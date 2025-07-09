@@ -10,7 +10,7 @@ import ProgressBar from "../components/ProgressBar";
 
 const Home = () => (
   <>
-  <div className="bg-black">
+  <div className="bg-white">
     {/* Top Notification Bar */}
     <NotificationStrip />
     {/* Main Navigation Bar */}

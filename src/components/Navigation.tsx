@@ -12,9 +12,9 @@ import { NavLink } from "react-router-dom";
 export const Navigation = (): JSX.Element => {
   const navItems = [
     { label: "Home", to: "/" },
+    { label: "Explore", to: "/explore" },
     { label: "Leaderboard", to: "/leaderboard" },
-    { label: "Loyalty Cards", to: "/loyalty-cards" },
-    { label: "Businesses", to: "/businesses" },
+    { label: "Loyalty Cards", to: "/loyalty-cards" }, 
   ];
 
   return (
