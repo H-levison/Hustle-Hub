@@ -22,3 +22,31 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ─── Python Backend Additions ─────────────────────────────
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database
+*.db
+
+# Environment variables
+.env
+
+# Python virtual environments
+venv/
+.env/
+
+# Flask instance folder
+instance/
+
+# Alembic migrations (optional, if using)
+migrations/
+
+# Coverage reports (if you use pytest + coverage)
+htmlcov/
+.coverage
+.cache
