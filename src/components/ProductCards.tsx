@@ -88,73 +88,65 @@ const products = [
   }
 ];
 
-const ProductCard = ({ product, onFavoriteToggle }) => {
+type Product = {
+  id: number;
+  images: string[];
+  title: string;
+  location: string;
+  price: number;
+  rating: number;
+  reviews: number;
+  isFavorite: boolean;
+};
+
+interface ProductCardProps {
+  product: Product;
+  onFavoriteToggle: (productId: number) => void;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const nextImage = (e) => {
+  const nextImage = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
   };
 
-  const prevImage = (e) => {
+  const prevImage = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
   };
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onFavoriteToggle(product.id);
   };
 
   return (
-    <div className="bg-white rounded-lg  hover:shadow-md transition-shadow duration-200">
+    <div className="bg-transparent rounded-2xl w-42 md:w-60">
       {/* Image Section */}
       <div className="relative">
-        <div className="aspect-square overflow-hidden rounded-t-lg bg-gray-100">
+        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100">
           <img
             src={product.images[currentImageIndex]}
             alt={product.title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover rounded-xl"
           />
         </div>
-        
         {/* Favorite Button */}
         <button
           onClick={handleFavoriteClick}
           className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
         >
           <Heart 
-            size={16} 
+            size={18} 
             className={product.isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"} 
           />
         </button>
-
-        {/* Navigation Arrows */}
-        {product.images.length > 1 && (
-          <>
-            <button
-              onClick={prevImage}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 p-1 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100"
-            >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M15 18l-6-6 6-6"/>
-              </svg>
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100"
-            >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 6l6 6-6 6"/>
-              </svg>
-            </button>
-          </>
-        )}
-
         {/* Image Indicators */}
         {product.images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1">
-            {product.images.map((_, index) => (
+          <div className="absolute bottom-3 left-1/2  transform -translate-x-1/2 flex gap-1">
+            {product.images.map((_: string, index: number) => (
               <div
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all ${
@@ -165,32 +157,19 @@ const ProductCard = ({ product, onFavoriteToggle }) => {
           </div>
         )}
       </div>
-
       {/* Content Section */}
-      <div className="p-4">
-        <div className="flex items-start justify-between mb-1">
-          <h3 className="font-semibold text-gray-900 truncate pr-2">{product.title}</h3>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <Star size={14} className="fill-black text-black" />
-            <span className="text-sm font-medium">{product.rating}</span>
-          </div>
-        </div>
-        
-        <p className="text-gray-600 text-sm mb-2">{product.location}</p>
-        
-        <div className="flex items-baseline gap-1">
-          <span className="font-semibold text-gray-900">${product.price}</span>
-          <span className="text-gray-600 text-sm">night</span>
-        </div>
+      <div className="pt-3 px-1 pb-1">
+        <h3 className="font-semibold text-gray-900 text-base leading-tight truncate mb-0.5">{product.title}</h3>
+        <div className="text-gray-700 text-sm mb-0.5">${product.price} for 2 nights · <span className="inline-flex items-center"><Star size={14} className="fill-black text-black mr-0.5" /> {product.rating}</span></div>
       </div>
     </div>
   );
 };
 
 const ProductCards = () => {
-  const [productList, setProductList] = useState(products);
+  const [productList, setProductList] = useState<Product[]>(products);
 
-  const handleFavoriteToggle = (productId) => {
+  const handleFavoriteToggle = (productId: number) => {
     setProductList(prev => 
       prev.map(product => 
         product.id === productId 
@@ -201,10 +180,12 @@ const ProductCards = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4"> 
+    
+    <section className="w-full flex justify-center py-8">
+    <div className="w-full mx-24">
+      <div className=" px-4"> 
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-5 gap-2 ">
           {productList.map((product) => (
             <ProductCard 
               key={product.id} 
@@ -215,6 +196,8 @@ const ProductCards = () => {
         </div>
       </div>
     </div>
+
+    </section>
   );
 };
 
