@@ -7,6 +7,7 @@ import CategoryIcons from "../components/CategoryIcons";
 import CategoryChips from "../components/CategoryChips";
 import LocationCards from "../components/LocationCards";
 import ProgressBar from "../components/ProgressBar";
+import ProductCards from "../components/ProductCards";
 
 const Home = () => (
   <>
@@ -17,10 +18,9 @@ const Home = () => (
     <Navigation />
     <SearchBar />
     <HeroGrid />
-    <CategoryIcons />
-    <CategoryChips />
-    <LocationCards />
-    <ProgressBar />
+    <CategoryIcons /> 
+    {/* <LocationCards /> */}
+    <ProductCards />
   </div>
     
   </>
