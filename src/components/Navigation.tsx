@@ -18,10 +18,12 @@ export const Navigation = (): JSX.Element => {
   ];
 
   return (
-    <header className="w-full h-[82px]   relative flex items-center justify-between px-11 border-b shadow-sm">
+    <header className="w-full h-[82px] relative flex items-center justify-between px-11 border-b shadow-sm">
       {/* Brand logo */}
-      <div className="font-extrabold text-[#1c09ed] text-lg font-['Inter',Helvetica]">
-        Hustlehub
+      <div className="font-extrabold flex gap-2 text-[#1c09ed] text-lg font-['Inter',Helvetica]">
+        
+      <img src="./logo (2).png" alt="" className="h-[25px]  "/>
+      <p className="text-[#0075F3]">Hustlehub</p>
       </div>
 
       {/* Navigation menu */}
