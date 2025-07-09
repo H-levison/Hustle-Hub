@@ -1,7 +1,7 @@
 import React from "react";
 
 const VendorBanner: React.FC = () => (
-  <div className="w-full max-w-8xl mx-auto px-[80px] mt-[-20px]">
+  <div className="w-full max-w-8xl mx-auto px-[80px] mt-[20px]">
   <section className="w-full py-12 px-[80px] bg-[#10194A] rounded-3xl flex flex-col md:flex-row items-center justify-between px-8 py-12 gap-8">
     {/* Left Side */}
     <div className="flex-1 max-w-xl">

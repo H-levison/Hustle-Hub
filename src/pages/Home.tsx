@@ -16,9 +16,7 @@ import Footer from "../components/Footer";
 
 const Home = () => (
   <>
-    <div className="bg-white">
-      {/* Top Notification Bar */}
-      <NotificationStrip />
+      {/* <NotificationStrip /> */}
       {/* Main Navigation Bar */}
       <Navigation />
       <SearchBar />
@@ -27,9 +25,9 @@ const Home = () => (
       {/* <TrendingProducts /> */}
       <ProductCards />
       <FeaturedStores />
-      <InfoSection />
+      {/* <InfoSection /> */}
       <VendorBanner />
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-7xl mx-auto px-4">
+      <div className="flex flex-col md:flex-row gap-8 w-full max-w-8xl mx-auto px-[80px] mt-[20px]">
         <div className="flex-1">
           <SatisfactionSection />
         </div>
@@ -38,7 +36,6 @@ const Home = () => (
         </div>
       </div>
       <Footer />
-    </div>
   </>
 );
 
