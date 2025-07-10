@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Heart, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const products = [
   {
@@ -14,7 +15,9 @@ const products = [
     price: 120,
     rating: 4.8,
     reviews: 234,
-    isFavorite: false
+    isFavorite: false,
+    description: "A stylish modern apartment in the heart of downtown.",
+    details: "2 beds, 2 baths, 1200 sqft, pet friendly, free WiFi."
   },
   {
     id: 2,
@@ -28,7 +31,9 @@ const products = [
     price: 85,
     rating: 4.9,
     reviews: 156,
-    isFavorite: true
+    isFavorite: true,
+    description: "A cozy beach house with a beautiful view of the ocean.",
+    details: "3 beds, 2 baths, 1500 sqft, ocean view, free parking."
   },
   {
     id: 3,
@@ -42,7 +47,9 @@ const products = [
     price: 200,
     rating: 4.7,
     reviews: 89,
-    isFavorite: false
+    isFavorite: false,
+    description: "A luxurious mountain cabin for a peaceful getaway.",
+    details: "4 beds, 3 baths, 2500 sqft, mountain view, hot tub."
   },
   {
     id: 4,
@@ -56,7 +63,9 @@ const products = [
     price: 350,
     rating: 4.6,
     reviews: 312,
-    isFavorite: false
+    isFavorite: false,
+    description: "A stunning luxury villa with a private pool.",
+    details: "5 beds, 4 baths, 3500 sqft, pool, 24/7 security."
   },
   {
     id: 5,
@@ -70,7 +79,9 @@ const products = [
     price: 95,
     rating: 4.5,
     reviews: 67,
-    isFavorite: true
+    isFavorite: true,
+    description: "An elegant historic townhouse in the heart of Boston.",
+    details: "3 beds, 2 baths, 1800 sqft, historic, free parking."
   },
   {
     id: 6,
@@ -84,7 +95,9 @@ const products = [
     price: 140,
     rating: 4.8,
     reviews: 198,
-    isFavorite: false
+    isFavorite: false,
+    description: "A beautiful lakefront lodge with a cozy atmosphere.",
+    details: "4 beds, 3 baths, 2200 sqft, lake view, sauna."
   }
 ];
 
@@ -97,6 +110,8 @@ type Product = {
   rating: number;
   reviews: number;
   isFavorite: boolean;
+  description: string;
+  details: string;
 };
 
 interface ProductCardProps {
@@ -187,11 +202,12 @@ const ProductCards = () => {
         
         <div className="grid grid-cols-5 gap-2 ">
           {productList.map((product) => (
-            <ProductCard 
-              key={product.id} 
-              product={product} 
-              onFavoriteToggle={handleFavoriteToggle}
-            />
+            <Link key={product.id} to={`/product/${product.id}`} state={{ product }}>
+              <ProductCard 
+                product={product} 
+                onFavoriteToggle={handleFavoriteToggle}
+              />
+            </Link>
           ))}
         </div>
       </div>
