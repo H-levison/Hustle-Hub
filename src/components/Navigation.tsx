@@ -56,14 +56,21 @@ export const Navigation = (): JSX.Element => {
           <GlobeIcon size={20} />
         </div>
 
-        {/* Login button */}
-        <Button
-          variant="outline"
-          className="w-[101px] h-[37px] rounded-[40px] border border-solid border-[#1c09ed] bg-white font-['Inter',Helvetica] font-medium text-sm relative hover:bg-gray-50 transition-colors"
-        >
-          <span className="absolute left-[18px]">Login</span>
-          <div className="absolute w-[26px] h-[26px] top-1 left-[62px] bg-white rounded-[50px] border border-solid border-black" />
-        </Button>
+        {/* Auth buttons */}
+        <div className="flex items-center gap-3">
+          
+
+          {/* Login button */}
+          <NavLink to="/auth/login">
+            <Button
+              variant="outline"
+              className="w-[101px] h-[37px] rounded-[40px] border border-solid border-[#1c09ed] bg-white font-['Inter',Helvetica] font-medium text-sm relative hover:bg-gray-50 transition-colors"
+            >
+              <span className="absolute left-[18px]">Login</span>
+              <div className="absolute w-[26px] h-[26px] top-1 left-[62px] bg-white rounded-[50px] border border-solid border-black" />
+            </Button>
+          </NavLink>
+        </div>
       </div>
     </header>
   );

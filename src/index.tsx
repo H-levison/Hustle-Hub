@@ -6,6 +6,9 @@ import Leaderboard from "./pages/Leaderboard";
 import LoyaltyCards from "./pages/Loyatycards";
 import Explore from "./pages/Explore";
 import Product from "./pages/Product";
+import Login from "./pages/auth/login";
+import Signup from "./pages/auth/signup";
+import ForgotPassword from "./pages/auth/forgot-password";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -16,6 +19,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/loyalty-cards" element={<LoyaltyCards />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/product/:id" element={<Product />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/signup" element={<Signup />} />
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </HashRouter>
   </StrictMode>,
