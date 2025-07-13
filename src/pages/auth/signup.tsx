@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 
 const abstractImg = './Login .png'; 
 
@@ -24,10 +26,44 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle signup logic here
-  };
+  const navigate = useNavigate();
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!formData.agreeToTerms || !isPasswordValid || !isPasswordMatch) {
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:5000/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Registration successful! Please log in.");
+      navigate('/auth/login');
+    } else {
+      alert(data.error || "Something went wrong.");
+    }
+  } catch (error) {
+    console.error("Signup failed:", error);
+    alert("Server error. Try again later.");
+  }
+};
+
 
   const isPasswordValid = formData.password.length >= 8;
   const isPasswordMatch = formData.password === formData.confirmPassword;
