@@ -64,10 +64,10 @@ export const Navigation = (): JSX.Element => {
           <NavLink to="/auth/login">
             <Button
               variant="outline"
-              className="w-[101px] h-[37px] rounded-[40px] border border-solid border-[#1c09ed] bg-white font-['Inter',Helvetica] font-medium text-sm relative hover:bg-gray-50 transition-colors"
+              className="w-[101px] h-[37px] rounded-[40px] border border-solid border-gray-400 bg-white font-['Inter',Helvetica] font-medium text-sm relative hover:bg-gray-50 transition-colors"
             >
               <span className="absolute left-[18px]">Login</span>
-              <div className="absolute w-[26px] h-[26px] top-1 left-[62px] bg-white rounded-[50px] border border-solid border-black" />
+              <div className="absolute w-[26px] h-[26px] top-1 left-[62px] bg-white rounded-[50px] border border-solid border-gray-400" />
             </Button>
           </NavLink>
         </div>

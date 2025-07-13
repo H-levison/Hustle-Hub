@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const featuredStores = [
   {
@@ -32,9 +33,10 @@ const FeaturedStores = () => (
     <h2 className="text-2xl font-bold mb-6">Featured Stores</h2>
     <div className="grid grid-cols-5 gap-4 ">
       {featuredStores.map((store) => (
-        <div
+        <Link
           key={store.id}
-          className="relative h-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer"
+          to={`/shop/${store.id}`}
+          className="relative h-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer block"
         >
           <img
             src={store.image}
@@ -62,7 +64,7 @@ const FeaturedStores = () => (
           <button className="absolute bottom-3 left-3 right-3 bg-white text-black rounded-full py-2 text-sm font-semibold hover:bg-gray-100 transition-colors">
             Browse shop
           </button>
-        </div>
+        </Link>
       ))}
     </div>
   </section>
