@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const abstractImg = './Login .png'; 
-
+const navigate = useNavigate();
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,9 +25,6 @@ const Signup = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
   };
-
-  const navigate = useNavigate();
-
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();

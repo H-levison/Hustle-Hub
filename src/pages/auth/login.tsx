@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 
 const abstractImg = './Login .png'; 
-
 const Login = () => {
+  const navigate = useNavigate(); 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -19,47 +21,45 @@ const Login = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
   };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await fetch('http://localhost:5000/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: formData.email,
-        password: formData.password,
-      }),
-    });
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Login failed');
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.user.is_provider ? 'provider' : 'student');
+      localStorage.setItem('user_id', data.user.id.toString());
+
+      //Redirect based on role
+      if (data.user.email === "admin@hustlehub.com") {
+        navigate('/admin/dashboard');
+      } else if (data.user.is_provider) {
+        navigate('/provider/dashboard');
+      } else {
+        navigate('/dashboard');
+      }
+
+    } catch (error: any) {
+      alert(error.message); // Use toast later
     }
-
-    // Store the token & user info
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('role', data.user.is_provider ? 'provider' : 'student');
-    localStorage.setItem('user_id', data.user.id.toString());
-
-    //Redirect based on role
-    if (data.user.email === "admin@hustlehub.com") {
-      window.location.href = '/admin/dashboard';
-    } else if (data.user.is_provider) {
-      window.location.href = '/provider/dashboard';
-    } else {
-      window.location.href = '/dashboard';
-    }
-
-  } catch (error: any) {
-    alert(error.message); // to be replaced with toast or error UI
-  }
-};
-
+  };
 
   return (
     <div className="h-[80%] flex p-4">
