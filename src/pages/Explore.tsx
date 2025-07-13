@@ -1,12 +1,16 @@
 import React from "react";
 import { Navigation } from "../components/Navigation";
+import SearchBar from "../components/SearchBar";
+import ProductCards from "../components/ProductCards";
+import FeaturedStores from "../components/FeaturedStores";
 
 const Explore = () => (
   <>
     <Navigation />
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Explore</h1>
-      <p>Explore content coming soon...</p>
+    <SearchBar />
+    <main className="p-8"> 
+    <ProductCards /> 
+    <FeaturedStores />
     </main>
   </>
 );

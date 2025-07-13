@@ -12,16 +12,18 @@ import { NavLink } from "react-router-dom";
 export const Navigation = (): JSX.Element => {
   const navItems = [
     { label: "Home", to: "/" },
+    { label: "Explore", to: "/explore" },
     { label: "Leaderboard", to: "/leaderboard" },
-    { label: "Loyalty Cards", to: "/loyalty-cards" },
-    { label: "Businesses", to: "/businesses" },
+    { label: "Loyalty Cards", to: "/loyalty-cards" }, 
   ];
 
   return (
-    <header className="w-full h-[82px]   relative flex items-center justify-between px-11 border-b shadow-sm">
+    <header className="w-full bg-white h-[82px] relative flex items-center justify-between px-11 border-b shadow-sm sticky top-0 z-50">
       {/* Brand logo */}
-      <div className="font-extrabold text-[#1c09ed] text-lg font-['Inter',Helvetica]">
-        Hustlehub
+      <div className="font-extrabold flex gap-2 text-[#1c09ed] text-lg font-['Inter',Helvetica]">
+        
+      <img src="./logo (2).png" alt="" className="h-[25px]  "/>
+      <p className="text-[#0075F3]">Hustlehub</p>
       </div>
 
       {/* Navigation menu */}
@@ -54,14 +56,21 @@ export const Navigation = (): JSX.Element => {
           <GlobeIcon size={20} />
         </div>
 
-        {/* Login button */}
-        <Button
-          variant="outline"
-          className="w-[101px] h-[37px] rounded-[40px] border border-solid border-[#1c09ed] bg-white font-['Inter',Helvetica] font-medium text-sm relative hover:bg-gray-50 transition-colors"
-        >
-          <span className="absolute left-[18px]">Login</span>
-          <div className="absolute w-[26px] h-[26px] top-1 left-[62px] bg-white rounded-[50px] border border-solid border-black" />
-        </Button>
+        {/* Auth buttons */}
+        <div className="flex items-center gap-3">
+          
+
+          {/* Login button */}
+          <NavLink to="/auth/login">
+            <Button
+              variant="outline"
+              className="w-[101px] h-[37px] rounded-[40px] border border-solid border-[#1c09ed] bg-white font-['Inter',Helvetica] font-medium text-sm relative hover:bg-gray-50 transition-colors"
+            >
+              <span className="absolute left-[18px]">Login</span>
+              <div className="absolute w-[26px] h-[26px] top-1 left-[62px] bg-white rounded-[50px] border border-solid border-black" />
+            </Button>
+          </NavLink>
+        </div>
       </div>
     </header>
   );
