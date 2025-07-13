@@ -13,26 +13,41 @@ CORS(app)
 engine = get_engine(DATABASE_URL)
 session = create_session(engine)
 
-#Register Route
+# Register Route
 @app.route("/register", methods=["POST"])
 def register():
-    data = request.get_json()
-    email = data.get("email")
-    existing_user = session.query(User).filter_by(email=email).first()
-    if existing_user:
-        return jsonify({"error": "User already exists"}), 400
+    try:
+        data = request.get_json()
 
-    user = User(
-        full_name=data.get("full_name"),
-        email=email,
-        is_provider=data.get("is_provider", False)
-    )
-    user.set_password(data.get("password"))
-    session.add(user)
-    session.commit()
+        email = data.get("email")
+        password = data.get("password")
+        first_name = data.get("first_name", "").strip()
+        last_name = data.get("last_name", "").strip()
 
-    return jsonify({"message": "User registered successfully", "user_id": user.id})
+        if not first_name or not last_name:
+            return jsonify({"error": "First and last names are required"}), 400
 
+        existing_user = session.query(User).filter_by(email=email).first()
+        if existing_user:
+            return jsonify({"error": "User already exists"}), 400
+
+        user = User(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            is_provider=data.get("is_provider", False)
+        )
+        user.set_password(password)
+
+        session.add(user)
+        session.commit()
+
+        return jsonify({"message": "User registered successfully", "user_id": user.id}), 201
+
+    except Exception as e:
+        session.rollback()
+        print("Registration error:", e)
+        return jsonify({"error": "Server error"}), 500
 
 # Login Route
 @app.route("/login", methods=["POST"])

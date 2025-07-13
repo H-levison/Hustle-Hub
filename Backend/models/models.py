@@ -13,10 +13,11 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    full_name = Column(String(100), nullable=False)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
     email = Column(String(120), unique=True, nullable=False)
     password_hash = Column(String(128), nullable=False)
-    is_provider = Column(Boolean, default=False)  # True if they offer services too
+    is_provider = Column(Boolean, default=False)  # True if they offer services
     created_at = Column(DateTime, default=datetime.utcnow)
 
     #Here we have our relationships
