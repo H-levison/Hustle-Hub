@@ -17,7 +17,7 @@ const ForgotPassword = () => {
   return (
     <div className="h-[80%] flex p-4">
       {/* Left: Abstract image and quote */}
-      <div className="rounded-3xl md:flex flex-col justify-between w-1/2 bg-black relative">
+      {/* <div className="rounded-3xl md:flex flex-col justify-between w-1/2 bg-black relative">
         <img src={abstractImg} alt="Abstract" className="absolute rounded-3xl inset-0 w-full h-full object-cover opacity-80" />
         <div className="relative z-10 flex flex-col justify-between h-full w-full p-12">
           <div>
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
           </div>
         </div>
         <div className="absolute inset-0 w-full h-full border-4 border-white/20 rounded-3xl pointer-events-none" />
-      </div>
+      </div> */}
 
       {/* Right: Forgot password form */}
       <div className="flex-1 flex flex-col justify-center items-center bg-white rounded-l-3xl min-h-screen px-8 py-12">

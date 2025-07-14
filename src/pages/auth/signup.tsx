@@ -255,7 +255,7 @@ const Signup = () => {
         </div>
       </div>
       {/* Right: Abstract image and quote */}
-      <div className=" md:flex  flex-col justify-between w-1/2 bg-black rounded-3xl relative">
+      {/* <div className="  md:flex  flex-col justify-between w-1/2 bg-black rounded-3xl relative">
         <img src={abstractImg} alt="Abstract" className="absolute rounded-3xl inset-0 w-full h-full object-cover opacity-80" />
         <div className="relative z-10 flex flex-col justify-between h-full w-full p-12">
           <div>
@@ -269,7 +269,7 @@ const Signup = () => {
           </div>
         </div>
         <div className="absolute inset-0 w-full h-full border-4 border-white/20 rounded-3xl pointer-events-none" />
-      </div>
+      </div> */}
     </div>
   );
 };
