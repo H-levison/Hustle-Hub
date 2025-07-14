@@ -3,6 +3,7 @@ import { Navigation } from "../components/Navigation";
 import { NotificationStrip } from "../components/NotificationStrip";
 import SearchBar from "../components/SearchBar";
 import HeroGrid from "../components/HeroGrid";
+import HeroSliderMobile from "../components/HeroSliderMobile";
 import CategoryIcons from "../components/CategoryIcons";
 import CategoryChips from "../components/CategoryChips";
 import ProductCards from "../components/ProductCards";
@@ -19,7 +20,8 @@ const Home = () => (
       {/* <NotificationStrip /> */}
       {/* Main Navigation Bar */}
       <Navigation />
-      <SearchBar />
+      {/* <SearchBar /> */}
+      <HeroSliderMobile />
       <HeroGrid />
       <CategoryIcons />
       {/* <TrendingProducts /> */}
