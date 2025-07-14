@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navigation } from "../components/Navigation";
 
 const CartItems = () => (
   <div className="bg-white rounded-xl shadow p-4 mb-4">
@@ -11,7 +12,7 @@ const CouponCode = () => (
   <div className="bg-white rounded-xl shadow p-4 mb-4">
     <h2 className="font-semibold mb-2">Coupon Code</h2>
     <input className="w-full border rounded px-2 py-1 mb-2" placeholder="Enter Your Coupon Code" />
-    <button className="w-full bg-white border border-blue-600 text-blue-600 rounded py-2">Apply Your Coupon</button>
+    <button className="w-full bg-white border border-blue-600 text-blue-600 rounded py-2">Apply Your Loyalty card</button>
   </div>
 );
 
@@ -29,10 +30,7 @@ const PaymentMethod = () => (
   <div className="bg-white rounded-xl shadow p-4">
     <h2 className="font-semibold mb-2">Payment Method</h2>
     <div className="flex gap-2 mb-4">
-      <span className="bg-gray-100 rounded p-2">PayPal</span>
-      <span className="bg-gray-100 rounded p-2">Stripe</span>
-      <span className="bg-gray-100 rounded p-2">Mastercard</span>
-      <span className="bg-gray-100 rounded p-2">Bitcoin</span>
+      <span className="bg-gray-100 rounded p-2">Pay on delivery</span>
     </div>
     <button className="w-full bg-blue-600 text-white rounded py-2">Check Out</button>
   </div>
@@ -40,6 +38,8 @@ const PaymentMethod = () => (
 
 const Cart = () => {
   return (
+    <>
+    <Navigation />
     <div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Cart Items Section */}
       <div className="lg:col-span-2">
@@ -52,6 +52,7 @@ const Cart = () => {
         <PaymentMethod />
       </div>
     </div>
+    </>
   );
 };
 

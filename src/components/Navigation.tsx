@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GlobeIcon, Menu, X } from "lucide-react";
+import { GlobeIcon, Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   NavigationMenu,
@@ -48,13 +48,10 @@ export const Navigation = (): JSX.Element => {
 
       {/* Desktop Right side controls */}
       <div className="hidden md:flex items-center gap-6">
-        {/* Language selector */}
-        <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-          <span className="font-['Inter',Helvetica] font-medium text-black text-sm">
-            En
-          </span>
-          <GlobeIcon size={20} />
-        </div>
+        {/* Cart icon */}
+        <NavLink to="/cart" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+          <ShoppingCart size={22} />
+        </NavLink>
         {/* Auth buttons */}
         <div className="flex items-center gap-3">
           <NavLink to="/auth/login">
@@ -116,11 +113,10 @@ export const Navigation = (): JSX.Element => {
           </div>
           {/* Divider */}
           <div className="border-t my-4" />
-          {/* Language selector */}
-          <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-            <span className="font-['Inter',Helvetica] font-medium text-black text-base">En</span>
-            <GlobeIcon size={20} />
-          </div>
+          {/* Cart icon */}
+          <NavLink to="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+            <ShoppingCart size={22} />
+          </NavLink>
           {/* Auth button */}
           <NavLink to="/auth/login" onClick={() => setMobileOpen(false)}>
             <Button
