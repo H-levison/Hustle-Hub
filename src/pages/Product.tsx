@@ -35,10 +35,10 @@ const Product = () => {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Breadcrumb */}
+         
         
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12">
+        <div className=" ">
           <div className='flex gap-2  justify-around'>
             {/* Product Images Section */}
           <div className="order-2 xl:order-1">
