@@ -46,7 +46,7 @@ const FeaturedStores = () => (
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
           
           <div className="absolute top-3 left-3 flex gap-2">
-            <span className="bg-white/90 text-xs px-2 py-1 rounded-full font-medium">cars</span>
+            <span className="bg-white/90 text-xs px-2 py-1 rounded-full font-medium">Food</span>
             <span className="bg-white/90 text-xs px-2 py-1 rounded-full font-medium">Category</span>
           </div>
           
