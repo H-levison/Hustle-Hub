@@ -20,7 +20,7 @@ export const Navigation = (): JSX.Element => {
   ];
 
   return (
-    <header className="w-full h-[68px] relative flex items-center justify-between px-4 md:px-11 border-b shadow-sm sticky top-0 z-50">
+    <header className="w-full bg-white h-[68px] relative flex items-center justify-between px-4 md:px-11 border-b shadow-sm sticky top-0 z-50">
       {/* Brand logo */}
       <div className="font-extrabold flex gap-2 text-[#1c09ed] text-lg font-['Inter',Helvetica]">
         <img src="./logo (2).png" alt="" className="h-[25px]" />

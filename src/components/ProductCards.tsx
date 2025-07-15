@@ -126,8 +126,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
     onFavoriteToggle(product.id);
   };
 
-  return (
-    <div className="bg-transparent rounded-2xl w-64 h-80 flex-shrink-0">
+  return ( 
+      
+    <div className="bg-transparent rounded-2xl w-64 h-75  flex-shrink-0">
       <div className="relative">
         <div className="aspect-square overflow-hidden rounded-xl bg-gray-100 w-full h-48">
           <img
@@ -158,9 +159,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
           </div>
         )}
       </div>
-      <div className="pt-3 px-1 pb-1">
+      <div className="pt-3 px-1 ">
         <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{product.title}</h3>
-        <div className="text-gray-700 text-sm mb-0.5">
+        <div className="text-gray-700 text-sm  flex justify-between">
           ${product.price} · 
           <span className="inline-flex items-center">
             <Star size={14} className="fill-black text-black mr-0.5" /> {product.rating}
@@ -168,6 +169,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
         </div>
       </div>
     </div>
+ 
   );
 };
 
@@ -185,19 +187,19 @@ const ProductCards = () => {
   };
 
   return (
-    <section className="w-full flex justify-center py-8">
-      <div className="w-full     px-4">
-        <div className="flex gap-8 px-10 md:flex-wrap overflow-x-auto scrollbar-hide">
-          {productList.map((product) => (
-            <div key={product.id} className="cursor-pointer"> 
-              <ProductCard 
-                product={product} 
-                onFavoriteToggle={handleFavoriteToggle}
-              /> 
-            </div>
-          ))}
-        </div>
+    <section className="w-full  py-8">
+      <div className="flex flex-col md:flex-row gap-6 sm:gap-8 w-full max-w-8xl mx-auto px-2 sm:px-4 md:px-[80px] mt-4 sm:mt-[20px]">
+  <div className="flex gap-8 px-10 md:flex-wrap overflow-x-auto scrollbar-hide">
+    {productList.map((product) => (
+      <div key={product.id} className="cursor-pointer"> 
+        <ProductCard 
+          product={product} 
+          onFavoriteToggle={handleFavoriteToggle}
+        /> 
       </div>
+    ))}
+  </div>
+</div>
     </section>
   );
 };
