@@ -56,46 +56,49 @@ const Card: React.FC<CardProps> = ({
 
 const HeroGrid = () => {
   return (
-    <section className="w-full flex justify-center py-8">
-      <div className="grid grid-cols-4 grid-rows-3 gap-4 w-full mx-24 h-[500px]">
+    <section className="w-full flex justify-center py-8 hidden lg:flex">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-3 gap-4 w-full md:mx-8 lg:mx-24 h-[500px]">
         <Card 
-          title="Giant luxury complex with all the necessary amenities"
-          tags={["affordable living", "Near Campus"]}
-          button="Apply now"
-          bgImage="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop"
+          title="Fashion & Apparel"
+          tags={["men", "kids", "women"]}
+          button="See more"
+          bgImage="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400&h=300&fit=crop"
           className="col-span-2 row-span-2"
         />
         <Card 
-          title="Shipping + freight"
+          title="Beauty & Personal Care"
           tags={["Fast Delivery"]}
-          bgImage="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=300&fit=crop"
+          button="See more"
+          bgImage="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&h=300&fit=crop"
           className="col-start-1 row-start-3"
         />
         <Card 
-          title="Ready to turn your skills into income?"
-          button="Join us"
-          bgColor="bg-blue-500"
+          title="Electronics & Gadgets"
+          button="See more"
+          bgImage="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop"
           className="col-start-2 row-start-3"
         />
         <Card 
-          title="Handy man service"
+          title="Food & Beverages"
           tags={["Near Campus"]}
           bgImage="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400&h=300&fit=crop"
           className="col-start-3 row-start-1"
         />
         <Card 
-          title="hire top taskers"
-          subtitle="hire the best taskers for your needs."
-          bgColor="bg-slate-100"
-          textColor="text-gray-800"
+          title="Services"
+          subtitle="Lorem ipsum and more words, run our of words so this is a task for some one else"
+          // tags={["handyman" , "cleaning"]}
+          button="check out "
+          bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
           className="row-span-2 col-start-3 row-start-2"
         />
+        
         <Card 
-          title="Let us compete for the number 1 spot"
+          title="Services"
           subtitle="Lorem ipsum and more words, run our of words so this is a task for some one else"
-          tags={["gaming club"]}
+          tags={["handyman" , "cleaning"]}
           button="Join communities"
-          bgImage="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=600&fit=crop"
+          bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
           className="row-span-3 col-start-4 row-start-1"
         />
       </div>
