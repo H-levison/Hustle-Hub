@@ -1,103 +1,102 @@
 import React, { useState } from "react";
 import { Heart, Star } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const products = [
   {
     id: 1,
     images: [
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop"
     ],
-    title: "Modern Apartment in Downtown",
-    location: "New York, NY",
-    price: 120,
+    title: "Nike Air Max 270",
+    location: "Nike",
+    price: 150,
     rating: 4.8,
     reviews: 234,
     isFavorite: false,
-    description: "A stylish modern apartment in the heart of downtown.",
-    details: "2 beds, 2 baths, 1200 sqft, pet friendly, free WiFi."
+    description: "Comfortable running shoes with air cushioning.",
+    details: "Mesh upper, rubber sole, available in multiple colors."
   },
   {
     id: 2,
     images: [
-      "https://images.unsplash.com/photo-1501183638710-841dd1904471?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1493663284031-b7e3aaa4c4a0?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop"
     ],
-    title: "Cozy Beach House",
-    location: "Miami, FL",
-    price: 85,
+    title: "Wireless Headphones",
+    location: "Sony",
+    price: 299,
     rating: 4.9,
     reviews: 156,
     isFavorite: true,
-    description: "A cozy beach house with a beautiful view of the ocean.",
-    details: "3 beds, 2 baths, 1500 sqft, ocean view, free parking."
+    description: "Premium noise-cancelling wireless headphones.",
+    details: "30-hour battery, Bluetooth 5.0, fast charging."
   },
   {
     id: 3,
     images: [
-      "https://images.unsplash.com/photo-1549517045-bc93de075e53?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=400&h=300&fit=crop"
     ],
-    title: "Mountain Cabin Retreat",
-    location: "Aspen, CO",
-    price: 200,
+    title: "Vintage Watch",
+    location: "Rolex",
+    price: 2500,
     rating: 4.7,
     reviews: 89,
     isFavorite: false,
-    description: "A luxurious mountain cabin for a peaceful getaway.",
-    details: "4 beds, 3 baths, 2500 sqft, mountain view, hot tub."
+    description: "Classic luxury timepiece with automatic movement.",
+    details: "Stainless steel case, leather strap, water resistant."
   },
   {
     id: 4,
     images: [
-      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop"
     ],
-    title: "Luxury Villa with Pool",
-    location: "Los Angeles, CA",
-    price: 350,
+    title: "Leather Handbag",
+    location: "Gucci",
+    price: 850,
     rating: 4.6,
     reviews: 312,
     isFavorite: false,
-    description: "A stunning luxury villa with a private pool.",
-    details: "5 beds, 4 baths, 3500 sqft, pool, 24/7 security."
+    description: "Elegant leather handbag with gold hardware.",
+    details: "Genuine leather, multiple compartments, adjustable strap."
   },
   {
     id: 5,
     images: [
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1572635196243-4dd75fbdbd7f?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1509048191080-d2ce53ce44e1?w=400&h=300&fit=crop"
     ],
-    title: "Historic Townhouse",
-    location: "Boston, MA",
-    price: 95,
+    title: "Skincare Set",
+    location: "Clinique",
+    price: 120,
     rating: 4.5,
     reviews: 67,
     isFavorite: true,
-    description: "An elegant historic townhouse in the heart of Boston.",
-    details: "3 beds, 2 baths, 1800 sqft, historic, free parking."
+    description: "Complete skincare routine with cleanser and moisturizer.",
+    details: "Dermatologist tested, suitable for all skin types."
   },
   {
     id: 6,
     images: [
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1500076656116-558758c991c1?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1611078987707-cfa0995f8ea8?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=300&fit=crop"
     ],
-    title: "Lakefront Lodge",
-    location: "Seattle, WA",
-    price: 140,
+    title: "Bluetooth Speaker",
+    location: "JBL",
+    price: 80,
     rating: 4.8,
     reviews: 198,
     isFavorite: false,
-    description: "A beautiful lakefront lodge with a cozy atmosphere.",
-    details: "4 beds, 3 baths, 2200 sqft, lake view, sauna."
+    description: "Portable speaker with deep bass and long battery life.",
+    details: "Waterproof, 12-hour battery, wireless connectivity."
   }
 ];
 
@@ -122,33 +121,21 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const nextImage = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
-  };
-
-  const prevImage = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
-  };
-
   const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onFavoriteToggle(product.id);
   };
 
   return (
-    <div className="bg-transparent rounded-2xl w-42 md:w-60">
-      {/* Image Section */}
+    <div className="bg-transparent rounded-2xl w-64 h-80 flex-shrink-0">
       <div className="relative">
-        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100">
+        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100 w-full h-48">
           <img
             src={product.images[currentImageIndex]}
             alt={product.title}
             className="w-full h-full object-cover rounded-xl"
           />
         </div>
-        {/* Favorite Button */}
         <button
           onClick={handleFavoriteClick}
           className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
@@ -158,9 +145,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
             className={product.isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"} 
           />
         </button>
-        {/* Image Indicators */}
         {product.images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2  transform -translate-x-1/2 flex gap-1">
+          <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1">
             {product.images.map((_: string, index: number) => (
               <div
                 key={index}
@@ -172,10 +158,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
           </div>
         )}
       </div>
-      {/* Content Section */}
       <div className="pt-3 px-1 pb-1">
-        <h3 className="font-semibold text-gray-900 text-base leading-tight truncate mb-0.5">{product.title}</h3>
-        <div className="text-gray-700 text-sm mb-0.5">${product.price} for 2 nights · <span className="inline-flex items-center"><Star size={14} className="fill-black text-black mr-0.5" /> {product.rating}</span></div>
+        <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{product.title}</h3>
+        <div className="text-gray-700 text-sm mb-0.5">
+          ${product.price} · 
+          <span className="inline-flex items-center">
+            <Star size={14} className="fill-black text-black mr-0.5" /> {product.rating}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -195,24 +185,19 @@ const ProductCards = () => {
   };
 
   return (
-    
     <section className="w-full flex justify-center py-8">
-    <div className="w-full mx-24">
-      <div className=" px-4"> 
-        
-        <div className="grid grid-cols-5 gap-2 ">
+      <div className="w-full     px-4">
+        <div className="flex gap-8 px-10 md:flex-wrap overflow-x-auto scrollbar-hide">
           {productList.map((product) => (
-            <Link key={product.id} to={`/product/${product.id}`} state={{ product }}>
+            <div key={product.id} className="cursor-pointer"> 
               <ProductCard 
                 product={product} 
                 onFavoriteToggle={handleFavoriteToggle}
-              />
-            </Link>
+              /> 
+            </div>
           ))}
         </div>
       </div>
-    </div>
-
     </section>
   );
 };

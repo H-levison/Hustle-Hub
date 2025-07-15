@@ -16,10 +16,11 @@ export const Navigation = (): JSX.Element => {
     { label: "Explore", to: "/explore" },
     { label: "Leaderboard", to: "/leaderboard" },
     { label: "Loyalty Cards", to: "/loyalty-cards" },
+    { label: "Vendor Shop", to: "/vendorshop" },
   ];
 
   return (
-    <header className="w-full bg-white h-[82px] relative flex items-center justify-between px-4 md:px-11 border-b shadow-sm sticky top-0 z-50">
+    <header className="w-full h-[68px] relative flex items-center justify-between px-4 md:px-11 border-b shadow-sm sticky top-0 z-50">
       {/* Brand logo */}
       <div className="font-extrabold flex gap-2 text-[#1c09ed] text-lg font-['Inter',Helvetica]">
         <img src="./logo (2).png" alt="" className="h-[25px]" />
@@ -34,7 +35,7 @@ export const Navigation = (): JSX.Element => {
               <NavLink
                 to={item.to}
                 className={({ isActive }) =>
-                  `font-['Inter',Helvetica] font-medium text-sm cursor-pointer hover:text-[#1c09ed] transition-colors ${
+                  `font-['Inter',Helvetica] font-medium text-md cursor-pointer hover:text-[#1c09ed] transition-colors ${
                     isActive ? "text-[#1c09ed]" : "text-black"
                   }`
                 }
