@@ -29,7 +29,7 @@ const Home = () => (
       <FeaturedStores />
       {/* <InfoSection /> */}
       <VendorBanner />
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-8xl mx-auto px-[80px] mt-[20px]">
+      <div className="flex flex-col md:flex-row gap-6 sm:gap-8 w-full max-w-8xl mx-auto px-2 sm:px-4 md:px-[80px] mt-4 sm:mt-[20px]">
         <div className="flex-1">
           <SatisfactionSection />
         </div>

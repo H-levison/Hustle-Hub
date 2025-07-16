@@ -11,6 +11,7 @@ import Login from "./pages/auth/login";
 import Signup from "./pages/auth/signup";
 import ForgotPassword from "./pages/auth/forgot-password";
 import Cart from "./pages/Cart";
+import VendorShop from "./pages/VendorShop";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -22,6 +23,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/explore" element={<Explore />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/shop/:id" element={<Shop />} />
+        <Route path="/vendorshop" element={<VendorShop />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/signup" element={<Signup />} />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
