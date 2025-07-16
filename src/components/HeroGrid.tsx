@@ -84,6 +84,16 @@ const HeroGrid = () => {
           bgImage="https://domf5oio6qrcr.cloudfront.net/medialibrary/8371/bigstock-Hamburger-And-French-Fries-263887.jpg"
           className="col-start-3 row-start-1"
         />
+
+
+        <Card 
+          title="Services"
+          subtitle="Lorem ipsum and more words, run our of words so this is a task for some one else"
+          tags={["handyman" , "cleaning"]}
+          button="Join communities"
+          bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
+          className="row-span-3 col-start-4 row-start-1"
+        />
         <Card 
           title="Stationeries"
           subtitle="We offer services that help people learn and grow."
@@ -93,14 +103,7 @@ const HeroGrid = () => {
           className="row-span-2 col-start-3 row-start-2"
         />
         
-        <Card 
-          title="Services"
-          subtitle="Lorem ipsum and more words, run our of words so this is a task for some one else"
-          tags={["handyman" , "cleaning"]}
-          button="Join communities"
-          bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
-          className="row-span-3 col-start-4 row-start-1"
-        />
+        
       </div>
     </section>
   );
