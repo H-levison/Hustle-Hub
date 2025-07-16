@@ -81,7 +81,7 @@ const HeroGrid = () => {
         <Card 
           title="Food & Beverages"
           tags={["Near Campus"]}
-          bgImage="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400&h=300&fit=crop"
+          bgImage= "./Food 1"
           className="col-start-3 row-start-1"
         />
         <Card 
