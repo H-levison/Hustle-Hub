@@ -85,8 +85,8 @@ const HeroGrid = () => {
           className="col-start-3 row-start-1"
         />
         <Card 
-          title="Services"
-          subtitle="Lorem ipsum and more words, run our of words so this is a task for some one else"
+          title="Stationeries"
+          subtitle="We offer services that help people learn and grow."
           // tags={["handyman" , "cleaning"]}
           button="check out "
           bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
