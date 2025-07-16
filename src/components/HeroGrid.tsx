@@ -88,8 +88,8 @@ const HeroGrid = () => {
 
         <Card 
           title="Services"
-          subtitle="Lorem ipsum and more words, run our of words so this is a task for some one else"
-          tags={["handyman" , "cleaning"]}
+          subtitle=" Apartment search and cleaning services made simple. "
+          tags={["house-hunting" , "cleaning"]}
           button="Join communities"
           bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
           className="row-span-3 col-start-4 row-start-1"
