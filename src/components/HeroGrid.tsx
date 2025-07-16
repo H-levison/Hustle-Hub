@@ -67,7 +67,7 @@ const HeroGrid = () => {
         />
         <Card 
           title="Beauty & Personal Care"
-          tags={["Fast Delivery"]}
+         
           button="See more"
           bgImage="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&h=300&fit=crop"
           className="col-start-1 row-start-3"
@@ -80,7 +80,7 @@ const HeroGrid = () => {
         />
         <Card 
           title="Food & Beverages"
-          tags={["Near Campus"]}
+          tags={["Order and Fast Delivery"]}
           bgImage="https://domf5oio6qrcr.cloudfront.net/medialibrary/8371/bigstock-Hamburger-And-French-Fries-263887.jpg"
           className="col-start-3 row-start-1"
         />
@@ -97,7 +97,7 @@ const HeroGrid = () => {
         <Card 
           title="Stationeries"
           subtitle="We offer services that help people learn and grow."
-          // tags={["handyman" , "cleaning"]}
+        tags={["education"]}
           button="check out "
           bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
           className="row-span-2 col-start-3 row-start-2"
