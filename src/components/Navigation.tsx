@@ -13,7 +13,7 @@ export const Navigation = (): JSX.Element => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navItems = [
     { label: "Home", to: "/" },
-    { label: "Explore", to: "/explore" },
+    // { label: "Explore", to: "/explore" },
     { label: "Leaderboard", to: "/leaderboard" },
     { label: "Loyalty Cards", to: "/loyalty-cards" },
     { label: "Vendor Shop", to: "/vendorshop" },
