@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Settings, LogOut, Store } from "lucide-react";
 
 
 export const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
 
   const toggleDropdown = () => {
@@ -29,12 +30,9 @@ export const ProfileDropdown = () => {
 
 
   const handleLogout = () => {
-    // Implement logout logic here
-    console.log("User logged out");
+    // Implement logout logic here, e.g., clearing auth tokens
     setIsOpen(false);
-    // You'll want to update your global state to reflect that the user is logged out.
-    // For now, we can reload the page to simulate the state change.
-    window.location.reload();
+    navigate("/auth/login");
   };
 
 
