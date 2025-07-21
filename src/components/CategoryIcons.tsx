@@ -22,48 +22,22 @@ import {
 } from "lucide-react";
 
 const categories = [
-  { label: "Cleaning", icon: Feather },
-  { label: "Handyman", icon: Hammer },
+
   { label: "Carpooling", icon: Car },
-  { label: "Assistant", icon: User },
-  { label: "Home Repairs", icon: Wrench },
-  { label: "Grocery", icon: ShoppingCart },
-  { label: "Pharmacy", icon: Pill },
   { label: "Clothing", icon: Shirt },
   { label: "Electronics", icon: Monitor },
   { label: "Food", icon: Utensils },
-  { label: "Chef", icon: ChefHat },
-  { label: "Security", icon: Shield },
-  { label: "Cashier", icon: CreditCard },
-  { label: "Manager", icon: Briefcase },
-  { label: "Retail Store", icon: Store },
-  { label: "Home Services", icon: Home },
-  { label: "Delivery", icon: Truck },
-  { label: "Support", icon: Phone },
-  { label: "Consulting", icon: HeartHandshake },
-];
+  { label: "Services", icon: Home },
+  ];
 
 const subcategories: Record<string, string[]> = {
-  Cleaning: ["House Cleaning", "Office Cleaning", "Deep Cleaning", "Window Cleaning", "Carpet Cleaning"],
-  Handyman: ["Furniture Assembly", "Wall Mounting", "Minor Repairs", "Installation", "Maintenance"],
+  
   Carpooling: ["Daily Commute", "Airport Rides", "Long Distance", "Event Transportation", "Group Travel"],
-  Assistant: ["Virtual Assistant", "Personal Assistant", "Administrative", "Data Entry", "Research"],
-  "Home Repairs": ["Plumbing", "Electrical", "Painting", "Carpentry", "Roofing"],
-  Grocery: ["Fruits", "Vegetables", "Dairy", "Snacks", "Drinks"],
-  Pharmacy: ["Medicine", "Supplements", "Personal Care", "First Aid", "Health Products"],
   Clothing: ["Men", "Women", "Kids", "Shoes", "Accessories"],
   Electronics: ["Phones", "Laptops", "TVs", "Cameras", "Accessories"],
   Food: ["Pizza", "Sushi", "Burgers", "Vegan", "Grill"],
-  Chef: ["Private Chef", "Meal Prep", "Catering", "Baking", "Special Diets"],
-  Security: ["Home Security", "Event Security", "Surveillance", "Guard Services", "Safety Consulting"],
-  Cashier: ["Retail", "Restaurant", "Gas Station", "Grocery Store", "Event Cashier"],
-  Manager: ["Store Manager", "Team Lead", "Project Manager", "Operations", "Supervisor"],
-  "Retail Store": ["Fashion", "Electronics", "Home Goods", "Sports", "Books"],
-  "Home Services": ["Lawn Care", "Pool Maintenance", "Pet Care", "Elder Care", "Babysitting"],
-  Delivery: ["Food Delivery", "Package Delivery", "Grocery Delivery", "Furniture Delivery", "Express Delivery"],
-  Support: ["Customer Service", "Technical Support", "Help Desk", "Phone Support", "Live Chat"],
-  Consulting: ["Business Consulting", "IT Consulting", "Marketing", "Financial Advice", "Career Coaching"],
-};
+  "Services": ["Fashion", "Electronics", "Home Goods", "Sports", "Books"],
+  };
 
 const SCROLL_AMOUNT = 200;
 
