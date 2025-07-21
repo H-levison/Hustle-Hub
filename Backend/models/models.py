@@ -27,11 +27,15 @@ class User(Base):
 
     # Hashing password before storing it
     def set_password(self, password):
+        if not password:
+            raise ValueError("Password must not be empty")
         self.password_hash = generate_password_hash(password)
 
-    # CHeck if password is correct
+    # Check if password is correct
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    
 
 class Business(Base):
     __tablename__ = 'businesses'
