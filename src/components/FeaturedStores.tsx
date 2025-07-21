@@ -45,10 +45,7 @@ const FeaturedStores = () => (
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
           
-          <div className="absolute top-2 sm:top-3 left-2 sm:left-3 flex gap-2">
-            <span className="bg-white/90 text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium">Food</span>
-            <span className="bg-white/90 text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium">Category</span>
-          </div>
+          
           
           <button className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white/90 rounded-full p-1.5 sm:p-2 hover:bg-white transition-colors">
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

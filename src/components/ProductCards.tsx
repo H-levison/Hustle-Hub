@@ -94,20 +94,24 @@ type Product = {
 interface ProductCardProps {
   product: Product;
   onFavoriteToggle: (productId: number) => void;
+  
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
 
   const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onFavoriteToggle(product.id);
+    
   };
 
   return ( 
       
     <div className="bg-transparent rounded-2xl w-64 h-75  flex-shrink-0">
       <div className="relative">
+        
         <div className="aspect-square overflow-hidden rounded-xl bg-gray-100 w-full h-48">
           <img
             src={product.images[currentImageIndex]}
@@ -174,6 +178,7 @@ const ProductCards = () => {
           product={product} 
           onFavoriteToggle={handleFavoriteToggle}
         /> 
+        
       </div>
     ))}
   </div>
