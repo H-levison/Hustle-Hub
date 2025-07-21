@@ -30,11 +30,21 @@ export const ProfileDropdown = () => {
 
 
   const handleLogout = () => {
-    // Implement logout logic here, e.g., clearing auth tokens
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsOpen(false);
     navigate("/auth/login");
   };
 
+   const [user, setUser] = useState<{ first_name: string; last_name: string } | null>(null);
+
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
+}, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -47,7 +57,9 @@ export const ProfileDropdown = () => {
           alt="User Profile"
           className="w-12 h-12 rounded-full object-cover"
         />
-        <span className="font-medium text-lg hidden md:block">Username</span>
+        <span className="font-medium text-lg hidden md:block">
+          {user ? `${user.first_name} ${user.last_name}` : "Guest"}
+        </span>
       </button>
 
 

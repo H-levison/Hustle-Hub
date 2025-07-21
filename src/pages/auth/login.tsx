@@ -43,6 +43,8 @@ const Login = () => {
     localStorage.setItem('token', data.token);
     localStorage.setItem('role', data.user.is_provider ? 'provider' : 'student');
     localStorage.setItem('user_id', data.user.id.toString());
+    localStorage.setItem("user", JSON.stringify(data.user));
+
 
     navigate('/'); 
 
