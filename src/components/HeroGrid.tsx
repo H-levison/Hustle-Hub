@@ -69,19 +69,19 @@ const HeroGrid = () => {
           title="Beauty & Personal Care"
          
           button="See more"
-          bgImage="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&h=300&fit=crop"
+          bgImage="https://i0.wp.com/weareglamerus.com/wp-content/uploads/2020/08/IMG_1153.jpeg?fit=1024%2C768&ssl=1"
           className="col-start-1 row-start-3"
         />
         <Card 
           title="Electronics & Gadgets"
           button="See more"
-          bgImage="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop"
+          bgImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxfyvTJF1fEPRGzhkLcGS6dV0oqC7Ycaz3GQ&s"
           className="col-start-2 row-start-3"
         />
         <Card 
           title="Food & Beverages"
           tags={["Order and Fast Delivery"]}
-          bgImage="https://domf5oio6qrcr.cloudfront.net/medialibrary/8371/bigstock-Hamburger-And-French-Fries-263887.jpg"
+          bgImage="https://kikifoodies.com/wp-content/uploads/2025/03/ET5B8958-4.jpeg"
           className="col-start-3 row-start-1"
         />
 
@@ -91,7 +91,7 @@ const HeroGrid = () => {
           subtitle=" Apartment search and cleaning services made simple. "
           tags={["house-hunting" , "cleaning"]}
           button="Join communities"
-          bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
+          bgImage="https://media.licdn.com/dms/image/v2/D4E0BAQG026Z0gOalLQ/company-logo_200_200/company-logo_200_200/0/1719171441582?e=2147483647&v=beta&t=-jZIWCXM4GP3LfL6-hWFdUSeSh7C3nZfI_6FKxQZPY4"
           className="row-span-3 col-start-4 row-start-1"
         />
         <Card 
@@ -99,7 +99,7 @@ const HeroGrid = () => {
           subtitle="We offer services that help people learn and grow."
         tags={["education"]}
           button="check out "
-          bgImage="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=400&h=300&fit=crop"
+          bgImage="https://wp.penguin.co.uk/wp-content/uploads/2024/12/Penguin-Best-Books-of-2025-article-sizing-1-1024x683.jpg"
           className="row-span-2 col-start-3 row-start-2"
         />
         
