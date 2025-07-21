@@ -5,99 +5,77 @@ const products = [
   {
     id: 1,
     images: [
-      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop"
+      "https://cdn.guardian.ng/wp-content/uploads/2023/12/Photo-Credit-Jollof-Festival-.jpg"
     ],
-    title: "Nike Air Max 270",
-    location: "Nike",
-    price: 150,
-    rating: 4.8,
-    reviews: 234,
-    isFavorite: false,
-    description: "Comfortable running shoes with air cushioning.",
-    details: "Mesh upper, rubber sole, available in multiple colors."
+    title: "Jollof Rice",
+location: "West Africa",
+price: 12,
+rating: 4.9,
+reviews: 1023,
+isFavorite: true,
+description: "A flavorful rice dish cooked in a rich tomato sauce.",
+details: "Made with rice, tomatoes, onions, peppers, and spices. Often served with chicken, beef, or plantains.",
   },
   {
     id: 2,
     images: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop"
+      "https://eatsdelightful.com/wp-content/uploads/2023/07/decorated-and-sliced-chocolate-chip-red-velvet-cake-on-cake-stand-2-scaled.jpg"
     ],
-    title: "Wireless Headphones",
-    location: "Sony",
-    price: 299,
-    rating: 4.9,
-    reviews: 156,
-    isFavorite: true,
-    description: "Premium noise-cancelling wireless headphones.",
-    details: "30-hour battery, Bluetooth 5.0, fast charging."
+    title: "Chocolate Red Velvet Cake",
+location: "Bakery Delight",
+price: 18,
+rating: 4.7,
+reviews: 587,
+isFavorite: false,
+description: "A rich, moist red velvet cake with a hint of chocolate.",
+details: "Layers of chocolate-infused red velvet cake topped with cream cheese frosting. Perfect for special occasions.",
+
   },
   {
     id: 3,
     images: [
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=400&h=300&fit=crop"
+      "https://media.voguebusiness.com/photos/60140c47d3d19b7432dd2ea9/2:3/w_2560%2Cc_limit/sneakers-sustainability-voguebus-janine-abrenilla-jan-21-story.jpg"
     ],
-    title: "Vintage Watch",
-    location: "Rolex",
-    price: 2500,
-    rating: 4.7,
-    reviews: 89,
-    isFavorite: false,
-    description: "Classic luxury timepiece with automatic movement.",
-    details: "Stainless steel case, leather strap, water resistant."
+    title: "Classic Sneakers",
+location: "Urban Kicks",
+price: 75,
+rating: 4.6,
+reviews: 412,
+isFavorite: true,
+description: "Stylish and versatile sneakers for everyday wear.",
+details: "Leather upper, cushioned insole, non-slip rubber sole. Suitable for casual or semi-formal outfits.",
+
   },
   {
     id: 4,
     images: [
-      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop"
+      "https://sisijemimah.com/wp-content/uploads/2016/04/image-2.jpeg"
     ],
-    title: "Leather Handbag",
-    location: "Gucci",
-    price: 850,
-    rating: 4.6,
-    reviews: 312,
-    isFavorite: false,
-    description: "Elegant leather handbag with gold hardware.",
-    details: "Genuine leather, multiple compartments, adjustable strap."
+    title: "Chin Chin",
+location: "Lagos Bites",
+price: 5,
+rating: 4.8,
+reviews: 764,
+isFavorite: true,
+description: "Crunchy, sweet fried dough snack popular across Nigeria.",
+details: "Made from flour, sugar, milk, butter, and nutmeg. Deep-fried to a golden brown. Perfect for snacking or parties.",
   },
   {
     id: 5,
     images: [
-      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1572635196243-4dd75fbdbd7f?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1509048191080-d2ce53ce44e1?w=400&h=300&fit=crop"
+      "https://m.media-amazon.com/images/I/71XZXuS-lbL._UF1000,1000_QL80_.jpg"
     ],
-    title: "Skincare Set",
-    location: "Clinique",
-    price: 120,
-    rating: 4.5,
-    reviews: 67,
-    isFavorite: true,
-    description: "Complete skincare routine with cleanser and moisturizer.",
-    details: "Dermatologist tested, suitable for all skin types."
+   title: "Glow Essentials Skincare Set",
+location: "Radiant Beauty Co.",
+price: 45,
+rating: 4.9,
+reviews: 320,
+isFavorite: false,
+description: "A complete skincare set for glowing, healthy skin.",
+details: "Includes cleanser, toner, serum, moisturizer, and sunscreen. Suitable for all skin types. Infused with vitamin C, hyaluronic acid, and botanical extracts.",
+
   },
-  {
-    id: 6,
-    images: [
-      "https://images.unsplash.com/photo-1611078987707-cfa0995f8ea8?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=300&fit=crop"
-    ],
-    title: "Bluetooth Speaker",
-    location: "JBL",
-    price: 80,
-    rating: 4.8,
-    reviews: 198,
-    isFavorite: false,
-    description: "Portable speaker with deep bass and long battery life.",
-    details: "Waterproof, 12-hour battery, wireless connectivity."
-  }
+ 
 ];
 
 type Product = {
