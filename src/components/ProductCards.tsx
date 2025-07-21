@@ -68,7 +68,7 @@ details: "Made from flour, sugar, milk, butter, and nutmeg. Deep-fried to a gold
    title: "Glow Essentials Skincare Set",
 location: "Radiant Beauty Co.",
 price: 45,
-rating: 4.9,
+rating: 3.2,
 reviews: 320,
 isFavorite: false,
 description: "A complete skincare set for glowing, healthy skin.",

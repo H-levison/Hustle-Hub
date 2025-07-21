@@ -4,21 +4,21 @@ import { Link } from "react-router-dom";
 const featuredStores = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-    title: "Alu Luxury cars",
-    subtitle: "Starting at 12am-8",
+    image: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
+    title: "Popcorn Guy",
+    subtitle: "Open from 9:00 AM to 4:00 PM",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1605032655655-cb0cdd3e0f50?auto=format&fit=crop&w=400&q=80",
-    title: "Fast Lane Autos",
-    subtitle: "Starting at 1pm-6",
+    image: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
+    title: "Fatima's Kitchen",
+    subtitle: "Open from 11:00 AM to 8:00 PM",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=400&q=80",
-    title: "Elite Motors",
-    subtitle: "Starting at 9am-5",
+    image: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
+    title: "Fani's Bites",
+    subtitle: "Open from 8:00 AM to 11:00 PM",
   },
   {
     id: 4,
