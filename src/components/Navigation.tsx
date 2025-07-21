@@ -19,7 +19,7 @@ export const Navigation = (): JSX.Element => {
     // { label: "Explore", to: "/explore" },
     { label: "Leaderboard", to: "/leaderboard" },
     { label: "Loyalty Cards", to: "/loyalty-cards" },
-    { label: "Vendor Shop", to: "/vendorshop" },
+    //{ label: "Vendor Shop", to: "/vendorshop" },
   ];
 
 
