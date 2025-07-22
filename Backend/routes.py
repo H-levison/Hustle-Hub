@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from models.models import get_engine, create_session, User, Booking, Service,LoyaltyCard, Notification, Category
+from models.models import get_engine, create_session, User, Booking, Service,LoyaltyCard, Notification, Category, Business
 from config import DATABASE_URL
 import jwt
 from datetime import datetime, timedelta
@@ -186,6 +186,93 @@ def get_loyalty(user_id):
         "points": card.points,
         "tier": card.tier
         })
+
+# Create a new business (vendor shop)
+@app.route('/businesses', methods=['POST'])
+@token_required
+def create_business(current_user):
+    if not current_user.is_provider:
+        return jsonify({'error': 'Only vendors can create a business'}), 403
+    data = request.get_json()
+    name = data.get('name')
+    description = data.get('description')
+    category_id = data.get('category_id')
+    if not name or not category_id:
+        return jsonify({'error': 'Name and category_id are required'}), 400
+    business = Business(
+        name=name,
+        description=description,
+        category_id=category_id,
+        owner_id=current_user.id
+    )
+    session.add(business)
+    session.commit()
+    return jsonify({'message': 'Business created', 'business_id': business.id}), 201
+
+# Update a business (only by owner)
+@app.route('/businesses/<int:business_id>', methods=['PUT'])
+@token_required
+def update_business(current_user, business_id):
+    business = session.query(Business).filter_by(id=business_id, owner_id=current_user.id).first()
+    if not business:
+        return jsonify({'error': 'Business not found or not owned by user'}), 404
+    data = request.get_json()
+    business.name = data.get('name', business.name)
+    business.description = data.get('description', business.description)
+    business.category_id = data.get('category_id', business.category_id)
+    session.commit()
+    return jsonify({'message': 'Business updated'})
+
+# Delete a business (only by owner)
+@app.route('/businesses/<int:business_id>', methods=['DELETE'])
+@token_required
+def delete_business(current_user, business_id):
+    business = session.query(Business).filter_by(id=business_id, owner_id=current_user.id).first()
+    if not business:
+        return jsonify({'error': 'Business not found or not owned by user'}), 404
+    session.delete(business)
+    session.commit()
+    return jsonify({'message': 'Business deleted'})
+
+# Get all businesses
+@app.route('/businesses', methods=['GET'])
+def get_all_businesses():
+    businesses = session.query(Business).all()
+    return jsonify([
+        {
+            'id': b.id,
+            'name': b.name,
+            'description': b.description,
+            'category_id': b.category_id,
+            'owner_id': b.owner_id,
+            'created_at': b.created_at
+        } for b in businesses
+    ])
+
+# Get a specific business by ID
+@app.route('/businesses/<int:business_id>', methods=['GET'])
+def get_business(business_id):
+    business = session.query(Business).filter_by(id=business_id).first()
+    if not business:
+        return jsonify({'error': 'Business not found'}), 404
+    return jsonify({
+        'id': business.id,
+        'name': business.name,
+        'description': business.description,
+        'category_id': business.category_id,
+        'owner_id': business.owner_id,
+        'created_at': business.created_at
+    })
+
+# Become a vendor endpoint
+@app.route('/user/become-vendor', methods=['PUT'])
+@token_required
+def become_vendor(current_user):
+    if current_user.is_provider:
+        return jsonify({'message': 'Already a vendor'}), 200
+    current_user.is_provider = True
+    session.commit()
+    return jsonify({'message': 'You are now a vendor', 'is_provider': True})
 
 if __name__ == "__main__":
     app.run(debug=True)

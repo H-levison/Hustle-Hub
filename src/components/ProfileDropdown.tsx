@@ -37,7 +37,7 @@ export const ProfileDropdown = () => {
     navigate("/auth/login");
   };
 
-   const [user, setUser] = useState<{ first_name: string; last_name: string } | null>(null);
+   const [user, setUser] = useState<{ first_name: string; last_name: string; is_provider?: boolean } | null>(null);
 
 useEffect(() => {
   const storedUser = localStorage.getItem("user");
@@ -65,14 +65,16 @@ useEffect(() => {
 
       {isOpen && (
         <div className="absolute  right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
-          <NavLink
-            to="/vendorshop"
-            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}
-          >
-            <Store size={16} />
-            <span>Vendor Shop</span>
-          </NavLink>
+          {user && user.is_provider && (
+            <NavLink
+              to="/vendorshop"
+              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => setIsOpen(false)}
+            >
+              <Store size={16} />
+              <span>Vendor Shop</span>
+            </NavLink>
+          )}
            {/* <NavLink
             to="/settings"
             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

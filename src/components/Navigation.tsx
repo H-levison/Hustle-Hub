@@ -32,6 +32,7 @@ export const Navigation = (): JSX.Element => {
       </div>
 
 
+
       {/* Desktop Navigation menu */}
       <NavigationMenu className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
         <NavigationMenuList className="flex gap-8">

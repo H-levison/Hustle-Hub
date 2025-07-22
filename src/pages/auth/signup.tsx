@@ -50,7 +50,13 @@ const Signup = () => {
       }),
     });
 
-    const data = await response.json();
+    let data;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      data = {};
+    }
 
     if (response.ok) {
       alert("Registration successful! Please log in.");

@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigation } from '../components/Navigation';
 import { Plus, X, Trash2, Package, Tag, Award, Image } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const VendorShop = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user || !user.is_provider) {
+      navigate('/'); // Redirect to home if not vendor
+    }
+  }, [navigate]);
+
   const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'loyalty'>('products');
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [products, setProducts] = useState([
