@@ -21,10 +21,10 @@ const Home = () => (
       {/* <NotificationStrip /> */}
       {/* Main Navigation Bar */}
       <Navigation />
+      <CategoryIcons />
       {/* <SearchBar /> */}
       <HeroSliderMobile />
       <HeroGrid />
-      <CategoryIcons />
       {/* <TrendingProducts /> */}
       <ProductCards />
       <FeaturedStores />

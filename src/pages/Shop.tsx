@@ -1,309 +1,415 @@
-import React, { useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { Star, Heart, Share2, MapPin, Clock, Phone, Mail, Filter, Grid, List } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  Star,
+  Heart,
+  Mail,
+} from 'lucide-react';
 import { Navigation } from '../components/Navigation';
+
+// Import the featured stores data
+const featuredStores = [
+  {
+    id: 1,
+    image: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
+    title: "Popcorn Guy",
+    subtitle: "Open from 9:00 AM to 4:00 PM",
+    description: "The best popcorn in town with various flavors.",
+    logo: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
+    banner: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
+    followers: 120,
+  },
+  {
+    id: 2,
+    image: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
+    title: "Fatima's Kitchen",
+    subtitle: "Open from 11:00 AM to 8:00 PM",
+    description: "Delicious homemade meals with authentic flavors.",
+    logo: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
+    banner: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
+    followers: 250,
+  },
+  {
+    id: 3,
+    image: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
+    title: "Fani's Bites",
+    subtitle: "Open from 8:00 AM to 11:00 PM",
+    description: "Quick and tasty bites for any time of the day.",
+    logo: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
+    banner: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
+    followers: 180,
+  },
+  {
+    id: 4,
+    image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80",
+    title: "Speed Demons",
+    subtitle: "Starting at 11am-7",
+    description: "The fastest delivery service for all your needs.",
+    logo: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80",
+    banner: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80",
+    followers: 95,
+  },
+];
+
+// Default store data for Rwanda Kicks (when no matching ID is found)
+const defaultStore = {
+  id: 5,
+  title: "Rwanda Kicks",
+  description: "We have the best sneakers in Kigali.",
+  logo: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=400&q=80",
+  banner: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=400&q=80",
+  followers: 80,
+  subtitle: "Open from 10:00 AM to 7:00 PM",
+};
 
 const Shop = () => {
   const { id } = useParams();
-  const location = useLocation();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [categories, setCategories] = useState(['All']);
+  const [storeData, setStoreData] = useState(null);
 
-  // Mock store data - in real app this would come from API
-  const store = {
-    id: id || '1',
-    name: "Alu Luxury Cars",
-    description: "Premium luxury car dealership offering the finest selection of high-end vehicles. We specialize in exotic cars, sports cars, and luxury sedans.",
-    image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80",
-    rating: 4.8,
-    reviews: 156,
-    location: "Dakar, Senegal",
-    phone: "+221 77 123 4567",
-    email: "info@aluluxurycars.com",
-    hours: "Mon-Fri: 9AM-6PM, Sat: 10AM-4PM",
-    category: "Automotive",
-    followers: 1247,
-    products: 89,
-    isFollowing: false
+  useEffect(() => {
+    // Find the store by ID from the featured stores
+    const storeId = parseInt(id, 10);
+    const foundStore = featuredStores.find(store => store.id === storeId);
+    
+    if (foundStore) {
+      setStoreData({
+        id: foundStore.id.toString(),
+        name: foundStore.title,
+        description: foundStore.description,
+        logo: foundStore.logo,
+        banner: foundStore.banner,
+        followers: foundStore.followers,
+        products: 90, // Default product count
+        subtitle: foundStore.subtitle
+      });
+    } else {
+      // Use default store if no matching ID is found
+      setStoreData({
+        id: defaultStore.id.toString(),
+        name: defaultStore.title,
+        description: defaultStore.description,
+        logo: defaultStore.logo,
+        banner: defaultStore.banner,
+        followers: defaultStore.followers,
+        products: 90, // Default product count
+        subtitle: defaultStore.subtitle
+      });
+    }
+  }, [id]);
+
+  // Extract unique categories from products when storeData changes
+  useEffect(() => {
+    if (storeData) {
+      const productsForStore = storeProducts[storeData.id] || storeProducts['5'];
+      const uniqueCategories = ['All', ...new Set(productsForStore.map(product => product.category))];
+      setCategories(uniqueCategories);
+    }
+  }, [storeData]);
+
+  // If store data is still loading, show a loading state
+  if (!storeData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-lg">Loading store...</p>
+      </div>
+    );
+  }
+
+  // Define product sets for each store type
+  const storeProducts = {
+    // Popcorn Guy (ID: 1)
+    '1': [
+      {
+        id: 1,
+        name: "Classic Butter Popcorn",
+        price: 2500,
+        category: "Snacks",
+        image: "https://images.unsplash.com/photo-1578849278619-e73505e9610f?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 2,
+        name: "Caramel Popcorn",
+        price: 3000,
+        category: "Snacks",
+        image: "https://images.unsplash.com/photo-1604308777626-73a23a916b7d?auto=format&fit=crop&w=400&q=80",
+        isFavorite: true,
+      },
+      {
+        id: 3,
+        name: "Cheese Popcorn",
+        price: 3200,
+        category: "Snacks",
+        image: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 4,
+        name: "Mixed Flavor Pack",
+        price: 5000,
+        category: "Snacks",
+        image: "https://images.unsplash.com/photo-1583086762675-5a88bcc72548?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+    ],
+    // Fatima's Kitchen (ID: 2)
+    '2': [
+      {
+        id: 1,
+        name: "Homemade Jollof Rice",
+        price: 8500,
+        category: "Main Course",
+        image: "https://images.unsplash.com/photo-1575687715189-41d7c1ebf02c?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 2,
+        name: "Grilled Chicken Platter",
+        price: 12000,
+        category: "Main Course",
+        image: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=400&q=80",
+        isFavorite: true,
+      },
+      {
+        id: 3,
+        name: "Vegetable Stew",
+        price: 7000,
+        category: "Main Course",
+        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 4,
+        name: "Fresh Fruit Salad",
+        price: 5000,
+        category: "Dessert",
+        image: "https://images.unsplash.com/photo-1564093497595-593b96d80180?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+    ],
+    // Fani's Bites (ID: 3)
+    '3': [
+      {
+        id: 1,
+        name: "Mini Samosas (6 pcs)",
+        price: 4500,
+        category: "Appetizers",
+        image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 2,
+        name: "Chicken Wings (8 pcs)",
+        price: 7000,
+        category: "Appetizers",
+        image: "https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=400&q=80",
+        isFavorite: true,
+      },
+      {
+        id: 3,
+        name: "Beef Sliders (3 pcs)",
+        price: 8500,
+        category: "Appetizers",
+        image: "https://images.unsplash.com/photo-1550317138-10000687a72b?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 4,
+        name: "Loaded Fries",
+        price: 6000,
+        category: "Sides",
+        image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+    ],
+    // Speed Demons (ID: 4)
+    '4': [
+      {
+        id: 1,
+        name: "Nike Air Force 1 White",
+        price: 45000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 2,
+        name: "Nocta Glide 'Black Chrome'",
+        price: 48000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1605348532760-6753d2c43329?auto=format&fit=crop&w=400&q=80",
+        isFavorite: true,
+      },
+      {
+        id: 3,
+        name: "Under Armour HOVR Infinite",
+        price: 32000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 4,
+        name: "Air Force 1 First Use",
+        price: 34000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+    ],
+    // Default store (Rwanda Kicks - ID: 5)
+    '5': [
+      {
+        id: 1,
+        name: "Nike Air Force 1 White",
+        price: 45000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 2,
+        name: "Nocta Glide 'Black Chrome'",
+        price: 48000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1605348532760-6753d2c43329?auto=format&fit=crop&w=400&q=80",
+        isFavorite: true,
+      },
+      {
+        id: 3,
+        name: "Under Armour HOVR Infinite",
+        price: 32000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+      {
+        id: 4,
+        name: "Air Force 1 First Use",
+        price: 34000,
+        category: "Footwear",
+        image: "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=400&q=80",
+        isFavorite: false,
+      },
+    ],
   };
 
-  const categories = ['All', 'Sports Cars', 'Luxury Sedans', 'SUVs', 'Electric', 'Classic'];
-  
-  const products = [
-    {
-      id: 1,
-      name: "Mercedes-Benz S-Class 2024",
-      price: 125000000,
-      originalPrice: 140000000,
-      image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&h=300&fit=crop",
-      rating: 4.9,
-      reviews: 23,
-      category: "Luxury Sedans",
-      isFavorite: false
-    },
-    {
-      id: 2,
-      name: "Porsche 911 GT3",
-      price: 180000000,
-      originalPrice: 200000000,
-      image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop",
-      rating: 4.8,
-      reviews: 45,
-      category: "Sports Cars",
-      isFavorite: true
-    },
-    {
-      id: 3,
-      name: "BMW X7 M60i",
-      price: 95000000,
-      originalPrice: 105000000,
-      image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&h=300&fit=crop",
-      rating: 4.7,
-      reviews: 18,
-      category: "SUVs",
-      isFavorite: false
-    },
-    {
-      id: 4,
-      name: "Tesla Model S Plaid",
-      price: 110000000,
-      originalPrice: 120000000,
-      image: "https://images.unsplash.com/photo-1536700503339-1e4b06520771?w=400&h=300&fit=crop",
-      rating: 4.9,
-      reviews: 67,
-      category: "Electric",
-      isFavorite: false
-    },
-    {
-      id: 5,
-      name: "Ferrari F8 Tributo",
-      price: 250000000,
-      originalPrice: 280000000,
-      image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop",
-      rating: 4.8,
-      reviews: 34,
-      category: "Sports Cars",
-      isFavorite: true
-    },
-    {
-      id: 6,
-      name: "Rolls-Royce Phantom",
-      price: 350000000,
-      originalPrice: 380000000,
-      image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?w=400&h=300&fit=crop",
-      rating: 4.9,
-      reviews: 12,
-      category: "Luxury Sedans",
-      isFavorite: false
-    }
-  ];
+  // Get products based on store ID
+  const products = storeProducts[storeData.id] || storeProducts['5'];
 
-  const filteredProducts = selectedCategory === 'All' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
+  const filteredProducts = selectedCategory === 'All'
+    ? products
+    : products.filter((p) => p.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Store Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Store Image */}
-            <div className="lg:w-1/3">
-              <div className="relative">
-                <img
-                  src={store.image}
-                  alt={store.name}
-                  className="w-full h-64 lg:h-48 object-cover rounded-lg"
-                />
-                <div className="absolute top-4 right-4">
-                  <button className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors">
-                    <Share2 className="w-5 h-5 text-gray-600" />
-                  </button>
-                </div>
-              </div>
-            </div>
 
-            {/* Store Info */}
-            <div className="lg:w-2/3">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{store.name}</h1>
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`w-4 h-4 ${i < Math.floor(store.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-                        />
-                      ))}
-                      <span className="ml-2 text-sm font-medium text-gray-700">{store.rating}</span>
-                    </div>
-                    <span className="text-sm text-gray-500">({store.reviews} reviews)</span>
-                    <span className="text-sm text-gray-500">• {store.category}</span>
-                  </div>
-                </div>
-                <button className={`px-6 py-2 rounded-full font-semibold transition-colors ${
-                  store.isFollowing 
-                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}>
-                  {store.isFollowing ? 'Following' : 'Follow'}
-                </button>
-              </div>
-
-              <p className="text-gray-600 mb-4 leading-relaxed">{store.description}</p>
-
-              {/* Store Stats */}
-              <div className="flex items-center gap-6 mb-4 text-sm">
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-600">{store.location}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-600">{store.hours}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Phone className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-600">{store.phone}</span>
-                </div>
-              </div>
-
-              {/* Store Stats */}
-              <div className="flex items-center gap-6 text-sm">
-                <div>
-                  <span className="font-semibold text-gray-900">{store.followers}</span>
-                  <span className="text-gray-500 ml-1">followers</span>
-                </div>
-                <div>
-                  <span className="font-semibold text-gray-900">{store.products}</span>
-                  <span className="text-gray-500 ml-1">products</span>
-                </div>
-              </div>
-            </div>
+      <div className="container mx-auto px-4 py-8 max-w-7xl flex flex-col lg:flex-row gap-6">
+        {/* Sidebar */}
+        <aside className="lg:w-1/4 w-full bg-white border border-gray-100 rounded-xl p-6 text-center sticky top-8 h-fit">
+          <img
+            src={storeData.logo}
+            alt="Store Logo"
+            className="w-20 h-20 mx-auto rounded-full mb-4 object-cover"
+          />
+          <h2 className="text-xl font-semibold text-gray-900">{storeData.name}</h2>
+          <p className="text-sm text-gray-600 mt-1">{storeData.description}</p>
+          <div className="mt-4 text-sm text-gray-700">
+            <span className="font-semibold">{storeData.followers}</span> Followers
           </div>
-        </div>
+          <p className="text-xs text-gray-500 mt-2">{storeData.subtitle}</p>
 
-        {/* Filters and View Options */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            {/* Category Filters */}
-            <div className="flex items-center gap-2 overflow-x-auto">
+          <nav className="mt-6 border-t pt-4">
+            <button className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-black text-white font-medium">
+              <Mail className="w-4 h-4" /> Shop
+            </button>
+          </nav>
+
+          <div className="mt-6 text-left">
+            <h3 className="font-semibold text-gray-800 mb-2">Categories</h3>
+            <div className="flex flex-col gap-2 mt-3">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                    selectedCategory === category
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  className={`text-left px-2 py-1 rounded text-sm ${selectedCategory === category 
+                    ? 'bg-black text-white' 
+                    : 'text-gray-600 hover:bg-gray-100'}`}
                 >
                   {category}
                 </button>
               ))}
             </div>
+          </div>
+        </aside>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <List className="w-5 h-5" />
-              </button>
+        {/* Main Content */}
+        <div className="lg:w-3/4 w-full">
+          {/* Banner */}
+          <div className="bg-white rounded-xl p-4 mb-6">
+            <img
+              src={storeData.banner}
+              alt={`${storeData.name} Banner`}
+              className="w-full h-48 object-cover rounded-lg"
+            />
+          </div>
+
+          {/* Filters and Sorting */}
+          <div className="flex flex-wrap justify-between items-center mb-4">
+            <div className="text-gray-600 text-sm">{filteredProducts.length} items</div>
+            <div className="flex gap-2">
+              <select className="border rounded-md px-3 py-2 text-sm">
+                <option>Show: 50</option>
+                <option>Show: 25</option>
+              </select>
+              <select className="border rounded-md px-3 py-2 text-sm">
+                <option>Sort by: Featured</option>
+              </select>
             </div>
           </div>
-        </div>
 
-        {/* Products Grid */}
-        <div className={`grid gap-6 ${
-          viewMode === 'grid' 
-            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-            : 'grid-cols-1'
-        }`}>
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow ${
-                viewMode === 'list' ? 'flex' : ''
-              }`}
-            >
-              {/* Product Image */}
-              <div className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'aspect-square'}`}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-                <button className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors">
-                  <Heart className={`w-4 h-4 ${product.isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                </button>
-                {product.originalPrice > product.price && (
-                  <div className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                    {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+          {/* Product Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="relative">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute top-2 left-2 bg-gray-800 text-white text-xs font-semibold px-2 py-1 rounded">
+                    RWF {product.price.toLocaleString()}
                   </div>
-                )}
-              </div>
-
-              {/* Product Info */}
-              <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-                <div className="flex items-center gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                  <button className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md">
+                    <Heart
+                      className={`w-4 h-4 ${product.isFavorite
+                        ? 'fill-red-500 text-red-500'
+                        : 'text-gray-600'}`}
                     />
-                  ))}
-                  <span className="text-xs text-gray-500 ml-1">({product.reviews})</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-lg font-bold text-gray-900">
-                    Rwf{product.price.toLocaleString()}
-                  </span>
-                  {product.originalPrice > product.price && (
-                    <span className="text-sm text-gray-400 line-through">
-                      Rwf{product.originalPrice.toLocaleString()}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-3">
-                  <button className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                    View Details
                   </button>
                 </div>
+                <div className="p-3">
+                  <p className="text-xs text-gray-500 mb-1">{product.category}</p>
+                  <h3 className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</h3>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* No Products Message */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Filter className="w-16 h-16 mx-auto" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
-            <p className="text-gray-600">Try adjusting your filters or browse all categories.</p>
+            ))}
           </div>
-        )}
+
+          {filteredProducts.length === 0 && (
+            <div className="text-center text-gray-500 py-8">No products found.</div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default Shop; 
+export default Shop;
