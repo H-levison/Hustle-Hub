@@ -21,7 +21,7 @@ const Home = () => (
       {/* <NotificationStrip /> */}
       {/* Main Navigation Bar */}
       <Navigation />
-      <SearchBar />
+      {/* <SearchBar /> */}
       <HeroSliderMobile />
       <HeroGrid />
       <CategoryIcons />

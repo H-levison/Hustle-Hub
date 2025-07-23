@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Settings, LogOut, Store } from "lucide-react";
+import { Settings, LogOut, Store, User } from "lucide-react";
 
 
 export const ProfileDropdown = () => {
@@ -52,14 +52,12 @@ useEffect(() => {
         onClick={toggleDropdown}
         className="flex items-center gap-2 cursor-pointer focus:outline-none"
       >
-        <img
-          src="https://wallpapers.com/images/hd/cool-profile-picture-87h46gcobjl5e4xu.jpg" // Using a placeholder image from public folder
-          alt="User Profile"
-          className="w-12 h-12 rounded-full object-cover"
-        />
-        <span className="font-medium text-lg hidden md:block">
+        <div className="w-12 h-12 rounded-full  flex items-center justify-center">
+          <User size={24} className="text-gray-600" />
+        </div>
+        {/* <span className="font-medium text-lg hidden md:block">
           {user ? `${user.first_name} ${user.last_name}` : "Guest"}
-        </span>
+        </span> */}
       </button>
 
 
@@ -95,4 +93,3 @@ useEffect(() => {
     </div>
   );
 };
-

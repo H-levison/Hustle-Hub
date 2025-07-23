@@ -22,7 +22,7 @@ const Card: React.FC<CardProps> = ({
   className = '',
 }) => (
   <div
-    className={`relative rounded-lg overflow-hidden flex flex-col justify-between p-6 ${bgColor} ${textColor} ${className}`}
+    className={`relative  rounded-lg overflow-hidden flex flex-col justify-between p-6 ${bgColor} ${textColor} ${className}`}
     style={bgImage ? {
       backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${bgImage})`,
       backgroundSize: 'cover',
@@ -44,7 +44,7 @@ const Card: React.FC<CardProps> = ({
     {/* Content at the bottom */}
     <div className="relative z-10 text-left">
       <h3 className="text-lg font-bold mb-2 leading-tight">{title}</h3>
-      {subtitle && <p className="text-sm opacity-90 mb-3">{subtitle}</p>}
+      {subtitle && <p className=" opacity-90 mb-3">{subtitle}</p>}
       {button && (
         <button className="bg-white text-black px-4 py-2 rounded-lg font-medium w-fit hover:bg-gray-100 transition-colors">
           {button}
@@ -56,8 +56,8 @@ const Card: React.FC<CardProps> = ({
 
 const HeroGrid = () => {
   return (
-    <section className="w-full flex justify-center py-8 hidden lg:flex">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-3 gap-4 w-full md:mx-8 lg:mx-24 h-[500px]">
+  <section className="w-full h-full flex justify-center py-8 hidden lg:flex">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-3 gap-4 w-full md:mx-8 lg:mx-24 h-[600px]">
         <Card 
           title="Fashion & Apparel"
           tags={["men", "kids", "women"]}
