@@ -169,9 +169,11 @@ const ProductCards = () => {
   };
 
   return (
-    <section className="w-full  py-8">
-      <div className="flex flex-col md:flex-row gap-6 sm:gap-8 w-full max-w-8xl mx-auto px-2 sm:px-4 md:px-[80px] mt-4 sm:mt-[20px]">
-  <div className="flex gap-8 px-10 md:flex-wrap overflow-x-auto scrollbar-hide">
+    <section className="px-2 sm:px-4 md:mx-24 py-6 sm:py-8">
+    <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Featured Products</h2>
+      
+      {/* <div className="flex gap-4  flex-col md:flex-row sm:gap-8 w-full  mx-auto px-2 sm:px-4 md:px-[80px] mt-4 sm:mt-[20px]"> */}
+  <div className="flex gap-8 md:flex-wrap overflow-x-auto no-scrollbar">
     {productList.map((product) => (
       <div key={product.id} className="cursor-pointer"> 
         <ProductCard 
@@ -182,7 +184,7 @@ const ProductCards = () => {
         </div>
     ))}
   </div>
-</div>
+{/* </div> */}
     </section>
 
 );
