@@ -1,9 +1,9 @@
 import React from "react";
 
 const avatars = [
-  "https://randomuser.me/api/portraits/women/68.jpg",
-  "https://randomuser.me/api/portraits/men/32.jpg",
-  "https://randomuser.me/api/portraits/women/65.jpg"
+  "https://i0.wp.com/necheontheroad.com/wp-content/uploads/2022/11/IMG_5886.jpg?resize=800%2C1001&ssl=1",
+  "https://www.alueducation.com/wp-content/uploads/2022/07/KHL-Hub-64.jpg",
+  "https://www.alueducation.com/wp-content/uploads/2025/04/Copy-of-IR2024-Print.jpg"
 ];
 
 const guarantees = [
@@ -50,9 +50,9 @@ const SatisfactionSection: React.FC = () => (
     <ul className="flex flex-col gap-4 mb-4">
       {guarantees.map((g, i) => (
         <li key={i} className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl text-blue-600">
+          {/* <div className="flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl text-blue-600">
             {g.icon}
-          </div>
+          </div> */}
           <div>
             <div className="font-bold text-lg">{g.title}</div>
             <div className="text-white/90 text-sm"> {g.desc}</div>
