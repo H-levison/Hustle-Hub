@@ -22,9 +22,9 @@ const featuredStores = [
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80",
-    title: "Speed Demons",
-    subtitle: "Starting at 11am-7",
+    image: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
+    title: "House of Sneakers",
+    subtitle: "Open from 8:00 AM to 11:00 pm",
   },
 ];
 

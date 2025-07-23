@@ -19,10 +19,10 @@ const Footer: React.FC = () => (
         </ul>
       </div>
       <div>
-        <h4 className="font-semibold mb-2">LOREM IPSUM</h4>
+        <h4 className="font-semibold mb-2">BUILT BY STUDENTS FOR STUDENTS </h4>
         <ul className="space-y-1 text-sm">
-          <li>Lorem ipsum dolor sit amet</li>
-          <li>Lorem ipsum dolor</li>
+          <li>We support ALU entrepreneurs on every step</li>
+          <li>Campus-wide reach</li>
         </ul>
       </div>
       <div>
