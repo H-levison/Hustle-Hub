@@ -323,7 +323,7 @@ const Shop = () => {
           <p className="text-xs text-gray-500 mt-2">{storeData.subtitle}</p>
 
           <nav className="mt-6 border-t pt-4">
-            <button className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-black text-white font-medium">
+            <button className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-500 text-white font-medium">
               <Mail className="w-4 h-4" /> Shop
             </button>
           </nav>
@@ -336,7 +336,7 @@ const Shop = () => {
                   key={category}
                   onClick={() => setSelectedCategory(category)}
                   className={`text-left px-2 py-1 rounded text-sm ${selectedCategory === category 
-                    ? 'bg-black text-white' 
+                    ? 'bg-blue-500 text-white' 
                     : 'text-gray-600 hover:bg-gray-100'}`}
                 >
                   {category}
@@ -347,15 +347,7 @@ const Shop = () => {
         </aside>
 
         {/* Main Content */}
-        <div className="lg:w-3/4 w-full">
-          {/* Banner */}
-          <div className="bg-white rounded-xl p-4 mb-6">
-            <img
-              src={storeData.banner}
-              alt={`${storeData.name} Banner`}
-              className="w-full h-48 object-cover rounded-lg"
-            />
-          </div>
+        <div className="lg:w-3/4 w-full ">
 
           {/* Filters and Sorting */}
           <div className="flex flex-wrap justify-between items-center mb-4">
