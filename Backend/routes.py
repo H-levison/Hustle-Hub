@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from models.models import get_engine, create_session, User, Booking, Service,LoyaltyCard, Notification, Category, Business
+from models.models import get_engine, create_session, User, Booking, Service,LoyaltyCard, Notification, Category, Business, Product
 from config import DATABASE_URL
 import jwt
 from datetime import datetime, timedelta
@@ -104,6 +104,17 @@ def login():
             "is_provider": user.is_provider
         }
     })
+    
+@app.route("/me", methods=["GET"])
+@token_required
+def get_current_user(current_user):
+    return jsonify({
+        "id": current_user.id,
+        "email": current_user.email,
+        "first_name": current_user.first_name,
+        "last_name": current_user.last_name,
+        "is_provider": current_user.is_provider
+    })    
 
 @app.route("/services", methods=["GET"])
 def get_services():
@@ -127,6 +138,89 @@ def get_categories():
                 "name": c.name
             } for c in categories
         ])    
+@app.route("/api/categories", methods=["POST"])
+@token_required
+def create_category(current_user):
+    if not current_user.is_provider:
+        return jsonify({"error": "Only vendors can create categories"}), 403
+
+    data = request.get_json()
+    name = data.get("name", "").strip()
+
+    if not name:
+        return jsonify({"error": "Category name is required"}), 400
+
+    existing = session.query(Category).filter_by(name=name).first()
+    if existing:
+        return jsonify({"error": "Category already exists"}), 409
+
+    new_category = Category(name=name)
+    session.add(new_category)
+    session.commit()
+
+    return jsonify({
+        "id": new_category.id,
+        "name": new_category.name
+    }), 201
+    
+
+@app.route("/products", methods=["POST"])
+@token_required
+def create_product(current_user):
+    if not current_user.is_provider:
+         return jsonify({"error": "Only vendors can add products"}), 403
+
+    data = request.get_json()
+    name = data.get("name")
+    description = data.get("description")
+    price = data.get("price")
+    category_id = data.get("category_id")
+    business_id = data.get("business_id")
+
+    if not name or not price or not category_id or not business_id:
+         return jsonify({"error": "Missing required fields"}), 400
+
+    product = Product(
+        name=name,
+        description=description,
+        price=price,
+        category_id=category_id,
+        business_id=business_id,
+        vendor_id=current_user.id
+    )
+    session.add(product)
+    session.commit()
+
+    return jsonify({"message": "Product created successfully", "product_id": product.id}), 201
+
+@app.route("/products", methods=["GET"])
+def get_all_products():
+    category = request.args.get("category")
+    name = request.args.get("name")
+    business = request.args.get("store")
+
+    query = session.query(Product)
+
+    if category:
+       query = query.join(Category).filter(Category.name.ilike(f"%{category}%"))
+    if name:
+       query = query.filter(Product.name.ilike(f"%{name}%"))
+    if business:
+       query = query.join(Business).filter(Business.name.ilike(f"%{business}%"))
+
+    products = query.all()
+
+    return jsonify([
+       {
+            "id": p.id,
+            "name": p.name,
+            "description": p.description,
+            "price": p.price,
+            "category_id": p.category_id,
+            "business_id": p.business_id,
+            "vendor_id": p.vendor_id
+        } for p in products
+    ])
 
 @app.route("/book", methods=["POST"])
 @token_required

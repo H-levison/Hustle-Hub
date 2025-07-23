@@ -1,7 +1,7 @@
 # models.py
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, Text, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, Text, Float, JSON
 from sqlalchemy.orm import relationship, declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine
@@ -149,6 +149,25 @@ class Address(Base):
 
     # Relationships
     user = relationship("User")
+    
+class Product(Base):
+    __tablename__ = 'products'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    description = Column(String)
+    image = Column(String)
+    price = Column(Float, nullable=False)
+    colors = Column(JSON)
+    sizes = Column(JSON)
+    category_id = Column(Integer, ForeignKey('categories.id'))
+    business_id = Column(Integer, ForeignKey('businesses.id'))
+
+    category = relationship("Category")
+    business = relationship("Business")
+    
+    
+    
 
 def get_engine(db_url):
     return create_engine(db_url, echo=True)
