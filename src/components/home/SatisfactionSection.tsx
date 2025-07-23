@@ -55,15 +55,15 @@ const SatisfactionSection: React.FC = () => (
           </div>
           <div>
             <div className="font-bold text-lg">{g.title}</div>
-            <div className="text-white/90 text-sm">// {g.desc}</div>
+            <div className="text-white/90 text-sm"> {g.desc}</div>
           </div>
         </li>
       ))}
     </ul>
     {/* Button */}
-    <button className="mt-2 w-fit bg-white text-blue-700 font-semibold rounded-full px-8 py-3 text-base shadow hover:bg-gray-100 transition self-start">
+    {/* <button className="mt-2 w-fit bg-white text-blue-700 font-semibold rounded-full px-8 py-3 text-base shadow hover:bg-gray-100 transition self-start">
       Join Now
-    </button>
+    </button> */}
   </section>
 );
 
