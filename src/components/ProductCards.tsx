@@ -1,89 +1,191 @@
 // components/ProductCards.tsx
-import { useState, useEffect } from 'react';
+import React, { useState } from "react";
+import { Heart, Star } from "lucide-react";
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
+const products = [
+  {
+    id: 1,
+    images: [
+      "https://cdn.guardian.ng/wp-content/uploads/2023/12/Photo-Credit-Jollof-Festival-.jpg"
+    ],
+    title: "Jollof Rice",
+location: "West Africa",
+price: 12,
+rating: 4.9,
+reviews: 1023,
+isFavorite: true,
+description: "A flavorful rice dish cooked in a rich tomato sauce.",
+details: "Made with rice, tomatoes, onions, peppers, and spices. Often served with chicken, beef, or plantains.",
+  },
+  {
+    id: 2,
+    images: [
+      "https://eatsdelightful.com/wp-content/uploads/2023/07/decorated-and-sliced-chocolate-chip-red-velvet-cake-on-cake-stand-2-scaled.jpg"
+    ],
+    title: "Chocolate Red Velvet Cake",
+location: "Bakery Delight",
+price: 18,
+rating: 4.7,
+reviews: 587,
+isFavorite: false,
+description: "A rich, moist red velvet cake with a hint of chocolate.",
+details: "Layers of chocolate-infused red velvet cake topped with cream cheese frosting. Perfect for special occasions.",
+
+  },
+  {
+    id: 3,
+    images: [
+      "https://media.voguebusiness.com/photos/60140c47d3d19b7432dd2ea9/2:3/w_2560%2Cc_limit/sneakers-sustainability-voguebus-janine-abrenilla-jan-21-story.jpg"
+    ],
+    title: "Classic Sneakers",
+location: "Urban Kicks",
+price: 75,
+rating: 4.6,
+reviews: 412,
+isFavorite: true,
+description: "Stylish and versatile sneakers for everyday wear.",
+details: "Leather upper, cushioned insole, non-slip rubber sole. Suitable for casual or semi-formal outfits.",
+
+  },
+  {
+    id: 4,
+    images: [
+      "https://sisijemimah.com/wp-content/uploads/2016/04/image-2.jpeg"
+    ],
+    title: "Chin Chin",
+location: "Lagos Bites",
+price: 5,
+rating: 4.8,
+reviews: 764,
+isFavorite: true,
+description: "Crunchy, sweet fried dough snack popular across Nigeria.",
+details: "Made from flour, sugar, milk, butter, and nutmeg. Deep-fried to a golden brown. Perfect for snacking or parties.",
+  },
+  {
+    id: 5,
+    images: [
+      "https://m.media-amazon.com/images/I/71XZXuS-lbL._UF1000,1000_QL80_.jpg"
+    ],
+   title: "Glow Essentials Skincare Set",
+location: "Radiant Beauty Co.",
+price: 45,
+rating: 3.2,
+reviews: 320,
+isFavorite: false,
+description: "A complete skincare set for glowing, healthy skin.",
+details: "Includes cleanser, toner, serum, moisturizer, and sunscreen. Suitable for all skin types. Infused with vitamin C, hyaluronic acid, and botanical extracts.",
+
+  },
+ 
+];
+
+type Product = {
+  id: number;
+  images: string[];
+  title: string;
+  location: string;
   price: number;
-  category: string;
-  image: string;
+  rating: number;
+  reviews: number;
   isFavorite: boolean;
+  description: string;
+  details: string;
+};
+
+interface ProductCardProps {
+  product: Product;
+  onFavoriteToggle: (productId: number) => void;
+  
 }
 
-// components/ProductCards.tsx
+const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onFavoriteToggle(product.id);
+    
+  };
+
+  return ( 
+      
+    <div className="bg-transparent rounded-2xl w-64 h-75  flex-shrink-0">
+      <div className="relative">
+        
+        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100 w-full h-48">
+          <img
+            src={product.images[currentImageIndex]}
+            alt={product.title}
+            className="w-full h-full object-cover rounded-xl"
+          />
+        </div>
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+          >
+          <Heart 
+            size={18} 
+            className={product.isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"} 
+          />
+        </button>
+        {product.images.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1">
+            {product.images.map((_: string, index: number) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  index === currentImageIndex ? "bg-white" : "bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="pt-3 px-1 ">
+        <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{product.title}</h3>
+        <div className="text-gray-700 text-sm  flex justify-between">
+          ${product.price} · 
+          <span className="inline-flex items-center">
+            <Star size={14} className="fill-black text-black mr-0.5" /> {product.rating}
+          </span>
+        </div>
+        </div>
+    </div>
+ 
+  );
+};
+
 const ProductCards = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [productList, setProductList] = useState<Product[]>(products);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/products');
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
-    return matchesSearch && matchesCategory;
-  });
+  const handleFavoriteToggle = (productId: number) => {
+    setProductList(prev => 
+      prev.map(product => 
+        product.id === productId 
+          ? { ...product, isFavorite: !product.isFavorite }
+          : product
+      )
+    );
+  };
 
   return (
-    <div>
-      {/* Search and category filter UI */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search products..."
-          className="flex-1 p-2 border rounded"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="p-2 border rounded"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {[...new Set(products.map(p => p.category))].map(category => (
-            <option key={category} value={category}>{category}</option>
-          ))}
-        </select>
-      </div>
+    <section className="w-full  py-8">
+      <div className="flex flex-col md:flex-row gap-6 sm:gap-8 w-full max-w-8xl mx-auto px-2 sm:px-4 md:px-[80px] mt-4 sm:mt-[20px]">
+  <div className="flex gap-8 px-10 md:flex-wrap overflow-x-auto scrollbar-hide">
+    {productList.map((product) => (
+      <div key={product.id} className="cursor-pointer"> 
+        <ProductCard 
+          product={product} 
+          onFavoriteToggle={handleFavoriteToggle}
+        /> 
+        
+        </div>
+    ))}
+  </div>
+</div>
+    </section>
 
-      {/* Product grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.map(product => (
-          <div key={product.id} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img 
-              src={product.image} 
-              alt={product.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h3 className="font-semibold text-lg">{product.name}</h3>
-              <p className="text-gray-600 text-sm my-2">{product.description}</p>
-              <div className="flex justify-between items-center">
-                <span className="font-bold">{product.price.toLocaleString()} FCFA</span>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                  {product.category}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+);
 };
 
 export default ProductCards;

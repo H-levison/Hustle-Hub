@@ -15,6 +15,7 @@ import SatisfactionSection from "../components/SatisfactionSection";
 import HelpSection from "../components/HelpSection";
 import Footer from "../components/Footer";
 
+// Declaring the home page
 const Home = () => (
   <>
       {/* <NotificationStrip /> */}
