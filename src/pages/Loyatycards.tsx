@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigation } from "../components/Navigation";
-import LoyaltyCard from "../components/LoyaltyCard";
+import LoyaltyCard from "../components/loyalty card/LoyaltyCard";
 
 // Mock data for demonstration
 const mockLoyaltyCards = [

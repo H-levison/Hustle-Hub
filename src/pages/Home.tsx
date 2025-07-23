@@ -1,19 +1,19 @@
 import React from "react";
 import { Navigation } from "../components/Navigation";
-import { NotificationStrip } from "../components/NotificationStrip";
+import { NotificationStrip } from "../components/home/NotificationStrip";
 import SearchBar from "../components/SearchBar";
-import HeroGrid from "../components/HeroGrid";
-import HeroSliderMobile from "../components/HeroSliderMobile";
-import CategoryIcons from "../components/CategoryIcons";
-import CategoryChips from "../components/CategoryChips";
-import ProductCards from "../components/ProductCards";
-import FeaturedStores from "../components/FeaturedStores";
-import InfoSection from "../components/InfoSection";
-import TrendingProducts from "../components/TrendingProducts";
-import VendorBanner from "../components/VendorBanner";
-import SatisfactionSection from "../components/SatisfactionSection";
-import HelpSection from "../components/HelpSection";
-import Footer from "../components/Footer";
+import HeroGrid from "../components/home/HeroGrid";
+import HeroSliderMobile from "../components/home/HeroSliderMobile";
+import CategoryIcons from "../components/home/CategoryIcons";
+import CategoryChips from "../components/home/CategoryChips";
+import ProductCards from "../components/store/ProductCards";
+import FeaturedStores from "../components/store/FeaturedStores";
+import InfoSection from "../components/home/InfoSection";
+import TrendingProducts from "../components/home/TrendingProducts";
+import VendorBanner from "../components/home/VendorBanner";
+import SatisfactionSection from "../components/home/SatisfactionSection";
+import HelpSection from "../components/home/HelpSection";
+import Footer from "../components/home/Footer";
 
 // Declaring the home page
 const Home = () => (
