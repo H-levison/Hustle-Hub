@@ -75,7 +75,7 @@ const Signup = () => {
   const isPasswordMatch = formData.password === formData.confirmPassword;
 
   return (
-    <div className="h-[80%] p-4 flex">
+    <div className="h-[80%] p-4 flex font-sans">
       {/* Left: Signup form */}
       <div className="flex-1 flex flex-col justify-center items-center bg-white rounded-r-3xl min-h-screen px-8 py-12">
         <div className="w-full max-w-md mx-auto">

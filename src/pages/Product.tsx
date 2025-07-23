@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, Heart, Share2, MessageCircle, ShoppingBag, User, Truck, Shield, RotateCcw, CheckCircle } from 'lucide-react';
 import { Navigation } from '../components/Navigation';
+import { useCart } from '../CartContext';
 
 const Product = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -8,8 +9,10 @@ const Product = () => {
   const [selectedColor, setSelectedColor] = useState('Black');
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
   const product = {
+    id: '1', // In a real app, this would come from route params or API
     title: "Ben Hogan Men's Solid Ottoman Golf Polo Shirt",
     price: 187500,
     originalPrice: 250000,
@@ -29,6 +32,18 @@ const Product = () => {
   const tabs = ['Description', 'Styling Ideas', 'Reviews', 'Best Seller'];
 
   const discountPercentage = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.images[selectedImage],
+      color: selectedColor,
+      size: selectedSize,
+      quantity,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -194,7 +209,7 @@ const Product = () => {
 
               {/* Action Buttons */}
               <div className="space-y-3 mb-6">
-                <button className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                <button className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2" onClick={handleAddToCart}>
                   <ShoppingBag className="w-5 h-5" />
                   Add to Cart
                 </button>

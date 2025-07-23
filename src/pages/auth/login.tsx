@@ -55,7 +55,7 @@ const Login = () => {
 
 
   return (
-    <div className="h-[80%] flex p-4">
+    <div className="h-[80%] flex p-4 font-sans">
       {/* Left: Abstract image and quote */}
       {/* <div className=" rounded-3xl md:flex flex-col justify-between w-1/2 bg-black relative">
         <img src={abstractImg} alt="Abstract" className="absolute rounded-3xl inset-0 w-full h-full object-cover opacity-80" />

@@ -1,12 +1,37 @@
 import React from 'react';
 import { Navigation } from "../components/Navigation";
+import { useCart } from '../CartContext';
 
-const CartItems = () => (
-  <div className="bg-white rounded-xl shadow p-4 mb-4">
-    <h2 className="font-semibold mb-2">Shopping Cart</h2>
-    <p className="text-gray-500 text-sm">(Cart items placeholder)</p>
-  </div>
-);
+const CartItems = () => {
+  const { cart, removeFromCart } = useCart();
+  if (cart.length === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow p-4 mb-4 text-center">
+        <h2 className="font-semibold mb-2">Shopping Cart</h2>
+        <p className="text-gray-500 text-sm">Your cart is empty.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="bg-white rounded-xl shadow p-4 mb-4">
+      <h2 className="font-semibold mb-2">Shopping Cart</h2>
+      <ul className="divide-y divide-gray-200">
+        {cart.map((item, idx) => (
+          <li key={idx} className="py-4 flex items-center gap-4">
+            <img src={item.image} alt={item.title} className="w-16 h-16 rounded object-cover border" />
+            <div className="flex-1">
+              <div className="font-semibold">{item.title}</div>
+              <div className="text-sm text-gray-500">Color: {item.color} | Size: {item.size}</div>
+              <div className="text-sm">Qty: {item.quantity}</div>
+              <div className="text-blue-600 font-bold">Rwf{item.price.toLocaleString()}</div>
+            </div>
+            <button className="text-red-500 hover:underline text-sm" onClick={() => removeFromCart(item.id)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 const CouponCode = () => (
   <div className="bg-white rounded-xl shadow p-4 mb-4">
@@ -16,15 +41,22 @@ const CouponCode = () => (
   </div>
 );
 
-const OrderSummary = () => (
-  <div className="bg-white rounded-xl shadow p-4 mb-4">
-    <h2 className="font-semibold mb-2">Order Summary</h2>
-    <div className="flex justify-between text-sm mb-1"><span>Discount</span><span>$0.00</span></div>
-    <div className="flex justify-between text-sm mb-1"><span>Delivery</span><span>$29.99</span></div>
-    <div className="flex justify-between text-sm mb-1"><span>Tax</span><span>$39.99</span></div>
-    <div className="flex justify-between font-bold text-lg mt-2"><span>Total</span><span>$1879.93</span></div>
-  </div>
-);
+const OrderSummary = () => {
+  const { cart } = useCart();
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const delivery = cart.length > 0 ? 2999 : 0;
+  const tax = cart.length > 0 ? 3999 : 0;
+  const total = subtotal + delivery + tax;
+  return (
+    <div className="bg-white rounded-xl shadow p-4 mb-4">
+      <h2 className="font-semibold mb-2">Order Summary</h2>
+      <div className="flex justify-between text-sm mb-1"><span>Subtotal</span><span>Rwf{subtotal.toLocaleString()}</span></div>
+      <div className="flex justify-between text-sm mb-1"><span>Delivery</span><span>Rwf{delivery.toLocaleString()}</span></div>
+      <div className="flex justify-between text-sm mb-1"><span>Tax</span><span>Rwf{tax.toLocaleString()}</span></div>
+      <div className="flex justify-between font-bold text-lg mt-2"><span>Total</span><span>Rwf{total.toLocaleString()}</span></div>
+    </div>
+  );
+};
 
 const PaymentMethod = () => (
   <div className="bg-white rounded-xl shadow p-4">
