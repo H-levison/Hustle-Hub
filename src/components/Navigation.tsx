@@ -18,8 +18,9 @@ export const Navigation = (): JSX.Element => {
   const navItems = [
     { label: "Home", to: "/" },
     { label: "Explore", to: "/explore" },
+    { label: "Shop", to: "/explore?tab=stores" },
     // { label: "Leaderboard", to: "/leaderboard" },
-    { label: "Loyalty Cards", to: "/loyalty-cards" },
+    // { label: "Loyalty Cards", to: "/loyalty-cards" },
     // { label: "Vendor Shop", to: "/vendorshop" },
   ];
 
@@ -32,15 +33,8 @@ export const Navigation = (): JSX.Element => {
         <p className="text-[#0075F3]">Hustlehub</p>
       </NavLink>
 
-      {/* Search Bar - Hidden on mobile, visible on desktop */}
-      <div className="w-full hidden md:block">
-         <SearchBar />
-       </div>
-
-
-
       {/* Desktop Navigation menu */}
-      {/* <NavigationMenu className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
+      <NavigationMenu className="hidden md:block">
         <NavigationMenuList className="flex gap-8">
           {navItems.map((item, index) => (
             <NavigationMenuItem key={index}>
@@ -57,7 +51,12 @@ export const Navigation = (): JSX.Element => {
             </NavigationMenuItem>
           ))}
         </NavigationMenuList>
-      </NavigationMenu> */}
+      </NavigationMenu>
+
+      {/* Search Bar - Hidden on mobile, visible on desktop */}
+      <div className="w-full hidden md:block">
+         <SearchBar />
+       </div>
 
       
 
