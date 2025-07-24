@@ -13,7 +13,7 @@ const products = [
       "https://cdn.guardian.ng/wp-content/uploads/2023/12/Photo-Credit-Jollof-Festival-.jpg"
     ],
     title: "Jollof Rice",
-    location: "West Africa",
+    location: "Fatima's Kitchen",
     price: 12,
     rating: 4.9,
     reviews: 1023,
@@ -41,7 +41,7 @@ const products = [
       "https://media.voguebusiness.com/photos/60140c47d3d19b7432dd2ea9/2:3/w_2560%2Cc_limit/sneakers-sustainability-voguebus-janine-abrenilla-jan-21-story.jpg"
     ],
     title: "Classic Sneakers",
-    location: "Urban Kicks",
+    location: "House of Sneakers",
     price: 75,
     rating: 4.6,
     reviews: 412,
@@ -55,7 +55,7 @@ const products = [
       "https://sisijemimah.com/wp-content/uploads/2016/04/image-2.jpeg"
     ],
     title: "Chin Chin",
-    location: "Lagos Bites",
+    location: "Fani's Bites",
     price: 5,
     rating: 4.8,
     reviews: 764,
@@ -69,7 +69,7 @@ const products = [
       "https://m.media-amazon.com/images/I/71XZXuS-lbL._UF1000,1000_QL80_.jpg"
     ],
     title: "Glow Essentials Skincare Set",
-    location: "Radiant Beauty Co.",
+    location: "Beauty & Co.",
     price: 45,
     rating: 3.2,
     reviews: 320,
@@ -83,7 +83,7 @@ const products = [
       "https://i.redd.it/iw6g7cmeulgb1.jpg"
     ],
     title: "Air Max Running Shoes",
-    location: "Nike Store",
+    location: "House of Sneakers",
     price: 129.99,
     rating: 4.5,
     reviews: 856,
@@ -97,7 +97,7 @@ const products = [
       "https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/09c5ea6df1bd4be6baaaac5e003e7047_9366/Forum_Low_Shoes_White_FY7756_01_standard.jpg"
     ],
     title: "Forum Low Shoes",
-    location: "Adidas Official",
+    location: "House of Sneakers",
     price: 89.99,
     rating: 4.3,
     reviews: 412,
@@ -111,7 +111,7 @@ const products = [
       "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_1350,h_1350/global/307338/02/sv01/fnd/IND/fmt/png/PUMA-x-LAMELO-BALL-MB.03-TOXIC-Men's-Basketball-Shoes"
     ],
     title: "MB.03 Basketball Shoes",
-    location: "Puma Official",
+    location: "House of Sneakers",
     price: 119.99,
     rating: 4.7,
     reviews: 328,

@@ -254,7 +254,7 @@ const Shop = () => {
         id: 4,
         name: "Air Force 1 First Use",
         price: 34000,
-        category: "Footwear",
+       category: "Footwear",
         image: "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=400&q=80",
         isFavorite: false,
       },
@@ -400,6 +400,7 @@ const Shop = () => {
           )}
         </div>
       </div>
+
     </div>
   );
 };
