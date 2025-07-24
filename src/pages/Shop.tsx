@@ -41,12 +41,12 @@ const featuredStores = [
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80",
-    title: "Speed Demons",
-    subtitle: "Starting at 11am-7",
-    description: "The fastest delivery service for all your needs.",
-    logo: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80",
-    banner: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80",
+    image: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
+    title: "House of Sneakers",
+    subtitle: "Open from 8:00 AM to 11:00 PM",
+    description: "We have the best sneakers in Kigali",
+    logo: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
+    banner: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
     followers: 95,
   },
 ];
@@ -134,7 +134,7 @@ const Shop = () => {
         name: "Caramel Popcorn",
         price: 3000,
         category: "Snacks",
-        image: "https://images.unsplash.com/photo-1604308777626-73a23a916b7d?auto=format&fit=crop&w=400&q=80",
+        image: "https://www.cook2eatwell.com/wp-content/uploads/2020/09/Caramel-Popcorn-Image.jpg",
         isFavorite: true,
       },
       {
@@ -142,7 +142,7 @@ const Shop = () => {
         name: "Cheese Popcorn",
         price: 3200,
         category: "Snacks",
-        image: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?auto=format&fit=crop&w=400&q=80",
+        image: "https://kidtestedrecipes.com/wp-content/uploads/2022/12/Cheese_Popcorn_Recipe-Card-540x720.jpg",
         isFavorite: false,
       },
       {
@@ -150,7 +150,7 @@ const Shop = () => {
         name: "Mixed Flavor Pack",
         price: 5000,
         category: "Snacks",
-        image: "https://images.unsplash.com/photo-1583086762675-5a88bcc72548?auto=format&fit=crop&w=400&q=80",
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_eRaJ__7l6Or2BMpCzJjnbesK8V_So5A_zA&s",
         isFavorite: false,
       },
     ],
@@ -161,7 +161,7 @@ const Shop = () => {
         name: "Homemade Jollof Rice",
         price: 8500,
         category: "Main Course",
-        image: "https://images.unsplash.com/photo-1575687715189-41d7c1ebf02c?auto=format&fit=crop&w=400&q=80",
+        image: "https://kikifoodies.com/wp-content/uploads/2024/11/ET5B6272-2-1024x1024.jpg",
         isFavorite: false,
       },
       {
@@ -177,7 +177,7 @@ const Shop = () => {
         name: "Vegetable Stew",
         price: 7000,
         category: "Main Course",
-        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80",
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnDjyYInCcnEC_IBGYr7aT75FT0-NmMZW3sWS_yQvcN0AF1LjvibRW14_gow5CmIOA7Js&usqp=CAU",
         isFavorite: false,
       },
       {
@@ -185,7 +185,7 @@ const Shop = () => {
         name: "Fresh Fruit Salad",
         price: 5000,
         category: "Dessert",
-        image: "https://images.unsplash.com/photo-1564093497595-593b96d80180?auto=format&fit=crop&w=400&q=80",
+        image: "https://www.cookitrealgood.com/wp-content/uploads/2024/08/DSC04332-720x405.png",
         isFavorite: false,
       },
     ],
@@ -318,7 +318,7 @@ const Shop = () => {
           <h2 className="text-xl font-semibold text-gray-900">{storeData.name}</h2>
           <p className="text-sm text-gray-600 mt-1">{storeData.description}</p>
           <div className="mt-4 text-sm text-gray-700">
-            <span className="font-semibold">{storeData.followers}</span> Followers
+            {/* <span className="font-semibold">{storeData.followers}</span> Followers */}
           </div>
           <p className="text-xs text-gray-500 mt-2">{storeData.subtitle}</p>
 
