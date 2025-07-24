@@ -8,7 +8,7 @@ import {
 import { Navigation } from '../components/Navigation';
 
 // Import the featured stores data
-const featuredStores = [
+export const featuredStores = [
   {
     id: 1,
     image: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
@@ -18,6 +18,7 @@ const featuredStores = [
     logo: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
     banner: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
     followers: 120,
+    whatsapp: "+250795918959",
   },
   {
     id: 2,
@@ -28,6 +29,7 @@ const featuredStores = [
     logo: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
     banner: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
     followers: 250,
+    whatsapp: "+250788222222",
   },
   {
     id: 3,
@@ -38,6 +40,7 @@ const featuredStores = [
     logo: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
     banner: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
     followers: 180,
+    whatsapp: "+250788333333",
   },
   {
     id: 4,
@@ -48,6 +51,7 @@ const featuredStores = [
     logo: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
     banner: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
     followers: 95,
+    whatsapp: "+250788444444",
   },
 ];
 
@@ -60,6 +64,7 @@ const defaultStore = {
   banner: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=400&q=80",
   followers: 80,
   subtitle: "Open from 10:00 AM to 7:00 PM",
+  whatsapp: "+250788555555",
 };
 
 const Shop = () => {
@@ -254,7 +259,7 @@ const Shop = () => {
         id: 4,
         name: "Air Force 1 First Use",
         price: 34000,
-        category: "Footwear",
+       category: "Footwear",
         image: "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=400&q=80",
         isFavorite: false,
       },
@@ -400,6 +405,7 @@ const Shop = () => {
           )}
         </div>
       </div>
+
     </div>
   );
 };

@@ -9,6 +9,7 @@ export interface CartItem {
   color?: string;
   size?: string;
   quantity: number;
+  vendorId: number;
 }
 
 interface CartContextType {
@@ -31,6 +32,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (item: CartItem) => {
     setCart(prev => {
+      // If cart is not empty and vendorId is different, clear cart first
+      if (prev.length > 0 && prev[0].vendorId !== item.vendorId) {
+        return [item];
+      }
       // If item with same id, color, and size exists, increase quantity
       const existing = prev.find(
         i => i.id === item.id && i.color === item.color && i.size === item.size

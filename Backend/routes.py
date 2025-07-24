@@ -8,7 +8,7 @@ from config import SECRET_KEY
 from functools import wraps
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 engine = get_engine(DATABASE_URL)
 session = create_session(engine)
@@ -291,17 +291,20 @@ def create_business(current_user):
     name = data.get('name')
     description = data.get('description')
     category_id = data.get('category_id')
-    if not name or not category_id:
-        return jsonify({'error': 'Name and category_id are required'}), 400
+    whatsapp = data.get('whatsapp')
+    # Remove logo logic
+    if not name or not category_id or not whatsapp:
+        return jsonify({'error': 'Name, category_id, and whatsapp are required'}), 400
     business = Business(
         name=name,
         description=description,
         category_id=category_id,
-        owner_id=current_user.id
+        owner_id=current_user.id,
+        whatsapp=whatsapp
     )
     session.add(business)
     session.commit()
-    return jsonify({'message': 'Business created', 'business_id': business.id}), 201
+    return jsonify({'message': 'Business created', 'business_id': business.id, 'whatsapp': business.whatsapp}), 201
 
 # Update a business (only by owner)
 @app.route('/businesses/<int:business_id>', methods=['PUT'])
@@ -339,6 +342,7 @@ def get_all_businesses():
             'description': b.description,
             'category_id': b.category_id,
             'owner_id': b.owner_id,
+            'whatsapp': b.whatsapp,
             'created_at': b.created_at
         } for b in businesses
     ])
@@ -355,6 +359,7 @@ def get_business(business_id):
         'description': business.description,
         'category_id': business.category_id,
         'owner_id': business.owner_id,
+        'whatsapp': business.whatsapp,
         'created_at': business.created_at
     })
 

@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 import { Star, Heart, Share2, MessageCircle, ShoppingBag, User, Truck, Shield, RotateCcw, CheckCircle } from 'lucide-react';
 import { Navigation } from '../components/Navigation';
 import { useCart } from '../CartContext';
+import { featuredStores } from './Shop';
+
+const getVendorIdByProductId = (productId: string) => {
+  const id = parseInt(productId, 10);
+  if (id >= 1 && id <= 4) return 1;
+  if (id >= 5 && id <= 8) return 2;
+  if (id >= 9 && id <= 12) return 3;
+  if (id >= 13 && id <= 16) return 4;
+  return 5;
+};
 
 const Product = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -9,7 +19,7 @@ const Product = () => {
   const [selectedColor, setSelectedColor] = useState('Black');
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
 
   const product = {
     id: '1', // In a real app, this would come from route params or API
@@ -34,6 +44,12 @@ const Product = () => {
   const discountPercentage = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   const handleAddToCart = () => {
+    const vendorId = getVendorIdByProductId(product.id);
+    if (cart.length > 0 && cart[0].vendorId !== vendorId) {
+      if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
+        return;
+      }
+    }
     addToCart({
       id: product.id,
       title: product.title,
@@ -42,6 +58,7 @@ const Product = () => {
       color: selectedColor,
       size: selectedSize,
       quantity,
+      vendorId,
     });
   };
 

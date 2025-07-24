@@ -79,7 +79,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle })
             {showSortOptions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           {showSortOptions && (
-            <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md shadow-lg z-10">
+            <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md  z-10">
               {sortOptions.map(option => (
                 <button
                   key={option.value}
@@ -142,7 +142,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
   };
 
   return (
-    <div className="bg-transparent rounded-xl overflow-hidden group cursor-pointer hover:shadow-md transition-all">
+    <div className="bg-transparent rounded-xl overflow-hidden group cursor-pointer  transition-all">
       <div className="relative">
         <div className="aspect-square overflow-hidden rounded-xl bg-gray-100">
           <img
@@ -182,7 +182,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
         <p className="text-sm text-gray-500 mb-1">{product.location}</p>
         <div className="flex justify-between items-center">
           <p className="font-semibold text-gray-900">${product.price.toFixed(2)}</p>
-          <button className="text-xs bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full hover:bg-indigo-100 transition-colors">
+          <button className="text-xs bg-indigo-50 text-indigo-600 px-3 py-2 rounded-full hover:bg-indigo-100 transition-colors">
             Add to Cart
           </button>
         </div>

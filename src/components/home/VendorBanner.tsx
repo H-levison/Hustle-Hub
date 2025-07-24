@@ -1,8 +1,159 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+
+// Vite env type declaration for TypeScript
+// (If you already have this in a global.d.ts or env.d.ts, you can remove this block)
+declare global {
+  interface ImportMeta {
+    env: {
+      VITE_API_BASE_URL?: string;
+      [key: string]: any;
+    };
+  }
+}
+
+const VendorRegistrationModal = ({ open, onClose, onSuccess }: { open: boolean, onClose: () => void, onSuccess: () => void }) => {
+  const [storeName, setStoreName] = useState('');
+  const [description, setDescription] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  React.useEffect(() => {
+    if (open) {
+      fetch('/api/categories')
+        .then(res => res.json())
+        .then(data => setCategories(data))
+        .catch(() => setCategories([]));
+    }
+  }, [open]);
+
+  // // For testing: use fixed categories
+  // React.useEffect(() => {
+  //   if (open) {
+  //     setCategories([
+  //       { id: '1', name: 'Food & Beverages' },
+  //       { id: '2', name: 'Fashion & Apparel' },
+  //       { id: '3', name: 'Electronics' },
+  //       { id: '4', name: 'Home & Living' },
+  //       { id: '5', name: 'Services' },
+  //     ]);
+  //   }
+  // }, [open]);
+
+  const validateWhatsapp = (num: string) => /^\+[1-9]\d{7,14}$/.test(num);
+
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (!storeName || !description || !whatsapp || !category) {
+      setError('All fields are required.');
+      return;
+    }
+    if (!validateWhatsapp(whatsapp)) {
+      setError('WhatsApp number must start with + and country code, e.g. +2507xxxxxxx');
+      return;
+    }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      // 1. Become vendor (set is_provider=True)
+      const becomeRes = await fetch(`${API_BASE}/user/become-vendor`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!becomeRes.ok) {
+        setError('Failed to become vendor.');
+        setLoading(false);
+        return;
+      }
+      const becomeData = await becomeRes.json();
+      if (
+        becomeData.message !== 'You are now a vendor' &&
+        becomeData.message !== 'Already a vendor'
+      ) {
+        setError('Failed to become vendor.');
+        setLoading(false);
+        return;
+      }
+      // 2. Find category_id from selected category name
+      const selectedCat = categories.find(cat => cat.name === category);
+      if (!selectedCat) {
+        setError('Invalid category.');
+        setLoading(false);
+        return;
+      }
+      // 3. Create business (store) without logo
+      const res = await fetch(`${API_BASE}/businesses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: storeName,
+          description,
+          whatsapp,
+          category_id: selectedCat.id,
+        })
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || 'Failed to create store.');
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+      onSuccess();
+    } catch (err) {
+      setError('Server error. Try again.');
+      setLoading(false);
+    }
+  };
+
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+        <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700" aria-label="Close modal">✕</button>
+        <h3 className="text-xl font-semibold mb-4">Become a Vendor</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Store Name*</label>
+            <input type="text" className="w-full border p-2 rounded" value={storeName} onChange={e => setStoreName(e.target.value)} required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Short Description*</label>
+            <textarea className="w-full border p-2 rounded" value={description} onChange={e => setDescription(e.target.value)} required rows={2} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">WhatsApp Number*</label>
+            <input type="text" className="w-full border p-2 rounded" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="+2507xxxxxxx" required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Store Category*</label>
+            <select className="w-full border p-2 rounded" value={category} onChange={e => setCategory(e.target.value)} required>
+              <option value="">Select a category</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+          {error && <div className="text-red-500 text-sm">{error}</div>}
+          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition" disabled={loading}>{loading ? 'Creating...' : 'Create Store'}</button>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const VendorBanner: React.FC = () => {
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   const handleBecomeVendor = async () => {
     const userStr = localStorage.getItem('user');
@@ -16,30 +167,18 @@ const VendorBanner: React.FC = () => {
       navigate('/vendorshop');
       return;
     }
-    try {
-      const response = await fetch('http://localhost:5000/user/become-vendor', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        user.is_provider = true;
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('role', 'provider');
-        navigate('/vendorshop');
-      } else {
-        alert(data.error || data.message || 'Failed to become a vendor');
-      }
-    } catch (err) {
-      alert('Server error. Please try again.');
-    }
+    setShowModal(true);
+  };
+
+  const handleSuccess = () => {
+    setShowModal(false);
+    // Optionally update user state here
+    navigate('/vendorshop');
   };
 
   return (
     <div className="w-full max-w-8xl mx-auto px-2 sm:px-4 md:px-[80px] mt-4 sm:mt-[20px]">
+      <VendorRegistrationModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleSuccess} />
       <section className="w-full py-6 sm:py-12 px-2 sm:px-6 md:px-[80px] bg-[#10194A] rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
         {/* Left Side */}
         <div className="flex-1 max-w-xl text-center md:text-left">

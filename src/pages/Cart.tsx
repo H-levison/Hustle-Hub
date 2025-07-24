@@ -1,6 +1,37 @@
 import React from 'react';
 import { Navigation } from "../components/Navigation";
 import { useCart } from '../CartContext';
+import { featuredStores } from './Shop'; // Import the vendor/shop data
+
+interface CartItem {
+  id: string;
+  title: string;
+  price: number;
+  image: string;
+  color?: string;
+  size?: string;
+  quantity: number;
+}
+
+interface Vendor {
+  id: number;
+  title: string;
+  whatsapp: string;
+  // ...other fields
+}
+
+// Helper to get vendor by product or vendor id
+function getVendorByProduct(cart: CartItem[]): Vendor | undefined {
+  if (!cart.length) return undefined;
+  const productId = parseInt(cart[0].id, 10);
+  let vendorId = 1;
+  if (productId >= 1 && productId <= 4) vendorId = 1;
+  else if (productId >= 5 && productId <= 8) vendorId = 2;
+  else if (productId >= 9 && productId <= 12) vendorId = 3;
+  else if (productId >= 13 && productId <= 16) vendorId = 4;
+  else vendorId = 5;
+  return featuredStores.find((v) => v.id === vendorId);
+}
 
 const CartItems = () => {
   const { cart, removeFromCart } = useCart();
@@ -58,15 +89,31 @@ const OrderSummary = () => {
   );
 };
 
-const PaymentMethod = () => (
-  <div className="bg-white rounded-xl shadow p-4">
-    <h2 className="font-semibold mb-2">Payment Method</h2>
-    <div className="flex gap-2 mb-4">
-      <span className="bg-gray-100 rounded p-2">Pay on delivery</span>
+const PaymentMethod = () => {
+  const { cart } = useCart();
+  const vendor = getVendorByProduct(cart);
+  const handleCheckout = () => {
+    if (!vendor) return;
+    const orderLines = cart.map(item =>
+      `- ${item.title} (Qty: ${item.quantity}${item.color ? ", Color: " + item.color : ""}${item.size ? ", Size: " + item.size : ""}) - Rwf${item.price * item.quantity}`
+    ).join("%0A");
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + (cart.length > 0 ? 2999 : 0) + (cart.length > 0 ? 3999 : 0);
+    const message = `Hello, I want to order:%0A${orderLines}%0A%0ATotal: Rwf${total.toLocaleString()}`;
+    const whatsappUrl = `https://wa.me/${vendor.whatsapp.replace(/[^\d]/g, '')}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
+  return (
+    <div className="bg-white rounded-xl shadow p-4">
+      <h2 className="font-semibold mb-2">Payment Method</h2>
+      <div className="flex gap-2 mb-4">
+        <span className="bg-gray-100 rounded p-2">Pay on Whatsapp</span>
+      </div>
+      <button className="w-full bg-blue-600 text-white rounded py-2" onClick={handleCheckout} disabled={!vendor || cart.length === 0}>
+        Check Out to Whatsapp
+      </button>
     </div>
-    <button className="w-full bg-blue-600 text-white rounded py-2">Check Out</button>
-  </div>
-);
+  );
+};
 
 const Cart = () => {
   return (

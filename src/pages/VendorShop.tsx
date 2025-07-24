@@ -29,38 +29,12 @@ interface LoyaltyCard {
   color: string;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 const VendorShop = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Check authentication and vendor status
-  useEffect(() => {
-    const checkAuth = async () => {
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
-      const token = localStorage.getItem('token');
-      
-      if (!user || !user.is_provider || !token) {
-        navigate('/');
-        return;
-      }
-
-      try {
-        // Fetch initial data
-        await Promise.all([
-          fetchProducts(),
-          fetchCategories(),
-          fetchLoyaltyCards()
-        ]);
-      } catch (err) {
-        setError('Failed to load data. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
 
   // State for tabs and modals
   const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'loyalty'>('products');
@@ -72,6 +46,7 @@ const VendorShop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loyaltyCards, setLoyaltyCards] = useState<LoyaltyCard[]>([]);
+  const [store, setStore] = useState<any>(null);
 
   // Form states
   const [newProduct, setNewProduct] = useState({
@@ -119,6 +94,21 @@ const VendorShop = () => {
     });
     const data = await response.json();
     setLoyaltyCards(data);
+  };
+
+  // Fetch the current vendor's store/business
+  const fetchStore = async (userId: string, token: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/businesses`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      // Find the business owned by the current user
+      const myStore = data.find((b: any) => b.owner_id === userId || b.owner_id === Number(userId));
+      setStore(myStore || null);
+    } catch (err) {
+      setStore(null);
+    }
   };
 
   // Product handlers
@@ -338,6 +328,34 @@ const VendorShop = () => {
     { id: 'loyalty', label: 'Loyalty Cards', icon: Award }
   ];
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const token = localStorage.getItem('token');
+      
+      if (!user || !user.is_provider || !token) {
+        navigate('/');
+        return;
+      }
+
+      try {
+        // Fetch initial data
+        await Promise.all([
+          fetchProducts(),
+          fetchCategories(),
+          fetchLoyaltyCards(),
+          fetchStore(user.id, token)
+        ]);
+      } catch (err) {
+        setError('Failed to load data. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -356,11 +374,32 @@ const VendorShop = () => {
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <h1 className="text-3xl font-bold mb-6">Vendor Dashboard</h1>
           
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
+          {/* Store Info */}
+          {store && (
+  <div className="relative flex flex-col md:flex-row items-center gap-6 bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+    {/* Store Image */}
+    <div className="flex-shrink-0 w-32 h-32 rounded-xl overflow-hidden bg-gray-100 border">
+      <img
+        src={store.logo || "https://via.placeholder.com/150x150?text=Store+Logo"}
+        alt={store.name}
+        className="w-full h-full object-cover"
+      />
+    </div>
+    {/* Store Info */}
+    <div className="flex-1 min-w-0">
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-1">{store.name}</h2>
+      <p className="text-gray-600 mb-2">{store.description}</p>
+      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700 mb-2">
+        <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
+          {categories.find((cat) => cat.id === String(store.category_id))?.name || "Category"}
+        </span>
+        <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium">
+          WhatsApp: {store.whatsapp}
+        </span>
+      </div>
+    </div>
+    </div>
+)}
 
           {/* Tabs */}
           <div className="flex border-b border-slate-200 mb-6 overflow-x-auto">

@@ -45,6 +45,7 @@ class Business(Base):
     description = Column(Text)
     category_id = Column(Integer, ForeignKey('categories.id'))
     owner_id = Column(Integer, ForeignKey('users.id'))
+    whatsapp = Column(String(20))  # Added for vendor contact
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
