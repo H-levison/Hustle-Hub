@@ -80,7 +80,7 @@ const products = [
   {
     id: 6,
     images: [
-      "https://www.nike.com/assets/experience/dotcom-member/gated-launch-pages/static/v2/3-up-draw-mobile.jpg"
+      "https://i.redd.it/iw6g7cmeulgb1.jpg"
     ],
     title: "Air Max Running Shoes",
     location: "Nike Store",
