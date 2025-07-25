@@ -1,0 +1,52 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ─── Python Backend Additions ─────────────────────────────
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database
+*.db
+
+# Environment variables
+.env
+
+# Python virtual environments
+venv/
+.env/
+
+# Flask instance folder
+instance/
+
+# Alembic migrations (optional, if using)
+migrations/
+
+# Coverage reports (if you use pytest + coverage)
+htmlcov/
+.coverage
+.cache
