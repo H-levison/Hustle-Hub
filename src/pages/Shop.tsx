@@ -67,11 +67,70 @@ const defaultStore = {
   whatsapp: "+250788555555",
 };
 
+// Product Card Component with new design
+const ProductCard = ({ product, onFavoriteToggle, onAddToCart }) => {
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    onFavoriteToggle(product.id);
+  };
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    onAddToCart(product.id);
+  };
+
+  // Generate a random rating between 4.0 and 5.0 for demonstration
+  const rating = (4.0 + Math.random()).toFixed(1);
+
+  return (
+    <div className="bg-transparent rounded-xl overflow-hidden group cursor-pointer transition-all">
+      <div className="relative">
+        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+        >
+          <Heart 
+            size={18} 
+            className={product.isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"} 
+          />
+        </button>
+      </div>
+      <div className="pt-3 px-1">
+        <div className="flex justify-between items-start">
+          <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{product.name}</h3>
+          <div className="flex items-center text-sm">
+            <Star size={14} className="fill-black text-black mr-0.5" />
+            <span>{rating}</span>
+          </div>
+        </div>
+        <p className="text-sm text-gray-500 mb-1">{product.category}</p>
+        <div className="flex justify-between items-center">
+          <p className="font-semibold text-gray-900">RWF {product.price.toLocaleString()}</p>
+          <button 
+            onClick={handleAddToCart}
+            className="text-xs bg-indigo-50 text-indigo-600 px-3 py-2 rounded-full hover:bg-indigo-100 transition-colors"
+          >
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Shop = () => {
   const { id } = useParams();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [categories, setCategories] = useState(['All']);
   const [storeData, setStoreData] = useState(null);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     // Find the store by ID from the featured stores
@@ -103,24 +162,6 @@ const Shop = () => {
       });
     }
   }, [id]);
-
-  // Extract unique categories from products when storeData changes
-  useEffect(() => {
-    if (storeData) {
-      const productsForStore = storeProducts[storeData.id] || storeProducts['5'];
-      const uniqueCategories = ['All', ...new Set(productsForStore.map(product => product.category))];
-      setCategories(uniqueCategories);
-    }
-  }, [storeData]);
-
-  // If store data is still loading, show a loading state
-  if (!storeData) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-lg">Loading store...</p>
-      </div>
-    );
-  }
 
   // Define product sets for each store type
   const storeProducts = {
@@ -301,8 +342,42 @@ const Shop = () => {
     ],
   };
 
-  // Get products based on store ID
-  const products = storeProducts[storeData.id] || storeProducts['5'];
+  // Extract unique categories from products when storeData changes
+  useEffect(() => {
+    if (storeData) {
+      const productsForStore = storeProducts[storeData.id] || storeProducts['5'];
+      setProducts(productsForStore);
+      const uniqueCategories = ['All', ...new Set(productsForStore.map(product => product.category))];
+      setCategories(uniqueCategories);
+    }
+  }, [storeData]);
+
+  const handleFavoriteToggle = (productId) => {
+    setProducts(prev => 
+      prev.map(product => 
+        product.id === productId 
+          ? { ...product, isFavorite: !product.isFavorite }
+          : product
+      )
+    );
+  };
+
+  const handleAddToCart = (productId) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      console.log(`Added ${product.name} to cart!`);
+      // You can add your cart logic here
+    }
+  };
+
+  // If store data is still loading, show a loading state
+  if (!storeData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-lg">Loading store...</p>
+      </div>
+    );
+  }
 
   const filteredProducts = selectedCategory === 'All'
     ? products
@@ -368,35 +443,15 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Product Grid */}
+          {/* Product Grid with new design */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <div
+              <ProductCard
                 key={product.id}
-                className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="relative">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute top-2 left-2 bg-gray-800 text-white text-xs font-semibold px-2 py-1 rounded">
-                    RWF {product.price.toLocaleString()}
-                  </div>
-                  <button className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md">
-                    <Heart
-                      className={`w-4 h-4 ${product.isFavorite
-                        ? 'fill-red-500 text-red-500'
-                        : 'text-gray-600'}`}
-                    />
-                  </button>
-                </div>
-                <div className="p-3">
-                  <p className="text-xs text-gray-500 mb-1">{product.category}</p>
-                  <h3 className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</h3>
-                </div>
-              </div>
+                product={product}
+                onFavoriteToggle={handleFavoriteToggle}
+                onAddToCart={handleAddToCart}
+              />
             ))}
           </div>
 
