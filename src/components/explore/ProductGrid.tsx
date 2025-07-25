@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
 
-// Import product type from ProductCards or define it here
 type Product = {
   id: number;
   images: string[];
@@ -15,15 +14,50 @@ type Product = {
   details: string;
 };
 
+type Store = {
+  id: number;
+  image: string;
+  title: string;
+  subtitle: string;
+};
+
+const Stores = [
+  {
+    id: 1,
+    image: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
+    title: "Popcorn Guy",
+    subtitle: "Open from 9:00 AM to 4:00 PM",
+  },
+  {
+    id: 2,
+    image: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
+    title: "Fatima's Kitchen",
+    subtitle: "Open from 11:00 AM to 8:00 PM",
+  },
+  {
+    id: 3,
+    image: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
+    title: "Fani's Bites",
+    subtitle: "Open from 8:00 AM to 11:00 PM",
+  },
+  {
+    id: 4,
+    image: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
+    title: "House of Sneakers",
+    subtitle: "Open from 8:00 AM to 11:00 pm",
+  },
+];
+
 interface ProductGridProps {
   products: Product[];
+  stores?: Store[];
   onFavoriteToggle: (productId: number) => void;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({ products, stores = [], onFavoriteToggle }) => {
   const [sortOption, setSortOption] = useState('featured');
   const [showSortOptions, setShowSortOptions] = useState(false);
-  const [activeTab, setActiveTab] = useState('products'); // 'products' or 'stores'
+  const [activeTab, setActiveTab] = useState('products');
 
   const sortOptions = [
     { value: 'featured', label: 'Featured' },
@@ -50,7 +84,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle })
 
   return (
     <div className="w-full">
-      {/* Tabs for Products and Stores */}
       <div className="flex border-b mb-6">
         <button
           className={`px-4 py-2 font-medium text-sm ${activeTab === 'products' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
@@ -68,33 +101,37 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle })
 
       <div className="flex justify-between items-center mb-6">
         <div>
-          <p className="text-sm text-gray-500">Showing 1-{products.length} of {products.length} {activeTab === 'products' ? 'products' : 'stores'}</p>
+          <p className="text-sm text-gray-500">
+            Showing 1-{activeTab === 'products' ? products.length : Stores.length} of {activeTab === 'products' ? products.length : Stores.length} {activeTab}
+          </p>
         </div>
-        <div className="relative">
-          <button 
-            className="flex items-center gap-2 text-sm border rounded-md px-3 py-1.5"
-            onClick={() => setShowSortOptions(!showSortOptions)}
-          >
-            Sort by: {sortOptions.find(option => option.value === sortOption)?.label}
-            {showSortOptions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
-          {showSortOptions && (
-            <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md  z-10">
-              {sortOptions.map(option => (
-                <button
-                  key={option.value}
-                  className={`block w-full text-left px-4 py-2 text-sm ${sortOption === option.value ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-                  onClick={() => {
-                    setSortOption(option.value);
-                    setShowSortOptions(false);
-                  }}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {activeTab === 'products' && (
+          <div className="relative">
+            <button 
+              className="flex items-center gap-2 text-sm border rounded-md px-3 py-1.5"
+              onClick={() => setShowSortOptions(!showSortOptions)}
+            >
+              Sort by: {sortOptions.find(option => option.value === sortOption)?.label}
+              {showSortOptions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+            {showSortOptions && (
+              <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md z-10">
+                {sortOptions.map(option => (
+                  <button
+                    key={option.value}
+                    className={`block w-full text-left px-4 py-2 text-sm ${sortOption === option.value ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                    onClick={() => {
+                      setSortOption(option.value);
+                      setShowSortOptions(false);
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {activeTab === 'products' ? (
@@ -109,7 +146,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle })
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <p className="col-span-full text-center text-gray-500 py-8">Store listings coming soon</p>
+          {Stores.length > 0 ? (
+            Stores.map(store => (
+              <StoreCard key={store.id} store={store} />
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500 py-8">No stores available</p>
+          )}
         </div>
       )}
     </div>
@@ -129,20 +172,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
     onFavoriteToggle(product.id);
   };
 
-  const handleNextImage = () => {
-    if (product.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
-    }
-  };
-
-  const handlePrevImage = () => {
-    if (product.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
-    }
-  };
-
   return (
-    <div className="bg-transparent rounded-xl overflow-hidden group cursor-pointer  transition-all">
+    <div className="bg-transparent rounded-xl overflow-hidden group cursor-pointer transition-all">
       <div className="relative">
         <div className="aspect-square overflow-hidden rounded-xl bg-gray-100">
           <img
@@ -187,6 +218,38 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
           </button>
         </div>
       </div>
+    </div>
+  );
+};
+
+interface StoreCardProps {
+  store: Store;
+}
+
+const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
+  return (
+    <div className="relative h-56 sm:h-72 md:h-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer">
+      <img
+        src={store.image}
+        alt={store.title}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+      
+      <button className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white/90 rounded-full p-1.5 sm:p-2 hover:bg-white transition-colors">
+        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </button>
+      
+      <div className="absolute bottom-12 sm:bottom-14 left-2 sm:left-3 text-white">
+        <h3 className="font-semibold text-base sm:text-lg leading-tight">{store.title}</h3>
+        <p className="text-xs sm:text-sm opacity-90">{store.subtitle}</p>
+      </div>
+      
+      <button className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 bg-white text-black rounded-full py-1.5 sm:py-2 text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors">
+        Browse shop
+      </button>
     </div>
   );
 };

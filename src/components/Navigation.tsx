@@ -18,7 +18,7 @@ export const Navigation = (): JSX.Element => {
   const navItems = [
     { label: "Home", to: "/" },
     { label: "Explore", to: "/explore" },
-    { label: "Store", to: "/explore?tab=stores" },
+    // { label: "Store", to: "/explore?tab=stores" },
     // { label: "Leaderboard", to: "/leaderboard" },
     { label: "Loyalty Cards", to: "/loyalty-cards" },
     // { label: "Vendor Shop", to: "/vendorshop" },
