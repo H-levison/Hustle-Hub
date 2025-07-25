@@ -33,12 +33,11 @@ __pycache__/
 # SQLite database
 *.db
 
-# Environment variables
-.env
+
 
 # Python virtual environments
 venv/
-.env/
+*.env
 
 # Flask instance folder
 instance/
