@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigation } from '../components/Navigation';
-import { Plus, X, Trash2, Package, Tag, Award, Image } from 'lucide-react';
+import { Plus, X, Trash2, Package, Tag, Award, Image, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Product {
@@ -41,6 +41,12 @@ const VendorShop = () => {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [showAddTier, setShowAddTier] = useState(false);
+  const [showEditStore, setShowEditStore] = useState(false);
+  const [editStore, setEditStore] = useState({
+    name: '',
+    description: '',
+    logo: '',
+  });
 
   // Data state
   const [products, setProducts] = useState<Product[]>([]);
@@ -71,7 +77,7 @@ const VendorShop = () => {
 
   // Fetch data functions
   const fetchProducts = async () => {
-    const response = await fetch('/api/products/vendor', {
+    const response = await fetch(`${API_BASE}/products/vendor`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
@@ -81,19 +87,30 @@ const VendorShop = () => {
   };
 
   const fetchCategories = async () => {
-    const response = await fetch('/api/categories');
+    const response = await fetch(`${API_BASE}/categories`);
     const data = await response.json();
     setCategories(data);
   };
 
   const fetchLoyaltyCards = async () => {
-    const response = await fetch('/api/loyalty-cards', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    try {
+      console.log('Fetching loyalty cards...');
+      const response = await fetch(`${API_BASE}/loyalty-cards`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Loyalty cards fetch error:', errorText);
+        return;
       }
-    });
-    const data = await response.json();
-    setLoyaltyCards(data);
+      const data = await response.json();
+      console.log('Loyalty cards fetched:', data);
+      setLoyaltyCards(data);
+    } catch (err) {
+      console.error('Error fetching loyalty cards:', err);
+    }
   };
 
   // Fetch the current vendor's store/business
@@ -103,10 +120,14 @@ const VendorShop = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
+      console.log('All businesses:', data);
+      console.log('Current user ID:', userId);
       // Find the business owned by the current user
       const myStore = data.find((b: any) => b.owner_id === userId || b.owner_id === Number(userId));
+      console.log('Found store:', myStore);
       setStore(myStore || null);
     } catch (err) {
+      console.error('Error fetching store:', err);
       setStore(null);
     }
   };
@@ -115,32 +136,57 @@ const VendorShop = () => {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
     try {
-      const response = await fetch('/api/products', {
+      // Map category name to id
+      const selectedCategory = categories.find(cat => cat.name === newProduct.category);
+      console.log('Store state:', store);
+      console.log('Selected category:', selectedCategory);
+      
+      if (!selectedCategory) {
+        setError('Please select a valid category.');
+        return;
+      }
+      
+      if (!store) {
+        setError('Store not loaded. Please refresh the page.');
+        return;
+      }
+      
+      if (!store.id) {
+        setError('Store ID not found. Please ensure you have a registered business.');
+        return;
+      }
+      
+      const payload = {
+        name: newProduct.name,
+        description: newProduct.description,
+        price: newProduct.price,
+        category_id: selectedCategory.id,
+        business_id: store.id, // Use 'id' instead of '_id'
+        image: newProduct.image,
+        stock: newProduct.stock,
+        colors: newProduct.colors,
+        sizes: newProduct.sizes
+      };
+      console.log('Product payload:', payload);
+      const response = await fetch(`${API_BASE}/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({
-          name: newProduct.name,
-          description: newProduct.description,
-          price: newProduct.price,
-          category: newProduct.category,
-          image: newProduct.image,
-          stock: newProduct.stock,
-          colors: newProduct.colors,
-          sizes: newProduct.sizes
-        })
+        body: JSON.stringify(payload)
       });
-
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Backend error:', errorText);
         throw new Error('Failed to create product');
       }
-
-      const createdProduct = await response.json();
-      setProducts(prev => [...prev, createdProduct]);
+      const { product } = await response.json();
+      setProducts(prev => [...prev, {
+        ...product,
+        category: selectedCategory.name
+      }]);
       setShowAddProduct(false);
       resetProductForm();
     } catch (err) {
@@ -166,7 +212,8 @@ const VendorShop = () => {
 
   const handleDeleteProduct = async (productId: string) => {
     try {
-      const response = await fetch(`/api/products/${productId}`, {
+      console.log('Deleting product:', productId);
+      const response = await fetch(`${API_BASE}/products/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -174,9 +221,12 @@ const VendorShop = () => {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Delete error:', errorText);
         throw new Error('Failed to delete product');
       }
 
+      console.log('Product deleted successfully');
       setProducts(prev => prev.filter(p => p.id !== productId));
     } catch (err) {
       setError('Failed to delete product. Please try again.');
@@ -190,7 +240,7 @@ const VendorShop = () => {
     setError(null);
     
     try {
-      const response = await fetch('/api/categories', {
+      const response = await fetch(`${API_BASE}/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,7 +265,7 @@ const VendorShop = () => {
 
   const handleDeleteCategory = async (categoryId: string) => {
     try {
-      const response = await fetch(`/api/categories/${categoryId}`, {
+      const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -239,24 +289,38 @@ const VendorShop = () => {
     setError(null);
     
     try {
-      const response = await fetch('/api/loyalty-cards', {
+      if (!store || !store.id) {
+        setError('Store not loaded. Please ensure you have a registered business.');
+        return;
+      }
+      
+      const payload = {
+        tier: newTier.tier,
+        discount: parseInt(newTier.discount),
+        minSpend: parseInt(newTier.minSpend),
+        color: 'bg-blue-500', // or allow user to pick
+        business_id: store.id // Use 'id' instead of '_id'
+      };
+      
+      console.log('Adding loyalty tier with payload:', payload);
+      
+      const response = await fetch(`${API_BASE}/loyalty-cards`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({
-          tier: newTier.tier,
-          discount: parseInt(newTier.discount),
-          minSpend: parseInt(newTier.minSpend)
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Loyalty tier creation error:', errorText);
         throw new Error('Failed to create loyalty tier');
       }
 
       const createdTier = await response.json();
+      console.log('Loyalty tier created:', createdTier);
       setLoyaltyCards(prev => [...prev, createdTier]);
       setShowAddTier(false);
       setNewTier({ tier: '', discount: '', minSpend: '' });
@@ -268,7 +332,8 @@ const VendorShop = () => {
 
   const handleDeleteTier = async (tierId: string) => {
     try {
-      const response = await fetch(`/api/loyalty-cards/${tierId}`, {
+      console.log('Deleting loyalty tier:', tierId);
+      const response = await fetch(`${API_BASE}/loyalty-cards/${tierId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -276,9 +341,12 @@ const VendorShop = () => {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Loyalty tier deletion error:', errorText);
         throw new Error('Failed to delete loyalty tier');
       }
 
+      console.log('Loyalty tier deleted successfully');
       setLoyaltyCards(prev => prev.filter(t => t.id !== tierId));
     } catch (err) {
       setError('Failed to delete loyalty tier. Please try again.');
@@ -377,6 +445,21 @@ const VendorShop = () => {
           {/* Store Info */}
           {store && (
   <div className="relative flex flex-col md:flex-row items-center gap-6 bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+    {/* Edit Icon */}
+    <button
+      className="absolute top-3 right-3 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-blue-600 transition-colors"
+      onClick={() => {
+        setEditStore({
+          name: store.name || '',
+          description: store.description || '',
+          logo: store.logo || '',
+        });
+        setShowEditStore(true);
+      }}
+      aria-label="Edit store"
+    >
+      <Pencil size={18} />
+    </button>
     {/* Store Image */}
     <div className="flex-shrink-0 w-32 h-32 rounded-xl overflow-hidden bg-gray-100 border">
       <img
@@ -398,7 +481,95 @@ const VendorShop = () => {
         </span>
       </div>
     </div>
-    </div>
+    {/* Edit Store Modal */}
+    {showEditStore && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+          <button
+            onClick={() => setShowEditStore(false)}
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
+            aria-label="Close modal"
+          >
+            <X size={24} />
+          </button>
+          <h3 className="text-xl font-semibold mb-4">Edit Store Info</h3>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              try {
+                const response = await fetch(`${API_BASE}/businesses/${store.id}`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  },
+                  body: JSON.stringify({
+                    name: editStore.name,
+                    description: editStore.description,
+                    logo: editStore.logo,
+                  })
+                });
+                if (!response.ok) {
+                  throw new Error('Failed to update store');
+                }
+                setShowEditStore(false);
+                // Refetch store info
+                await fetchStore(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).id : '', localStorage.getItem('token')!);
+              } catch (err) {
+                alert('Failed to update store.');
+              }
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-sm font-medium mb-1">Store Name</label>
+              <input
+                type="text"
+                className="w-full border p-2 rounded"
+                value={editStore.name}
+                onChange={e => setEditStore({ ...editStore, name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <textarea
+                className="w-full border p-2 rounded"
+                value={editStore.description}
+                onChange={e => setEditStore({ ...editStore, description: e.target.value })}
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Logo Image URL</label>
+              <input
+                type="text"
+                className="w-full border p-2 rounded"
+                value={editStore.logo}
+                onChange={e => setEditStore({ ...editStore, logo: e.target.value })}
+                placeholder="https://example.com/logo.png"
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-4">
+              <button
+                type="button"
+                onClick={() => setShowEditStore(false)}
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+  </div>
 )}
 
           {/* Tabs */}
@@ -429,24 +600,43 @@ const VendorShop = () => {
                 <h2 className="text-xl font-semibold">Your Products ({products.length})</h2>
                 <button 
                   onClick={() => setShowAddProduct(true)} 
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={!store}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                    store 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   <Plus size={18} /> Add Product
                 </button>
               </div>
+              
+              {/* Show message if no store */}
+              {!store && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                  <p className="text-yellow-800">
+                    <strong>No business found.</strong> You need to register a business before you can add products. 
+                    Please contact support or create a business account.
+                  </p>
+                </div>
+              )}
               
               {/* Product list */}
               {products.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
                   <Package size={48} className="mx-auto text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-700">No products yet</h3>
-                  <p className="text-gray-500 mt-2">Add your first product to start selling</p>
-                  <button 
-                    onClick={() => setShowAddProduct(true)} 
-                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Add Product
-                  </button>
+                  <p className="text-gray-500 mt-2">
+                    {store ? 'Add your first product to start selling' : 'Register a business to start adding products'}
+                  </p>
+                  {store && (
+                    <button 
+                      onClick={() => setShowAddProduct(true)} 
+                      className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Add Product
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -501,7 +691,7 @@ const VendorShop = () => {
                           ))}
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="font-semibold text-slate-800">{product.price.toLocaleString()} FCFA</span>
+                          <span className="font-semibold text-slate-800">{product.price.toLocaleString()} RWF</span>
                         </div>
                       </div>
                     </div>
@@ -548,7 +738,7 @@ const VendorShop = () => {
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium mb-1">Price (FCFA)*</label>
+                          <label className="block text-sm font-medium mb-1">Price (RWF)*</label>
                           <input
                             type="number"
                             placeholder="15000"
@@ -837,7 +1027,7 @@ const VendorShop = () => {
                         </div>
                         <div>
                           <p className="text-slate-600">Minimum Spend</p>
-                          <p className="font-semibold text-slate-800">{card.minSpend.toLocaleString()} FCFA</p>
+                          <p className="font-semibold text-slate-800">{card.minSpend.toLocaleString()} RWF</p>
                         </div>
                       </div>
                     </div>
@@ -883,7 +1073,7 @@ const VendorShop = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1">Minimum Spend (FCFA)*</label>
+                        <label className="block text-sm font-medium mb-1">Minimum Spend (RWF)*</label>
                         <input
                           type="number"
                           placeholder="100000"

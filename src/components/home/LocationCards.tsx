@@ -15,7 +15,7 @@ const LocationCards = () => (
         <div key={city} className="min-w-[220px] bg-white rounded-lg shadow p-2 flex flex-col items-center">
           <img src={img} alt={city} className="w-full h-32 object-cover rounded-md mb-2" />
           <div className="font-medium text-sm mt-1">{city}</div>
-          <div className="text-[#1c09ed] font-bold text-base">${price}.00 <span className="text-xs font-normal">hour</span></div>
+          <div className="text-[#1c09ed] font-bold text-base">RWF{price}.00 <span className="text-xs font-normal">hour</span></div>
         </div>
       ))}
     </div>

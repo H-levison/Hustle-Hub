@@ -191,7 +191,7 @@ const ProductCards = () => {
                     </span>
                   </div>
                 </div>
-                <p className="text-sm font-medium text-gray-900">${product.price}</p>
+                <p className="text-sm font-medium text-gray-900">RWF{product.price}</p>
               </div>
             </div>
           ))}

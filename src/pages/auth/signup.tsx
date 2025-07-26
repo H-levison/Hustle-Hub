@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, Check, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Eye, EyeOff, Mail, Lock, User, Check, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-
-const abstractImg = './Login .png'; 
+const abstractImg = "./Login .png";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    agreeToTerms: false
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agreeToTerms: false,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const navigate = useNavigate();
 
   const handleGoHome = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,36 +40,17 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-        }),
+      const response = await axios.post("http://localhost:5000/register", {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        password: formData.password,
       });
 
-      let data;
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        data = {};
-      }
-
-      if (response.ok) {
-        alert("Registration successful! Please log in.");
-        navigate('/auth/login');
-      } else {
-        alert(data.error || "Something went wrong.");
-      }
+      alert("Registration successful! Please log in.");
+      navigate("/auth/login");
     } catch (error) {
-      console.error("Signup failed:", error);
-      alert("Server error. Try again later.");
+      console.log(error)
     }
   };
 
@@ -89,16 +70,27 @@ const Signup = () => {
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </button>
-          
+
           <div className="flex flex-col items-center mb-8">
-            <span className="font-bold text-2xl tracking-tight mb-2">Hustle hub</span>
-            <h2 className="text-3xl font-serif font-semibold mb-2">Create your account</h2>
-            <p className="text-gray-500 mb-6 text-center">Join us and start your journey today</p>
+            <span className="font-bold text-2xl tracking-tight mb-2">
+              Hustle hub
+            </span>
+            <h2 className="text-3xl font-serif font-semibold mb-2">
+              Create your account
+            </h2>
+            <p className="text-gray-500 mb-6 text-center">
+              Join us and start your journey today
+            </p>
           </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">First name</label>
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  First name
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="h-5 w-5 text-gray-400" />
@@ -117,7 +109,12 @@ const Signup = () => {
                 </div>
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">Last name</label>
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Last name
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="h-5 w-5 text-gray-400" />
@@ -137,7 +134,12 @@ const Signup = () => {
               </div>
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email address</label>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Email address
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" />
@@ -156,7 +158,12 @@ const Signup = () => {
               </div>
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
@@ -164,12 +171,16 @@ const Signup = () => {
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black bg-gray-50 ${formData.password && !isPasswordValid ? 'border-red-300' : 'border-gray-200'}`}
+                  className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black bg-gray-50 ${
+                    formData.password && !isPasswordValid
+                      ? "border-red-300"
+                      : "border-gray-200"
+                  }`}
                   placeholder="Create a password"
                 />
                 <button
@@ -178,12 +189,20 @@ const Signup = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
                 </button>
               </div>
               {formData.password && (
                 <div className="mt-1 text-xs">
-                  <div className={`flex items-center gap-1 ${isPasswordValid ? 'text-green-600' : 'text-red-600'}`}>
+                  <div
+                    className={`flex items-center gap-1 ${
+                      isPasswordValid ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
                     <Check className="w-3 h-3" />
                     At least 8 characters
                   </div>
@@ -191,7 +210,12 @@ const Signup = () => {
               )}
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">Confirm password</label>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Confirm password
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
@@ -199,12 +223,16 @@ const Signup = () => {
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   autoComplete="new-password"
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black bg-gray-50 ${formData.confirmPassword && !isPasswordMatch ? 'border-red-300' : 'border-gray-200'}`}
+                  className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black bg-gray-50 ${
+                    formData.confirmPassword && !isPasswordMatch
+                      ? "border-red-300"
+                      : "border-gray-200"
+                  }`}
                   placeholder="Confirm your password"
                 />
                 <button
@@ -213,12 +241,20 @@ const Signup = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   tabIndex={-1}
                 >
-                  {showConfirmPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
                 </button>
               </div>
               {formData.confirmPassword && (
                 <div className="mt-1 text-xs">
-                  <div className={`flex items-center gap-1 ${isPasswordMatch ? 'text-green-600' : 'text-red-600'}`}>
+                  <div
+                    className={`flex items-center gap-1 ${
+                      isPasswordMatch ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
                     <Check className="w-3 h-3" />
                     Passwords match
                   </div>
@@ -238,16 +274,28 @@ const Signup = () => {
               </div>
               <div className="ml-3 text-sm">
                 <label htmlFor="agreeToTerms" className="text-gray-700">
-                  I agree to the{' '}
-                  <Link to="/terms" className="font-medium text-black hover:underline">Terms of Service</Link>{' '}
-                  and{' '}
-                  <Link to="/privacy" className="font-medium text-black hover:underline">Privacy Policy</Link>
+                  I agree to the{" "}
+                  <Link
+                    to="/terms"
+                    className="font-medium text-black hover:underline"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    to="/privacy"
+                    className="font-medium text-black hover:underline"
+                  >
+                    Privacy Policy
+                  </Link>
                 </label>
               </div>
             </div>
             <button
               type="submit"
-              disabled={!formData.agreeToTerms || !isPasswordValid || !isPasswordMatch}
+              disabled={
+                !formData.agreeToTerms || !isPasswordValid || !isPasswordMatch
+              }
               className="w-full py-3 rounded-lg bg-blue-500 text-white font-semibold text-lg shadow hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               Create account
@@ -266,8 +314,13 @@ const Signup = () => {
             </button> */}
           </form>
           <div className="mt-8 text-center text-gray-500 text-sm">
-            Already have an account?{' '}
-            <Link to="/auth/login" className="font-semibold text-black underline">Sign In</Link>
+            Already have an account?{" "}
+            <Link
+              to="/auth/login"
+              className="font-semibold text-black underline"
+            >
+              Sign In
+            </Link>
           </div>
         </div>
       </div>

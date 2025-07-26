@@ -1,33 +1,57 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors"); // ✅ You forgot this line
 const User = require("./models/User");
 require("dotenv").config();
+const registerRoute = require("./routes/register");
+const loginRoute = require("./routes/login");
+const categoriesRoute = require("./routes/categories")
+const userBecomeVendorRoute = require("./routes/user")
+const BusinessesRoute = require("./routes/businesses")
+const productsRoute = require("./routes/products");
+const loyaltyRoute = require("./routes/loyalty");
 
 const app = express();
 const PORT = 5000;
 
-app.use(express.json()); // middleware
+// ✅ Enable CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Vite frontend
+    credentials: true,
+  })
+);
 
-// Connect MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.catch((err) => console.error("❌ MongoDB connection error:", err));
+app.use(express.json()); // JSON middleware
 
-app.get("/users", async (req, res) => {
-  try {
-      const users = await User.find();
-      res.json(users);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-});
+// MongoDB connection
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+// Test route
 app.get("/", (req, res) => {
   res.send("API is running");
 });
 
+// Register route
+app.use("/register", registerRoute);
+app.use("/login", loginRoute);
+app.use("/categories", categoriesRoute);
+app.use("/user", userBecomeVendorRoute);
+app.use("/businesses", BusinessesRoute);
+app.use("/products", productsRoute);
+app.use("/loyalty-cards", loyaltyRoute);
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
+});
+
+
+app.get("/test", (req, res) => {
+  res.send("API is working");
 });

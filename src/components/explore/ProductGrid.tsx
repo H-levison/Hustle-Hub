@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 type Product = {
   id: number;
@@ -15,49 +18,44 @@ type Product = {
 };
 
 type Store = {
-  id: number;
-  image: string;
-  title: string;
-  subtitle: string;
+  id: string;
+  name: string;
+  description: string;
+  logo: string;
+  whatsapp: string;
 };
-
-const Stores = [
-  {
-    id: 1,
-    image: "https://www.flippedoutfood.com/wp-content/uploads/2022/02/Movie-Theater-Popcorn-featured-540x720.jpg",
-    title: "Popcorn Guy",
-    subtitle: "Open from 9:00 AM to 4:00 PM",
-  },
-  {
-    id: 2,
-    image: "https://cookingwithclaudy.com/wp-content/uploads/2023/02/bca2acd9329ec7bb2050f52a3293d0e5.jpg",
-    title: "Fatima's Kitchen",
-    subtitle: "Open from 11:00 AM to 8:00 PM",
-  },
-  {
-    id: 3,
-    image: "https://i.ytimg.com/vi/QMDaxjc11xc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAv2aHkQ338hRLssjViQ_n3HB_A3g",
-    title: "Fani's Bites",
-    subtitle: "Open from 8:00 AM to 11:00 PM",
-  },
-  {
-    id: 4,
-    image: "https://static.vecteezy.com/system/resources/previews/030/547/265/large_2x/ai-generated-sport-shoes-photo.jpg",
-    title: "House of Sneakers",
-    subtitle: "Open from 8:00 AM to 11:00 pm",
-  },
-];
 
 interface ProductGridProps {
   products: Product[];
-  stores?: Store[];
   onFavoriteToggle: (productId: number) => void;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({ products, stores = [], onFavoriteToggle }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle }) => {
   const [sortOption, setSortOption] = useState('featured');
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [activeTab, setActiveTab] = useState('products');
+  const [stores, setStores] = useState<Store[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch stores from backend
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_BASE}/businesses`);
+        if (response.ok) {
+          const data = await response.json();
+          setStores(data);
+        }
+      } catch (error) {
+        console.error('Error fetching stores:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStores();
+  }, []);
 
   const sortOptions = [
     { value: 'featured', label: 'Featured' },
@@ -102,7 +100,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, stores = [], onFavo
       <div className="flex justify-between items-center mb-6">
         <div>
           <p className="text-sm text-gray-500">
-            Showing 1-{activeTab === 'products' ? products.length : Stores.length} of {activeTab === 'products' ? products.length : Stores.length} {activeTab}
+            Showing 1-{activeTab === 'products' ? products.length : stores.length} of {activeTab === 'products' ? products.length : stores.length} {activeTab}
           </p>
         </div>
         {activeTab === 'products' && (
@@ -137,18 +135,26 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, stores = [], onFavo
       {activeTab === 'products' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {sortedProducts.map(product => (
-            <ProductCard 
-              key={product.id} 
-              product={product} 
-              onFavoriteToggle={onFavoriteToggle} 
-            />
+            <Link key={product.id} to={`/product/${product.id}`}>
+              <ProductCard 
+                product={product} 
+                onFavoriteToggle={onFavoriteToggle} 
+              />
+            </Link>
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {Stores.length > 0 ? (
-            Stores.map(store => (
-              <StoreCard key={store.id} store={store} />
+          {loading ? (
+            // Loading skeleton for stores
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="relative h-56 sm:h-72 md:h-80 rounded-xl overflow-hidden shadow-lg bg-gray-200 animate-pulse" />
+            ))
+          ) : stores.length > 0 ? (
+            stores.map(store => (
+              <Link key={store.id} to={`/shop/${store.id}`}>
+                <StoreCard store={store} />
+              </Link>
             ))
           ) : (
             <p className="col-span-full text-center text-gray-500 py-8">No stores available</p>
@@ -180,6 +186,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
             src={product.images[currentImageIndex]}
             alt={product.title}
             className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Product+Image';
+            }}
           />
         </div>
         <button
@@ -212,7 +221,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
         </div>
         <p className="text-sm text-gray-500 mb-1">{product.location}</p>
         <div className="flex justify-between items-center">
-          <p className="font-semibold text-gray-900">${product.price.toFixed(2)}</p>
+          <p className="font-semibold text-gray-900">RWF{product.price.toFixed(2)}</p>
           <button className="text-xs bg-indigo-50 text-indigo-600 px-3 py-2 rounded-full hover:bg-indigo-100 transition-colors">
             Add to Cart
           </button>
@@ -230,9 +239,12 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
   return (
     <div className="relative h-56 sm:h-72 md:h-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer">
       <img
-        src={store.image}
-        alt={store.title}
+        src={store.logo || "https://via.placeholder.com/400x300?text=Store+Logo"}
+        alt={store.name}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Store+Logo';
+        }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
       
@@ -243,8 +255,8 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
       </button>
       
       <div className="absolute bottom-12 sm:bottom-14 left-2 sm:left-3 text-white">
-        <h3 className="font-semibold text-base sm:text-lg leading-tight">{store.title}</h3>
-        <p className="text-xs sm:text-sm opacity-90">{store.subtitle}</p>
+        <h3 className="font-semibold text-base sm:text-lg leading-tight">{store.name}</h3>
+        <p className="text-xs sm:text-sm opacity-90 line-clamp-2">{store.description}</p>
       </div>
       
       <button className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 bg-white text-black rounded-full py-1.5 sm:py-2 text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors">

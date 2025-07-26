@@ -1,24 +1,36 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const abstractImg = './Login .png'; 
+const abstractImg = "./Login .png";
+
+interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    is_provider: boolean;
+  };
+}
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false
+    email: "",
+    password: "",
+    rememberMe: false,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -26,34 +38,33 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const response = await axios.post<LoginResponse>(
+        "http://localhost:5000/login",
+        {
           email: formData.email,
           password: formData.password,
-        }),
-      });
+        }
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) throw new Error(data.error || 'Login failed');
-
-      // Note: localStorage usage for demonstration - in artifacts, use React state instead
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.user.is_provider ? 'provider' : 'student');
-      localStorage.setItem('user_id', data.user.id.toString());
+      localStorage.setItem("token", data.token);
+      localStorage.setItem(
+        "role",
+        data.user.is_provider ? "provider" : "student"
+      );
+      localStorage.setItem("user_id", data.user.id.toString());
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate('/'); 
-
+      navigate("/");
     } catch (error: any) {
-      alert(error.message);
+      console.error(error);
+      // You could display this error with a toast or form error message
     }
   };
 
   const handleGoHome = () => {
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -69,15 +80,26 @@ const Login = () => {
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </button>
-          
+
           <div className="flex flex-col items-center mb-8">
-            <span className="font-bold text-2xl tracking-tight mb-2">Hustle hub</span>
-            <h2 className="text-3xl font-serif font-semibold mb-2">Welcome Back</h2>
-            <p className="text-gray-500 mb-6 text-center">Enter your email and password to access your account</p>
+            <span className="font-bold text-2xl tracking-tight mb-2">
+              Hustle hub
+            </span>
+            <h2 className="text-3xl font-serif font-semibold mb-2">
+              Welcome Back
+            </h2>
+            <p className="text-gray-500 mb-6 text-center">
+              Enter your email and password to access your account
+            </p>
           </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Email
+              </label>
               <input
                 id="email"
                 name="email"
@@ -91,12 +113,17 @@ const Login = () => {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Password
+              </label>
               <div className="relative">
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
                   value={formData.password}
@@ -110,7 +137,11 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
                 </button>
               </div>
             </div>
@@ -125,7 +156,12 @@ const Login = () => {
                 />
                 Remember me
               </label>
-              <Link to="/auth/forgot-password" className="text-sm text-gray-600 hover:underline">Forgot Password</Link>
+              <Link
+                to="/auth/forgot-password"
+                className="text-sm text-gray-600 hover:underline"
+              >
+                Forgot Password
+              </Link>
             </div>
             <button
               type="submit"
@@ -147,8 +183,13 @@ const Login = () => {
             </button> */}
           </form>
           <div className="mt-8 text-center text-gray-500 text-sm">
-            Don't have an account?{' '}
-            <Link to="/auth/signup" className="font-semibold text-black underline">Sign Up</Link>
+            Don't have an account?{" "}
+            <Link
+              to="/auth/signup"
+              className="font-semibold text-black underline"
+            >
+              Sign Up
+            </Link>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -28,11 +28,11 @@ const SearchPage: React.FC = () => {
       {loading && <div>Loading...</div>}
       <div>
         {results.map(product => (
-          <div key={product.id} className="mb-2 p-2 border rounded">
+          <Link key={product.id} to={`/product/${product.id}`} className="block mb-2 p-2 border rounded hover:bg-gray-50 transition-colors">
             <div className="font-bold">{product.name}</div>
-            <div>{product.description}</div>
-            <div>{typeof product.price === 'number' ? `$${product.price}` : ''}</div>
-          </div>
+            <div className="text-gray-600">{product.description}</div>
+            <div className="text-blue-600 font-semibold">{typeof product.price === 'number' ? `RWF ${product.price.toLocaleString()}` : ''}</div>
+          </Link>
         ))}
         {results.length === 0 && !loading && <div>No results found.</div>}
       </div>
