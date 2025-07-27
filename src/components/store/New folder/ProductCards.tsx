@@ -150,19 +150,6 @@ const ProductCards = () => {
                   alt={product.title}
                   className="w-full h-full object-center object-cover lg:w-full lg:h-full"
                 />
-                <button
-                  onClick={() => toggleFavorite(product.id)}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-white"
-                >
-                  <Heart
-                    size={20}
-                    className={`${
-                      favorites.includes(product.id)
-                        ? "fill-red-500 text-red-500"
-                        : "text-gray-400"
-                    }`}
-                  />
-                </button>
               </div>
               <div className="mt-4 flex justify-between">
                 <div>
@@ -178,16 +165,15 @@ const ProductCards = () => {
                       <Star
                         key={i}
                         size={16}
-                        className={`${
-                          i < Math.floor(product.rating)
+                        className={
+                          product.reviews && product.reviews > 0 && i < Math.floor(product.rating)
                             ? "text-yellow-400 fill-yellow-400"
                             : "text-gray-300"
-                        } ${i === Math.floor(product.rating) && 
-                          product.rating % 1 > 0 ? "text-yellow-400 fill-yellow-400 opacity-50" : ""}`}
+                        }
                       />
                     ))}
                     <span className="ml-1 text-sm text-gray-500">
-                      ({product.reviews})
+                      ({product.reviews && product.reviews > 0 ? product.reviews : 0})
                     </span>
                   </div>
                 </div>

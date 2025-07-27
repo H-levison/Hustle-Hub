@@ -18,6 +18,8 @@ interface Product {
   category?: string; // Added category name
   businessName?: string; // Added business name
   businessWhatsapp?: string; // Added business WhatsApp
+  rating?: number; // Added rating
+  reviews?: number; // Added reviews
 }
 
 interface ProductCardProps {
@@ -55,15 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
             />
           </div>
         </Link>
-        <button
-          onClick={handleFavoriteClick}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors z-10"
-        >
-          <Heart 
-            size={18} 
-            className={isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"} 
-          />
-        </button>
+        {/* Heart icon removed */}
       </div>
       <div className="pt-3 px-1">
         <Link to={`/product/${product.id}`} className="block">
@@ -71,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
             <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
             <div className="flex items-center text-sm">
               <Star size={14} className="fill-black text-black mr-0.5" />
-              <span>4.5</span>
+              <span>{product.reviews && product.reviews > 0 ? (product.rating || 0) : 0}</span>
             </div>
           </div>
           <p className="text-sm text-gray-500 mb-1 line-clamp-1">{product.businessName || 'Unknown Store'}</p>

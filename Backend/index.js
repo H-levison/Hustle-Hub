@@ -13,6 +13,7 @@ const loyaltyRoute = require("./routes/loyalty");
 const userLoyaltyRoute = require("./routes/userLoyalty");
 const reviewsRoute = require("./routes/reviews");
 const ordersRoute = require("./routes/orders");
+const tiersRoute = require('./routes/tiers');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -54,6 +55,7 @@ app.use("/loyalty-cards", loyaltyRoute);
 app.use("/user-loyalty", userLoyaltyRoute);
 app.use("/reviews", reviewsRoute);
 app.use("/orders", ordersRoute);
+app.use('/tiers', tiersRoute);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

@@ -71,7 +71,7 @@ const HeroGrid = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-3 gap-4 w-full md:mx-8 lg:mx-24 h-[600px]">
         <Card 
           title="Fashion & Apparel"
-          tags={["men", "kids", "women"]}
+          // tags={["men", "kids", "women"]}
           button="See more"
           bgImage="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400&h=300&fit=crop"
           className="col-span-2 row-span-2"
@@ -93,7 +93,7 @@ const HeroGrid = () => {
         />
         <Card 
           title="Food & Beverages"
-          tags={["Order and Fast Delivery"]}
+          // tags={["Order and Fast Delivery"]}
           button="See more"
           bgImage="https://kikifoodies.com/wp-content/uploads/2025/03/ET5B8958-4.jpeg"
           className="col-start-3 row-start-1"
@@ -102,7 +102,7 @@ const HeroGrid = () => {
         <Card 
           title="Services"
           // subtitle=" Apartment search and cleaning services made simple. "
-          tags={["house-hunting" , "cleaning"]}
+          // tags={["house-hunting" , "cleaning"]}
           button="See more"
           bgImage="https://media.licdn.com/dms/image/v2/D4E0BAQG026Z0gOalLQ/company-logo_200_200/company-logo_200_200/0/1719171441582?e=2147483647&v=beta&t=-jZIWCXM4GP3LfL6-hWFdUSeSh7C3nZfI_6FKxQZPY4"
           className="row-span-3 col-start-4 row-start-1"
@@ -111,7 +111,7 @@ const HeroGrid = () => {
         <Card 
           title="Books & Stationeries"
           // subtitle="We offer services that help people learn and grow."
-          tags={["education"]}
+          // tags={["education"]}
           button="See more"
           bgImage="https://wp.penguin.co.uk/wp-content/uploads/2024/12/Penguin-Best-Books-of-2025-article-sizing-1-1024x683.jpg"
           className="row-span-2 col-start-3 row-start-2"

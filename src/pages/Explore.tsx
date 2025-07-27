@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Navigation } from "../components/Navigation";
-import SearchBar from "../components/SearchBar";
+// import SearchBar from "../components/SearchBar";
 import ProductFilterSidebar from "../components/explore/ProductFilterSidebar";
 import ProductGrid from "../components/explore/ProductGrid";
 import { SlidersHorizontal, Search } from "lucide-react";
@@ -256,8 +256,8 @@ const Explore = () => {
     title: product.name,
     location: product.business || 'Unknown Store',
     price: product.price,
-    rating: 4.5, // Default rating
-    reviews: Math.floor(Math.random() * 500) + 50, // Random reviews for demo
+    rating: 0, // Set to 0 by default - will be updated when reviews are implemented
+    reviews: 0, // Set to 0 by default - will be updated when reviews are implemented
     isFavorite: false,
     description: product.description,
     details: product.description
@@ -280,7 +280,7 @@ const Explore = () => {
   return (
     <>
       <Navigation />
-      
+      {/* SearchBar removed from Explore page, use sidebar filter instead */}
       {/* Main Content */}
       <section className="py-8">
         <div className="container mx-auto px-4">

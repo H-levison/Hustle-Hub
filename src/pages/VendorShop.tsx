@@ -1,8 +1,12 @@
+// VendorShop.tsx
+// Vendor dashboard page for managing products, orders, and loyalty tiers in Hustle-Hub.
+
 import React, { useState, useEffect } from 'react';
 import { Navigation } from '../components/Navigation';
 import { Plus, X, Trash2, Package, Tag, Award, Image, Pencil, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+// Product, Category, LoyaltyCard, and Tier interfaces for type safety
 interface Product {
   id: string;
   name: string;
@@ -26,17 +30,22 @@ interface LoyaltyCard {
   tier: string;
   discount: number;
   minSpend: number;
+  minCompletedOrders: number;
   color: string;
 }
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
+/**
+ * VendorShop component: main dashboard for vendors to manage their store, products, orders, and loyalty tiers.
+ */
 const VendorShop = () => {
   const navigate = useNavigate();
+  // Loading and error state
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // State for tabs and modals
+  // UI state for tabs and modals
   const [activeTab, setActiveTab] = useState<'products' | 'loyalty' | 'orders'>('products');
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
@@ -49,14 +58,15 @@ const VendorShop = () => {
   });
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  // Data state
+  // Data state for products, categories, loyalty cards, orders, and store
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loyaltyCards, setLoyaltyCards] = useState<LoyaltyCard[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [store, setStore] = useState<any>(null);
+  const [availableTiers, setAvailableTiers] = useState<{name: string, displayName: string, color: string}[]>([]);
 
-  // Form states
+  // Form state for adding/editing products and loyalty tiers
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
@@ -73,10 +83,13 @@ const VendorShop = () => {
   const [newTier, setNewTier] = useState({
     tier: '',
     discount: '',
-    minSpend: ''
+    minSpend: '',
+    minCompletedOrders: ''
   });
 
-  // Fetch data functions
+  /**
+   * Fetch all products for the current vendor's business
+   */
   const fetchProducts = async () => {
     try {
       // First get all products
@@ -193,6 +206,14 @@ const VendorShop = () => {
       setStore(null);
     }
   };
+
+  // Fetch tiers from backend
+  useEffect(() => {
+    fetch(`${API_BASE}/tiers`)
+      .then(res => res.json())
+      .then(data => setAvailableTiers(data))
+      .catch(() => setAvailableTiers([]));
+  }, []);
 
   // Product handlers
   const handleAddProduct = async (e: React.FormEvent) => {
@@ -389,6 +410,7 @@ const VendorShop = () => {
         tier: newTier.tier,
         discount: parseInt(newTier.discount),
         minSpend: parseInt(newTier.minSpend),
+        minCompletedOrders: parseInt(newTier.minCompletedOrders),
         color: 'bg-hustlehub-blue', // or allow user to pick
         business_id: store.id // Use 'id' instead of '_id'
       };
@@ -414,7 +436,7 @@ const VendorShop = () => {
       console.log('Loyalty tier created:', createdTier);
       setLoyaltyCards(prev => [...prev, createdTier]);
       setShowAddTier(false);
-      setNewTier({ tier: '', discount: '', minSpend: '' });
+      setNewTier({ tier: '', discount: '', minSpend: '', minCompletedOrders: '' });
     } catch (err) {
       setError('Failed to add loyalty tier. Please try again.');
       console.error(err);
@@ -1428,15 +1450,18 @@ const VendorShop = () => {
                     <h3 className="text-xl font-semibold mb-4">Add Loyalty Tier</h3>
                     <form onSubmit={handleAddTier} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium mb-1">Tier Name*</label>
-                        <input
-                          type="text"
-                          placeholder="Gold"
+                        <label className="block text-sm font-medium mb-1">Tier*</label>
+                        <select
                           className="w-full border p-2 rounded"
                           value={newTier.tier}
                           onChange={e => setNewTier({...newTier, tier: e.target.value})}
                           required
-                        />
+                        >
+                          <option value="">Select a tier</option>
+                          {availableTiers.map(tier => (
+                            <option key={tier.name} value={tier.name}>{tier.displayName || tier.name}</option>
+                          ))}
+                        </select>
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-1">Discount (%)*</label>
@@ -1459,6 +1484,18 @@ const VendorShop = () => {
                           className="w-full border p-2 rounded"
                           value={newTier.minSpend}
                           onChange={e => setNewTier({...newTier, minSpend: e.target.value})}
+                          required
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Minimum Completed Orders*</label>
+                        <input
+                          type="number"
+                          placeholder="5"
+                          className="w-full border p-2 rounded"
+                          value={newTier.minCompletedOrders || ''}
+                          onChange={e => setNewTier({...newTier, minCompletedOrders: e.target.value})}
                           required
                           min="0"
                         />

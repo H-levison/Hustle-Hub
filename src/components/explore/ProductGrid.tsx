@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../CartContext';
 
@@ -108,11 +108,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { addToCart, cart } = useCart();
   
-  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    onFavoriteToggle(product.id);
-  };
-
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     // Use the location as business name and create a unique business ID
@@ -142,15 +137,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
             }}
           />
         </div>
-        <button
-          onClick={handleFavoriteClick}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
-        >
-          <Heart 
-            size={18} 
-            className={product.isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"} 
-          />
-        </button>
+        {/* Heart icon removed */}
         {product.images.length > 1 && (
           <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1">
             {product.images.map((_, index) => (
@@ -167,7 +154,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
           <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{product.title}</h3>
           <div className="flex items-center text-sm">
             <Star size={14} className="fill-black text-black mr-0.5" />
-            <span>{product.rating}</span>
+            <span>{product.reviews > 0 ? product.rating : 0}</span>
           </div>
         </div>
         <p className="text-sm text-gray-500 mb-1">{product.location}</p>

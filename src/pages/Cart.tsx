@@ -393,7 +393,7 @@ const CustomerDetailsModal = ({
               <MapPin size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <textarea value={customerDetails.address} onChange={e => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))} className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-hustlehub-blue focus:border-transparent" placeholder="Enter your delivery address" rows={3} required />
             </div>
-          </div>
+              </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
             <textarea value={customerDetails.notes} onChange={e => setCustomerDetails(prev => ({ ...prev, notes: e.target.value }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-hustlehub-blue focus:border-transparent" placeholder="Any special instructions or notes for the vendor" rows={2} />
@@ -414,7 +414,7 @@ const Cart = () => {
     address: '',
     notes: ''
   });
-  const { getVendorGroups, clearCart } = useCart();
+  const { getVendorGroups, clearCart, showNotification, notificationMessage } = useCart();
   const vendorGroups = getVendorGroups();
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
 
@@ -478,14 +478,15 @@ const Cart = () => {
     }
   };
 
-  const sendWhatsAppMessage = (vendorGroup: VendorGroup) => {
+  // Update sendWhatsAppMessage to accept orderId
+  const sendWhatsAppMessage = (vendorGroup: VendorGroup, orderId: string) => {
     const orderLines = vendorGroup.items.map(item =>
       `- ${item.title} (Qty: ${item.quantity}${item.color ? ", Color: " + item.color : ""}${item.size ? ", Size: " + item.size : ""}) - RWF${item.price * item.quantity}`
     ).join("%0A");
     const vendorTotal = vendorGroup.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const customerInfo = `Customer Name: ${customerDetails.name}%0APhone: ${customerDetails.phone}%0AAddress: ${customerDetails.address}`;
     const notes = customerDetails.notes ? `%0ANotes: ${customerDetails.notes}` : '';
-    const message = `Hello, I want to make an order:%0A%0A${customerInfo}${notes}%0A%0AOrder Items:%0A${orderLines}%0A%0ATotal: RWF${vendorTotal.toLocaleString()}`;
+    const message = `Hello, I want to make an order (Order No: ${orderId}):%0A%0A${customerInfo}${notes}%0A%0AOrder Items:%0A${orderLines}%0A%0ATotal: RWF${vendorTotal.toLocaleString()}`;
     const whatsappUrl = `https://wa.me/${vendorGroup.vendorWhatsapp.replace(/[^\d]/g, '')}?text=${message}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -500,8 +501,12 @@ const Cart = () => {
         return;
       }
       for (const vendorGroup of vendorGroups) {
-        await createOrder(vendorGroup);
-        sendWhatsAppMessage(vendorGroup);
+        const result = await createOrder(vendorGroup);
+        if (result && result.order && result.order.id) {
+          sendWhatsAppMessage(vendorGroup, result.order.id);
+        } else {
+          sendWhatsAppMessage(vendorGroup, 'N/A');
+        }
       }
       clearCart();
       alert('Order(s) placed and WhatsApp message(s) sent to vendor(s)!');
@@ -516,6 +521,14 @@ const Cart = () => {
 
   return (
     <>
+      {/* Notification popup above the Navigation bar */}
+      {showNotification && (
+        <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
+          <div className="bg-hustlehub-blue text-white px-6 py-3 mt-4 rounded-xl shadow-lg text-center font-semibold pointer-events-auto animate-fade-in">
+            {notificationMessage}
+          </div>
+        </div>
+      )}
       <Navigation />
       <div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items Section */}
@@ -524,26 +537,26 @@ const Cart = () => {
         </div>
         {/* Sidebar: Coupon, Order Summary, Payment */}
         <div className="lg:col-span-1 space-y-6">
-          <CouponCode />
+            {/* <CouponCode /> */}
           <OrderSummary vendorDiscounts={vendorDiscounts} />
-          <PaymentMethod 
-            customerDetails={customerDetails}
-            setCustomerDetails={setCustomerDetails}
-            onCheckoutClick={() => setShowCustomerModal(true)}
-            createOrder={createOrder}
-            sendWhatsAppMessage={sendWhatsAppMessage}
-          />
+            <PaymentMethod 
+              customerDetails={customerDetails}
+              setCustomerDetails={setCustomerDetails}
+              onCheckoutClick={() => setShowCustomerModal(true)}
+              createOrder={createOrder}
+              sendWhatsAppMessage={sendWhatsAppMessage}
+            />
+          </div>
         </div>
-      </div>
-      <CustomerDetailsModal
-        isOpen={showCustomerModal}
-        onClose={() => setShowCustomerModal(false)}
-        customerDetails={customerDetails}
-        setCustomerDetails={setCustomerDetails}
-        onSubmit={handleCheckout}
-      />
-    </>
-  );
-};
+        <CustomerDetailsModal
+          isOpen={showCustomerModal}
+          onClose={() => setShowCustomerModal(false)}
+          customerDetails={customerDetails}
+          setCustomerDetails={setCustomerDetails}
+          onSubmit={handleCheckout}
+        />
+      </>
+    );
+  };
 
-export default Cart; 
+  export default Cart; 

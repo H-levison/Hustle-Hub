@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import {
   Star,
   Heart,
-  Mail,
+  MessageCircle,
 } from 'lucide-react';
 import { Navigation } from '../components/Navigation';
 import { useCart } from '../CartContext';
@@ -18,6 +18,8 @@ interface Product {
   category: string;
   business_id: string;
   isFavorite?: boolean;
+  rating?: number; // Optional rating property
+  reviews?: number; // Optional reviews property
 }
 
 interface ProductCardProps {
@@ -38,8 +40,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
     onAddToCart(product.id);
   };
 
-  // Generate a random rating between 4.0 and 5.0 for demonstration
-  const rating = (4.0 + Math.random()).toFixed(1);
+  // Use product.rating if available and there are reviews, otherwise 0
+  const rating = (typeof product.rating === 'number' && (product.reviews || 0) > 0) ? product.rating.toFixed(1) : '0';
 
   return (
     <div className="bg-transparent rounded-xl overflow-hidden group transition-all">
@@ -56,15 +58,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
             />
           </div>
         </Link>
-        <button
-          onClick={handleFavoriteClick}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors z-10"
-        >
-          <Heart 
-            size={18} 
-            className={product.isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"} 
-          />
-        </button>
+        {/* Heart icon removed */}
       </div>
       <div className="pt-3 px-1">
         <Link to={`/product/${product.id}`} className="block">
@@ -171,21 +165,24 @@ const Shop = () => {
                     ...product,
                     category: category.name,
                     business_id: storeData.id, // Ensure correct business_id
-                    isFavorite: false // Default state
+                    isFavorite: false, // Default state
+                    reviews: product.reviews || 0 // Ensure reviews is available
                   };
                 }
                 return {
                   ...product,
                   category: 'Uncategorized',
                   business_id: storeData.id, // Ensure correct business_id
-                  isFavorite: false
+                  isFavorite: false,
+                  reviews: product.reviews || 0
                 };
               } catch (err) {
                 return {
                   ...product,
                   category: 'Uncategorized',
                   business_id: storeData.id, // Ensure correct business_id
-                  isFavorite: false
+                  isFavorite: false,
+                  reviews: product.reviews || 0
                 };
               }
             })
@@ -307,8 +304,16 @@ const Shop = () => {
           <p className="text-xs text-gray-500 mt-2">{storeData.subtitle}</p>
 
           <nav className="mt-6 border-t pt-4">
-            <button className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-hustlehub-blue text-white font-medium">
-              <Mail className="w-4 h-4" /> Shop
+            <button
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition-colors"
+              onClick={() => {
+                if (storeData.whatsapp) {
+                  const phone = storeData.whatsapp.replace(/[^\d]/g, '');
+                  window.open(`https://wa.me/${phone}`, '_blank');
+                }
+              }}
+            >
+              <MessageCircle className="w-4 h-4" /> WhatsApp
             </button>
           </nav>
 

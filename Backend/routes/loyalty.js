@@ -1,9 +1,13 @@
+// routes/loyalty.js
+// Express routes for managing loyalty cards and tiers for users and businesses in Hustle-Hub.
+
 const express = require("express");
 const router = express.Router();
 const LoyaltyCard = require("../models/LoyaltyCard");
 const authMiddleware = require("../middleware/authMiddleware");
 
 // GET /loyalty-cards (for business loyalty tiers)
+// Returns all loyalty tiers defined for businesses (for vendor dashboard and customer selection)
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const loyaltyCards = await LoyaltyCard.find({ business_id: { $exists: true } });
@@ -13,6 +17,7 @@ router.get("/", authMiddleware, async (req, res) => {
       tier: card.tier,
       discount: card.discount,
       minSpend: card.minSpend,
+      minCompletedOrders: card.minCompletedOrders,
       color: card.color,
     }));
 
@@ -24,8 +29,9 @@ router.get("/", authMiddleware, async (req, res) => {
 });
 
 // POST /loyalty-cards (create loyalty tier)
+// Allows vendors to create a new loyalty tier for their business
 router.post("/", authMiddleware, async (req, res) => {
-  const { tier, discount, minSpend, color, business_id } = req.body;
+  const { tier, discount, minSpend, minCompletedOrders, color, business_id } = req.body;
   console.log("Loyalty tier creation attempt by:", req.user.email);
 
   try {
@@ -42,6 +48,7 @@ router.post("/", authMiddleware, async (req, res) => {
       tier,
       discount: parseInt(discount),
       minSpend: parseInt(minSpend),
+      minCompletedOrders: parseInt(minCompletedOrders) || 0,
       color: color || "bg-blue-500",
       business_id,
       user_id: req.user._id, // Temporary user_id for tier creation
@@ -54,6 +61,7 @@ router.post("/", authMiddleware, async (req, res) => {
       tier: newLoyaltyCard.tier,
       discount: newLoyaltyCard.discount,
       minSpend: newLoyaltyCard.minSpend,
+      minCompletedOrders: newLoyaltyCard.minCompletedOrders,
       color: newLoyaltyCard.color,
     });
   } catch (err) {
@@ -63,6 +71,7 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // DELETE /loyalty-cards/:id (delete loyalty tier)
+// Allows vendors to delete a loyalty tier from their business
 router.delete("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   console.log("Loyalty tier deletion attempt by:", req.user.email);
@@ -85,7 +94,8 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// GET /user/:userId/loyalty (existing route for user loyalty cards)
+// GET /user/:userId/loyalty (get a user's loyalty card)
+// Returns the loyalty card/tier for a specific user (for customer dashboard)
 router.get("/user/:userId/loyalty", authMiddleware, async (req, res) => {
   const userId = req.params.userId;
 
@@ -97,8 +107,11 @@ router.get("/user/:userId/loyalty", authMiddleware, async (req, res) => {
     }
 
     return res.json({
-      points: card.points,
       tier: card.tier,
+      discount: card.discount,
+      minSpend: card.minSpend,
+      minCompletedOrders: card.minCompletedOrders,
+      color: card.color,
     });
   } catch (err) {
     console.error("Error fetching loyalty card:", err);

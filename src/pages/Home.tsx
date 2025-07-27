@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigation } from "../components/Navigation";
 import { NotificationStrip } from "../components/home/NotificationStrip";
-import SearchBar from "../components/SearchBar";
+// import SearchBar from "../components/SearchBar";
 import HeroGrid from "../components/home/HeroGrid";
 import HeroSliderMobile from "../components/home/HeroSliderMobile";
 import CategoryIcons from "../components/home/CategoryIcons";
@@ -21,7 +21,7 @@ const Home = () => (
       {/* <NotificationStrip /> */}
       {/* Main Navigation Bar */}
       <Navigation />
-      <CategoryIcons />
+      {/* <CategoryIcons /> */}
       {/* <SearchBar /> */}
       <HeroSliderMobile />
       <HeroGrid />
