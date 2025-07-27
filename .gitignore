@@ -23,6 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment variables - Comprehensive protection
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+.env.example
+
 # ─── Python Backend Additions ─────────────────────────────
 
 # Byte-compiled / optimized / DLL files
@@ -32,9 +41,6 @@ __pycache__/
 
 # SQLite database
 *.db
-
-# Environment variables
-.env
 
 # Python virtual environments
 venv/
