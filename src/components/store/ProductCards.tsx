@@ -94,7 +94,7 @@ const ProductCards = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/products');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/products`);
         if (response.ok) {
           const data = await response.json();
           
@@ -103,7 +103,7 @@ const ProductCards = () => {
             data.slice(0, 5).map(async (product: Product) => {
               try {
                 // Get category name
-                const categoryResponse = await fetch(`http://localhost:5000/categories/${product.category_id}`);
+                const categoryResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/categories/${product.category_id}`);
                 let categoryName = 'Uncategorized';
                 if (categoryResponse.ok) {
                   const category = await categoryResponse.json();
@@ -111,7 +111,7 @@ const ProductCards = () => {
                 }
 
                 // Get business info
-                const businessResponse = await fetch(`http://localhost:5000/businesses/${product.business_id}`);
+                const businessResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/businesses/${product.business_id}`);
                 let businessName = 'Unknown Store';
                 let businessWhatsapp = '+250788123456';
                 if (businessResponse.ok) {

@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors"); // ✅ You forgot this line
+const cors = require("cors"); // 
 const User = require("./models/User");
 require("dotenv").config();
 const registerRoute = require("./routes/register");
@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: process.env.NODE_ENV === 'production' 
-      ? ['https://your-frontend-app.onrender.com', 'http://localhost:5173'] // Add your frontend URL
+      ? [process.env.FRONTEND_URL || 'https://hustlehub-oe51.onrender.com', 'http://localhost:5173'] // Use environment variable
       : "http://localhost:5173",
     credentials: true,
   })
@@ -58,9 +58,11 @@ app.use("/orders", ordersRoute);
 app.use('/tiers', tiersRoute);
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`📍 Local URL: http://localhost:${PORT}`);
+  }
 });
-
 
 app.get("/test", (req, res) => {
   res.send("API is working");

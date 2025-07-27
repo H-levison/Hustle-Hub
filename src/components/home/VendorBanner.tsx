@@ -34,7 +34,7 @@ const VendorRegistrationModal = ({
 
   React.useEffect(() => {
     if (open) {
-      fetch("http://localhost:5000/categories")
+      fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/categories`)
         .then((res) => res.json())
         .then((data) => setCategories(data))
         .catch(() => setCategories([]));
