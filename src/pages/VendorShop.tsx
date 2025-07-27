@@ -39,6 +39,7 @@ const VendorShop = () => {
   // State for tabs and modals
   const [activeTab, setActiveTab] = useState<'products' | 'loyalty' | 'orders'>('products');
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [showEditProduct, setShowEditProduct] = useState(false);
   const [showAddTier, setShowAddTier] = useState(false);
   const [showEditStore, setShowEditStore] = useState(false);
   const [editStore, setEditStore] = useState({
@@ -46,6 +47,7 @@ const VendorShop = () => {
     description: '',
     logo: '',
   });
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Data state
   const [products, setProducts] = useState<Product[]>([]);
@@ -77,11 +79,8 @@ const VendorShop = () => {
   // Fetch data functions
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${API_BASE}/products/vendor`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      // First get all products
+      const response = await fetch(`${API_BASE}/products`);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -90,13 +89,21 @@ const VendorShop = () => {
         return;
       }
       
-      const data = await response.json();
-      console.log('Raw products data:', data);
+      const allProducts = await response.json();
+      console.log('All products:', allProducts);
       
-      // Ensure data is an array
-      if (Array.isArray(data)) {
-        setProducts(data);
+      // Filter products that belong to the current vendor's business
+      if (store && Array.isArray(allProducts)) {
+        console.log('Store ID:', store.id);
+        console.log('All products business IDs:', allProducts.map((p: any) => p.business_id));
+        
+        const vendorProducts = allProducts.filter((product: any) => 
+          product.business_id === store.id
+        );
+        console.log('Vendor products:', vendorProducts);
+        setProducts(vendorProducts);
       } else {
+        console.log('No store or products array:', { store, allProducts });
         setProducts([]);
       }
     } catch (err) {
@@ -288,6 +295,83 @@ const VendorShop = () => {
     }
   };
 
+  const handleEditProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    
+    if (!editingProduct) return;
+    
+    try {
+      // Map category name to id
+      const selectedCategory = categories.find(cat => cat.name === newProduct.category);
+      
+      if (!selectedCategory) {
+        setError('Please select a valid category.');
+        return;
+      }
+      
+      if (!store) {
+        setError('Store not loaded. Please refresh the page.');
+        return;
+      }
+      
+      const payload = {
+        name: newProduct.name,
+        description: newProduct.description,
+        price: newProduct.price,
+        category_id: selectedCategory.id,
+        business_id: store.id,
+        image: newProduct.image,
+        stock: newProduct.stock,
+        colors: newProduct.colors,
+        sizes: newProduct.sizes
+      };
+      
+      const response = await fetch(`${API_BASE}/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Backend error:', errorText);
+        throw new Error('Failed to update product');
+      }
+      
+      const { product } = await response.json();
+      
+      // Update the product in state
+      setProducts(prev => prev.map(p => p.id === editingProduct.id ? product : p));
+      setShowEditProduct(false);
+      setEditingProduct(null);
+      resetProductForm();
+    } catch (err) {
+      setError('Failed to update product. Please try again.');
+      console.error(err);
+    }
+  };
+
+  const openEditModal = (product: Product) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      category: categories.find(cat => cat.id === product.category_id)?.name || '',
+      image: product.image,
+      stock: product.stock,
+      colors: product.colors || [],
+      sizes: product.sizes || [],
+      colorInput: '',
+      sizeInput: ''
+    });
+    setShowEditProduct(true);
+  };
+
 
 
   // Loyalty card handlers
@@ -443,7 +527,6 @@ const VendorShop = () => {
       try {
         // Fetch initial data
         await Promise.all([
-          fetchProducts(),
           fetchCategories(),
           fetchLoyaltyCards(),
           fetchOrders(),
@@ -458,6 +541,13 @@ const VendorShop = () => {
 
     checkAuth();
   }, [navigate]);
+
+  // Refetch products when store is loaded
+  useEffect(() => {
+    if (store) {
+      fetchProducts();
+    }
+  }, [store]);
 
   if (isLoading) {
     return (
@@ -633,17 +723,31 @@ const VendorShop = () => {
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Your Products ({Array.isArray(products) ? products.length : 0})</h2>
-                <button 
-                  onClick={() => setShowAddProduct(true)} 
-                  disabled={!store}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    store 
-                      ? 'bg-hustlehub-blue text-white hover:bg-hustlehub-blue/90' 
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  <Plus size={18} /> Add Product
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => fetchProducts()} 
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                      <path d="M21 3v5h-5"/>
+                      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                      <path d="M3 21v-5h5"/>
+                    </svg>
+                    Refresh
+                  </button>
+                  <button 
+                    onClick={() => setShowAddProduct(true)} 
+                    disabled={!store}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                      store 
+                        ? 'bg-hustlehub-blue text-white hover:bg-hustlehub-blue/90' 
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    <Plus size={18} /> Add Product
+                  </button>
+                </div>
               </div>
               
               {/* Show message if no store */}
@@ -674,41 +778,49 @@ const VendorShop = () => {
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                   {Array.isArray(products) && products.map(product => (
-                    <div key={product.id} className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="aspect-video bg-gray-100 relative">
-                        {product.image ? (
-                          <img 
-                            src={product.image} 
-                            alt={product.name} 
-                            className="w-full h-full object-cover"
+                    <div key={product.id} className="bg-transparent rounded-xl overflow-hidden group transition-all">
+                      <div className="relative">
+                        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100 cursor-pointer">
+                          <img
+                            src={product.image || "https://via.placeholder.com/400x400?text=Product+Image"}
+                            alt={product.name}
+                            className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=No+Image';
+                              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Product+Image';
                             }}
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-400">
-                            <Image size={48} />
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-medium text-slate-800">{product.name}</h3>
-                          <button 
+                        </div>
+                        {/* Action buttons overlay */}
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <button
+                            onClick={() => openEditModal(product)}
+                            className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors z-10"
+                            aria-label="Edit product"
+                          >
+                            <Pencil size={16} className="text-blue-600" />
+                          </button>
+                          <button
                             onClick={() => handleDeleteProduct(product.id)}
-                            className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+                            className="p-2 rounded-full bg-white shadow-md hover:bg-red-50 transition-colors z-10"
                             aria-label="Delete product"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={16} className="text-red-500" />
                           </button>
+                        </div>
+                      </div>
+                      <div className="pt-3 px-1">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
+                          <div className="flex items-center text-sm">
+                            <span className="text-xs bg-hustlehub-blue/10 text-hustlehub-blue px-2 py-1 rounded">
+                              {categories.find(cat => cat.id === product.category_id)?.name || 'Uncategorized'}
+                            </span>
+                          </div>
                         </div>
                         <p className="text-slate-600 text-sm mb-2 line-clamp-2">{product.description}</p>
                         <div className="flex flex-wrap gap-1 mb-2">
-                          <span className="text-xs bg-hustlehub-blue/10 text-hustlehub-blue px-2 py-1 rounded">
-                            {categories.find(cat => cat.id === product.category_id)?.name || 'Uncategorized'}
-                          </span>
                           <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
                             {product.stock} in stock
                           </span>
@@ -726,7 +838,7 @@ const VendorShop = () => {
                           ))}
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="font-semibold text-slate-800">{product.price.toLocaleString()} RWF</span>
+                          <span className="font-semibold text-gray-900">RWF{product.price.toLocaleString()}</span>
                         </div>
                       </div>
                     </div>
@@ -912,6 +1024,199 @@ const VendorShop = () => {
                           className="bg-hustlehub-blue text-white px-4 py-2 rounded hover:bg-hustlehub-blue/90"
                         >
                           Add Product
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* Edit Product Modal */}
+              {showEditProduct && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                  <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
+                    <button 
+                      onClick={() => {
+                        setShowEditProduct(false);
+                        setEditingProduct(null);
+                        resetProductForm();
+                      }} 
+                      className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
+                      aria-label="Close modal"
+                    >
+                      <X size={24} />
+                    </button>
+                    <h3 className="text-xl font-semibold mb-4">Edit Product</h3>
+                    <form onSubmit={handleEditProduct} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Product Name*</label>
+                        <input
+                          type="text"
+                          placeholder="Premium Coffee"
+                          className="w-full border p-2 rounded"
+                          value={newProduct.name}
+                          onChange={e => setNewProduct({...newProduct, name: e.target.value})}
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Description*</label>
+                        <textarea
+                          placeholder="Rich, aromatic blend from Ethiopian highlands"
+                          className="w-full border p-2 rounded"
+                          value={newProduct.description}
+                          onChange={e => setNewProduct({...newProduct, description: e.target.value})}
+                          required
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium mb-1">Price (RWF)*</label>
+                          <input
+                            type="number"
+                            placeholder="15000"
+                            className="w-full border p-2 rounded"
+                            value={newProduct.price || ''}
+                            onChange={e => setNewProduct({...newProduct, price: parseFloat(e.target.value) || 0})}
+                            required
+                            min="0"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1">Stock Quantity*</label>
+                          <input
+                            type="number"
+                            placeholder="50"
+                            className="w-full border p-2 rounded"
+                            value={newProduct.stock || ''}
+                            onChange={e => setNewProduct({...newProduct, stock: parseInt(e.target.value) || 0})}
+                            required
+                            min="0"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Category*</label>
+                        <select
+                          className="w-full border p-2 rounded"
+                          value={newProduct.category}
+                          onChange={e => setNewProduct({...newProduct, category: e.target.value})}
+                          required
+                        >
+                          <option value="">Select a category</option>
+                          {Array.isArray(categories) && categories.map(category => (
+                            <option key={category.id} value={category.name}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Image URL*</label>
+                        <input
+                          type="text"
+                          placeholder="https://example.com/image.jpg"
+                          className="w-full border p-2 rounded"
+                          value={newProduct.image}
+                          onChange={e => setNewProduct({...newProduct, image: e.target.value})}
+                          required
+                        />
+                      </div>
+                      
+                      {/* Color Variations */}
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Color Variations</label>
+                        <div className="flex gap-2 mb-2">
+                          <input
+                            type="text"
+                            placeholder="Add color (e.g. Red)"
+                            className="flex-1 border p-2 rounded"
+                            value={newProduct.colorInput}
+                            onChange={e => setNewProduct({...newProduct, colorInput: e.target.value})}
+                          />
+                          <button 
+                            type="button" 
+                            onClick={addColor}
+                            className="bg-hustlehub-blue text-white px-3 py-2 rounded hover:bg-hustlehub-blue/90"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {Array.isArray(newProduct.colors) && newProduct.colors.map((color, i) => (
+                            <span key={i} className="bg-hustlehub-blue/10 text-hustlehub-blue px-2 py-1 rounded-full flex items-center gap-1">
+                              {color}
+                              <button 
+                                type="button" 
+                                onClick={() => removeColor(i)}
+                                className="text-red-500 hover:text-red-700"
+                                aria-label={`Remove ${color}`}
+                              >
+                                <X size={14} />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Size Variations */}
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Size Variations</label>
+                        <div className="flex gap-2 mb-2">
+                          <input
+                            type="text"
+                            placeholder="Add size (e.g. Large)"
+                            className="flex-1 border p-2 rounded"
+                            value={newProduct.sizeInput}
+                            onChange={e => setNewProduct({...newProduct, sizeInput: e.target.value})}
+                          />
+                          <button 
+                            type="button" 
+                            onClick={addSize}
+                            className="bg-hustlehub-blue text-white px-3 py-2 rounded hover:bg-hustlehub-blue/90"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {Array.isArray(newProduct.sizes) && newProduct.sizes.map((size, i) => (
+                            <span key={i} className="bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center gap-1">
+                              {size}
+                              <button 
+                                type="button" 
+                                onClick={() => removeSize(i)}
+                                className="text-red-500 hover:text-red-700"
+                                aria-label={`Remove ${size}`}
+                              >
+                                <X size={14} />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end gap-2 pt-4">
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            setShowEditProduct(false);
+                            setEditingProduct(null);
+                            resetProductForm();
+                          }}
+                          className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          type="submit" 
+                          className="bg-hustlehub-blue text-white px-4 py-2 rounded hover:bg-hustlehub-blue/90"
+                        >
+                          Update Product
                         </button>
                       </div>
                     </form>

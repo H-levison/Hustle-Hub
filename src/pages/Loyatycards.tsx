@@ -1,8 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigation } from '../components/Navigation';
 import { Star, Gift, CreditCard, Award, TrendingUp, ArrowRight, ShoppingBag, User, Crown, Zap } from 'lucide-react';
 
-// Mock data for demonstration
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+interface LoyaltyCard {
+  id: string;
+  business_id: string;
+  business_name: string;
+  business_logo: string;
+  business_category: string;
+  points: number;
+  current_tier: string;
+  total_spent: number;
+  orders_count: number;
+  last_order_date: string;
+  current_tier_data: {
+    tier: string;
+    discount: number;
+    minSpend: number;
+    color: string;
+  } | null;
+  next_tier_data: {
+    tier: string;
+    discount: number;
+    minSpend: number;
+    color: string;
+  } | null;
+  available_tiers: Array<{
+    tier: string;
+    discount: number;
+    minSpend: number;
+    color: string;
+  }>;
+}
+
+// Mock data for demonstration (fallback)
 const mockLoyaltyCards = [
   {
     businessName: "Fresh Bakes by Amina",
@@ -84,9 +117,26 @@ const tiers = [
 const currentTier = "Gold";
 const totalPoints = 1250;
 
-const LoyaltyCard = ({ businessName, points, discountLevel, pointsGoal, icon, category, vendorTier, vendorPoints, nextTierPoints, gradient }) => {
-  const progress = (points / pointsGoal) * 100;
-  const tierProgress = (vendorPoints / nextTierPoints) * 100;
+const LoyaltyCard = ({ card }: { card: LoyaltyCard }) => {
+  const progress = card.current_tier_data ? (card.points / card.current_tier_data.minSpend) * 100 : 0;
+  const tierProgress = card.next_tier_data ? (card.points / card.next_tier_data.minSpend) * 100 : 0;
+  
+  // Get business icon based on category
+  const getBusinessIcon = (category: string) => {
+    const categoryIcons: {[key: string]: string} = {
+      'food': '🍽️',
+      'clothing': '👕',
+      'electronics': '📱',
+      'beauty': '💄',
+      'jewelry': '💎',
+      'bakery': '🧁',
+      'default': '🏪'
+    };
+    return categoryIcons[category.toLowerCase()] || categoryIcons.default;
+  };
+  
+  const icon = getBusinessIcon(card.business_category);
+  const gradient = card.current_tier_data?.color || 'from-blue-500 to-purple-600';
   
   return (
     <div className="group cursor-pointer">
@@ -100,13 +150,13 @@ const LoyaltyCard = ({ businessName, points, discountLevel, pointsGoal, icon, ca
             <div className="flex items-center justify-between mb-4">
               <div className="text-4xl">{icon}</div>
               <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                <span className="text-xs font-bold">{vendorTier}</span>
+                <span className="text-xs font-bold">{card.current_tier}</span>
               </div>
             </div>
-            <h3 className="text-xl font-bold mb-1">{businessName}</h3>
-            <p className="text-white/80 text-sm mb-4">{category}</p>
+            <h3 className="text-xl font-bold mb-1">{card.business_name}</h3>
+            <p className="text-white/80 text-sm mb-4">{card.business_category}</p>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold">{discountLevel}%</span>
+              <span className="text-3xl font-bold">{card.current_tier_data?.discount || 0}%</span>
               <span className="text-white/80 text-sm">Discount</span>
             </div>
           </div>
@@ -118,7 +168,7 @@ const LoyaltyCard = ({ businessName, points, discountLevel, pointsGoal, icon, ca
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">Loyalty Points</span>
-              <span className="text-sm font-bold text-gray-900">{points} / {pointsGoal}</span>
+              <span className="text-sm font-bold text-gray-900">{card.points} / {card.current_tier_data?.minSpend || 0}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div 
@@ -135,7 +185,7 @@ const LoyaltyCard = ({ businessName, points, discountLevel, pointsGoal, icon, ca
           <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Vendor Progress</span>
-              <span className="text-xs text-gray-500">{vendorPoints} / {nextTierPoints}</span>
+              <span className="text-xs text-gray-500">{card.points} / {card.next_tier_data?.minSpend || card.current_tier_data?.minSpend || 0}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
@@ -157,6 +207,44 @@ const LoyaltyCard = ({ businessName, points, discountLevel, pointsGoal, icon, ca
 };
 
 const LoyaltyCards = () => {
+  const [loyaltyCards, setLoyaltyCards] = useState<LoyaltyCard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchLoyaltyCards();
+  }, []);
+
+  const fetchLoyaltyCards = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoyaltyCards([]);
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`${API_BASE}/user-loyalty`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setLoyaltyCards(data);
+      } else {
+        setLoyaltyCards([]);
+      }
+    } catch (err) {
+      console.error('Error fetching loyalty cards:', err);
+      setError('Failed to load loyalty cards');
+      setLoyaltyCards([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const currentTierData = tiers.find(tier => tier.name === currentTier);
   const nextTierData = tiers[tiers.findIndex(tier => tier.name === currentTier) + 1];
 
@@ -265,12 +353,12 @@ const LoyaltyCards = () => {
             </p>
           </div>
           
-          {mockLoyaltyCards.length > 0 ? (
+          {loyaltyCards.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mockLoyaltyCards.map((card, idx) => (
+              {loyaltyCards.map((card, idx) => (
                 <LoyaltyCard
-                  key={idx}
-                  {...card}
+                  key={card.id}
+                  card={card}
                 />
               ))}
             </div>

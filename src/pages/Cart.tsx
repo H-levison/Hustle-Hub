@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navigation } from "../components/Navigation";
 import { useCart, VendorGroup } from '../CartContext';
 import { Trash2, ShoppingBag } from 'lucide-react';
+import LoyaltyCardSelector from '../components/LoyaltyCardSelector';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -18,7 +19,13 @@ interface CartItem {
   vendorWhatsapp: string;
 }
 
-const CartItems = () => {
+const CartItems = ({ 
+  vendorDiscounts, 
+  setVendorDiscounts 
+}: { 
+  vendorDiscounts: {[key: string]: {discount: number, percentage: number, finalTotal: number}};
+  setVendorDiscounts: React.Dispatch<React.SetStateAction<{[key: string]: {discount: number, percentage: number, finalTotal: number}}>>;
+}) => {
   const { cart, removeFromCart, clearVendorItems, getVendorGroups } = useCart();
   
   if (cart.length === 0) {
@@ -84,6 +91,18 @@ const CartItems = () => {
             ))}
           </ul>
 
+          {/* Loyalty Card Selector */}
+          <LoyaltyCardSelector
+            businessId={vendorGroup.businessId}
+            orderTotal={vendorGroup.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}
+            onDiscountApplied={(discount, percentage, finalTotal) => {
+              setVendorDiscounts(prev => ({
+                ...prev,
+                [vendorGroup.businessId]: { discount, percentage, finalTotal }
+              }));
+            }}
+          />
+
           {/* Vendor Subtotal */}
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="flex justify-between items-center">
@@ -92,6 +111,22 @@ const CartItems = () => {
                 RWF{vendorGroup.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}
               </span>
             </div>
+            {vendorDiscounts[vendorGroup.businessId] && (
+              <div className="mt-2 pt-2 border-t border-gray-100">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-green-600">Loyalty Discount ({vendorDiscounts[vendorGroup.businessId].percentage}%):</span>
+                  <span className="text-green-600 font-semibold">
+                    -RWF{vendorDiscounts[vendorGroup.businessId].discount.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="font-semibold">Final Total:</span>
+                  <span className="font-bold text-lg text-green-600">
+                    RWF{vendorDiscounts[vendorGroup.businessId].finalTotal.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ))}
@@ -107,14 +142,19 @@ const CouponCode = () => (
   </div>
 );
 
-const OrderSummary = () => {
+const OrderSummary = ({ vendorDiscounts }: { vendorDiscounts: {[key: string]: {discount: number, percentage: number, finalTotal: number}} }) => {
   const { cart, getVendorGroups } = useCart();
   const vendorGroups = getVendorGroups();
   
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const delivery = 0; // Set delivery fee to zero
   const tax = 0; // Set tax to zero
-  const total = subtotal + delivery + tax;
+  
+  // Calculate total loyalty discounts
+  const totalLoyaltyDiscount = Object.values(vendorDiscounts).reduce((sum, discount) => sum + discount.discount, 0);
+  
+  // Calculate final total with loyalty discounts
+  const total = subtotal + delivery + tax - totalLoyaltyDiscount;
   
   return (
     <div className="bg-white rounded-xl shadow p-4 mb-4">
@@ -134,9 +174,18 @@ const OrderSummary = () => {
       )}
       
       <div className="flex justify-between text-sm mb-1"><span>Subtotal</span><span>RWF{subtotal.toLocaleString()}</span></div>
+      {totalLoyaltyDiscount > 0 && (
+        <div className="flex justify-between text-sm mb-1">
+          <span className="text-green-600">Loyalty Discounts</span>
+          <span className="text-green-600">-RWF{totalLoyaltyDiscount.toLocaleString()}</span>
+        </div>
+      )}
       <div className="flex justify-between text-sm mb-1"><span>Delivery</span><span>RWF{delivery.toLocaleString()}</span></div>
       <div className="flex justify-between text-sm mb-1"><span>Tax</span><span>RWF{tax.toLocaleString()}</span></div>
-      <div className="flex justify-between font-bold text-lg mt-2"><span>Total</span><span>RWF{total.toLocaleString()}</span></div>
+      <div className="flex justify-between font-bold text-lg mt-2">
+        <span>Total</span>
+        <span className={totalLoyaltyDiscount > 0 ? "text-green-600" : ""}>RWF{total.toLocaleString()}</span>
+      </div>
     </div>
   );
 };
@@ -360,18 +409,20 @@ const PaymentMethod = () => {
 };
 
 const Cart = () => {
+  const [vendorDiscounts, setVendorDiscounts] = useState<{[key: string]: {discount: number, percentage: number, finalTotal: number}}>({});
+
   return (
     <>
     <Navigation />
     <div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Cart Items Section */}
       <div className="lg:col-span-2">
-        <CartItems />
+        <CartItems vendorDiscounts={vendorDiscounts} setVendorDiscounts={setVendorDiscounts} />
       </div>
       {/* Sidebar: Coupon, Order Summary, Payment */}
       <div className="lg:col-span-1 space-y-6">
         <CouponCode />
-        <OrderSummary />
+        <OrderSummary vendorDiscounts={vendorDiscounts} />
         <PaymentMethod />
       </div>
     </div>

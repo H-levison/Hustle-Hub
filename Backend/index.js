@@ -10,6 +10,7 @@ const userBecomeVendorRoute = require("./routes/user")
 const BusinessesRoute = require("./routes/businesses")
 const productsRoute = require("./routes/products");
 const loyaltyRoute = require("./routes/loyalty");
+const userLoyaltyRoute = require("./routes/userLoyalty");
 const ordersRoute = require("./routes/orders");
 
 const app = express();
@@ -49,6 +50,7 @@ app.use("/user", userBecomeVendorRoute);
 app.use("/businesses", BusinessesRoute);
 app.use("/products", productsRoute);
 app.use("/loyalty-cards", loyaltyRoute);
+app.use("/user-loyalty", userLoyaltyRoute);
 app.use("/orders", ordersRoute);
 
 app.listen(PORT, () => {

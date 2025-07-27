@@ -100,28 +100,27 @@ const RangeFilter: React.FC<RangeFilterProps> = ({
 
 interface ProductFilterSidebarProps {
   onFilterChange: (filters: any) => void;
+  categories: Array<{id: string, name: string}>;
+  selectedCategory: string;
+  onCategoryChange: (category: string) => void;
+  priceRange: {min: number, max: number};
+  onPriceRangeChange: (range: {min: number, max: number}) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  activeTab: 'products' | 'stores';
 }
 
-const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({ onFilterChange }) => {
-  const [categoryFilters, setCategoryFilters] = React.useState({
-    food: false,
-    clothing: false,
-    electronics: false,
-    services: false,
-    handmade: false,
-    books: false,
-    beauty: false,
-    home: false,
-  });
-
-  const [brandFilters, setBrandFilters] = React.useState({
-    adidas: false,
-    nike: false,
-    puma: false,
-    reebok: false,
-    newBalance: false,
-  });
-
+const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({ 
+  onFilterChange, 
+  categories, 
+  selectedCategory, 
+  onCategoryChange,
+  priceRange,
+  onPriceRangeChange,
+  searchQuery,
+  onSearchChange,
+  activeTab
+}) => {
   const [sizeFilters, setSizeFilters] = React.useState({
     s: false,
     m: false,
@@ -129,79 +128,81 @@ const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({ onFilterCha
     xl: false,
   });
 
-  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 100]);
-
-  const handleCategoryChange = (id: string) => {
-    const newFilters = { ...categoryFilters, [id]: !categoryFilters[id as keyof typeof categoryFilters] };
-    setCategoryFilters(newFilters);
-    onFilterChange({ ...brandFilters, ...newFilters, priceRange });
-  };
-
-  const handleBrandChange = (id: string) => {
-    const newFilters = { ...brandFilters, [id]: !brandFilters[id as keyof typeof brandFilters] };
-    setBrandFilters(newFilters);
-    onFilterChange({ ...categoryFilters, ...newFilters, priceRange });
+  const handleCategoryChange = (categoryName: string) => {
+    onCategoryChange(categoryName === selectedCategory ? '' : categoryName);
   };
 
   const handleSizeChange = (id: string) => {
     const newFilters = { ...sizeFilters, [id]: !sizeFilters[id as keyof typeof sizeFilters] };
     setSizeFilters(newFilters);
-    onFilterChange({ ...categoryFilters, ...brandFilters, ...newFilters, priceRange });
+    onFilterChange({ selectedCategory, priceRange, sizeFilters: newFilters });
   };
 
   const handlePriceChange = (value: [number, number]) => {
-    setPriceRange(value);
-    onFilterChange({ ...categoryFilters, ...brandFilters, ...sizeFilters, priceRange: value });
+    const newRange = { min: value[0], max: value[1] };
+    onPriceRangeChange(newRange);
+    onFilterChange({ selectedCategory, priceRange: newRange, sizeFilters });
   };
 
   return (
     <div className="w-full max-w-xs bg-white p-4 rounded-lg border">
-      <h2 className="text-lg font-semibold mb-4">Product Categories</h2>
+      <h2 className="text-lg font-semibold mb-4">
+        {activeTab === 'products' ? 'Product Filters' : 'Store Filters'}
+      </h2>
       
-      <FilterSection title="Categories">
-        <CheckboxFilter id="food" label="Food" count={12} checked={categoryFilters.food} onChange={handleCategoryChange} />
-        <CheckboxFilter id="clothing" label="Clothing" count={8} checked={categoryFilters.clothing} onChange={handleCategoryChange} />
-        <CheckboxFilter id="electronics" label="Electronics" count={15} checked={categoryFilters.electronics} onChange={handleCategoryChange} />
-        <CheckboxFilter id="services" label="Services" count={6} checked={categoryFilters.services} onChange={handleCategoryChange} />
-        <CheckboxFilter id="handmade" label="Handmade" count={4} checked={categoryFilters.handmade} onChange={handleCategoryChange} />
-        <CheckboxFilter id="books" label="Books" count={9} checked={categoryFilters.books} onChange={handleCategoryChange} />
-        <CheckboxFilter id="beauty" label="Beauty" count={7} checked={categoryFilters.beauty} onChange={handleCategoryChange} />
-        <CheckboxFilter id="home" label="Home" count={5} checked={categoryFilters.home} onChange={handleCategoryChange} />
-      </FilterSection>
-
-      <FilterSection title="Brands">
-        <CheckboxFilter id="adidas" label="Adidas" count={5} checked={brandFilters.adidas} onChange={handleBrandChange} />
-        <CheckboxFilter id="nike" label="Nike" count={7} checked={brandFilters.nike} onChange={handleBrandChange} />
-        <CheckboxFilter id="puma" label="Puma" count={3} checked={brandFilters.puma} onChange={handleBrandChange} />
-        <CheckboxFilter id="reebok" label="Reebok" count={2} checked={brandFilters.reebok} onChange={handleBrandChange} />
-        <CheckboxFilter id="newBalance" label="New Balance" count={4} checked={brandFilters.newBalance} onChange={handleBrandChange} />
-      </FilterSection>
-
-      <FilterSection title="Size">
-        <div className="grid grid-cols-4 gap-2">
-          {['S', 'M', 'L', 'XL'].map((size) => {
-            const id = size.toLowerCase();
-            return (
-              <button
-                key={size}
-                className={`border rounded-md py-1 text-sm ${sizeFilters[id as keyof typeof sizeFilters] ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 text-gray-700'}`}
-                onClick={() => handleSizeChange(id)}
-              >
-                {size}
-              </button>
-            );
-          })}
-        </div>
-      </FilterSection>
-
-      <FilterSection title="Price Range">
-        <RangeFilter
-          min={0}
-          max={100}
-          value={priceRange}
-          onChange={handlePriceChange}
+      <FilterSection title="Search">
+        <input
+          type="text"
+          placeholder={activeTab === 'products' ? "Search products..." : "Search stores..."}
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </FilterSection>
+      
+      <FilterSection title="Categories">
+        {categories.map((category) => (
+          <CheckboxFilter 
+            key={category.id}
+            id={category.id} 
+            label={category.name} 
+            checked={selectedCategory === category.name}
+            onChange={() => handleCategoryChange(category.name)} 
+          />
+        ))}
+      </FilterSection>
+
+      {/* Only show product-specific filters when on products tab */}
+      {activeTab === 'products' && (
+        <>
+          <FilterSection title="Size">
+            <div className="grid grid-cols-4 gap-2">
+              {['S', 'M', 'L', 'XL'].map((size) => {
+                const id = size.toLowerCase();
+                return (
+                  <button
+                    key={size}
+                    className={`border rounded-md py-1 text-sm ${sizeFilters[id as keyof typeof sizeFilters] ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 text-gray-700'}`}
+                    onClick={() => handleSizeChange(id)}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterSection>
+
+          <FilterSection title="Price Range">
+            <RangeFilter
+              min={0}
+              max={1000000}
+              value={[priceRange.min, priceRange.max]}
+              onChange={handlePriceChange}
+              formatValue={(val) => `RWF${val.toLocaleString()}`}
+            />
+          </FilterSection>
+        </>
+      )}
 
       <button className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors">
         Apply Filters

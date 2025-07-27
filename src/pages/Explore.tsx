@@ -39,15 +39,22 @@ interface Store {
 const Explore = () => {
   const [searchParams] = useSearchParams();
   const categoryFilter = searchParams.get('category');
+  const searchFilter = searchParams.get('search');
+  const tabFilter = searchParams.get('tab');
   
-  const [activeTab, setActiveTab] = useState<'products' | 'stores'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'stores'>(
+    (tabFilter as 'products' | 'stores') || 'products'
+  );
   const [productList, setProductList] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
   const [filteredStores, setFilteredStores] = useState<Store[]>([]);
   const [activeFilter, setActiveFilter] = useState<string | null>(categoryFilter);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchFilter || "");
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryFilter || '');
+  const [priceRange, setPriceRange] = useState<{min: number, max: number}>({min: 0, max: 1000000});
+  const [categories, setCategories] = useState<Array<{id: string, name: string}>>([]);
 
   // Fetch products
   useEffect(() => {
@@ -102,6 +109,23 @@ const Explore = () => {
     fetchProducts();
   }, []);
 
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/categories`);
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   // Fetch stores
   useEffect(() => {
     const fetchStores = async () => {
@@ -147,33 +171,56 @@ const Explore = () => {
     fetchStores();
   }, []);
 
-  // Filter products based on category
+  // Filter products based on category, search, and price range
   useEffect(() => {
-    if (categoryFilter) {
-      const filtered = productList.filter(product => 
-        product.category?.toLowerCase().includes(categoryFilter.toLowerCase())
-      );
-      setFilteredProducts(filtered);
-      setActiveFilter(categoryFilter);
-    } else {
-      setFilteredProducts(productList);
-      setActiveFilter(null);
-    }
-  }, [productList, categoryFilter]);
+    let filtered = productList;
 
-  // Filter stores based on category
-  useEffect(() => {
-    if (categoryFilter) {
-      const filtered = stores.filter(store => 
-        store.category?.toLowerCase().includes(categoryFilter.toLowerCase())
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter(product => 
+        product.category?.toLowerCase().includes(selectedCategory.toLowerCase())
       );
-      setFilteredStores(filtered);
-      setActiveFilter(categoryFilter);
-    } else {
-      setFilteredStores(stores);
-      setActiveFilter(null);
     }
-  }, [stores, categoryFilter]);
+
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(product => 
+        product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.business?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Filter by price range
+    filtered = filtered.filter(product => 
+      product.price >= priceRange.min && product.price <= priceRange.max
+    );
+
+    setFilteredProducts(filtered);
+    setActiveFilter(selectedCategory || searchQuery || null);
+  }, [productList, selectedCategory, searchQuery, priceRange]);
+
+  // Filter stores based on category and search
+  useEffect(() => {
+    let filtered = stores;
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter(store => 
+        store.category?.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(store => 
+        store.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        store.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredStores(filtered);
+  }, [stores, selectedCategory, searchQuery]);
 
   const handleFavoriteToggle = (productId: string) => {
     setProductList(prev => 
@@ -187,7 +234,19 @@ const Explore = () => {
 
   const handleFilterChange = (filters: any) => {
     console.log('Filters changed:', filters);
-    // Implement filtering logic here
+    // Filtering is now handled by the useEffect hooks
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  const handlePriceRangeChange = (range: {min: number, max: number}) => {
+    setPriceRange(range);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
   };
 
   // Transform products to match ProductGrid expected format
@@ -240,7 +299,17 @@ const Explore = () => {
           <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar - Hidden on mobile, toggleable */}
             <div className="hidden md:block md:w-1/4 lg:w-1/5 flex-shrink-0">
-              <ProductFilterSidebar onFilterChange={handleFilterChange} />
+              <ProductFilterSidebar 
+                onFilterChange={handleFilterChange}
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={handleCategoryChange}
+                priceRange={priceRange}
+                onPriceRangeChange={handlePriceRangeChange}
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+                activeTab={activeTab}
+              />
             </div>
             
             {/* Mobile filter toggle button */}
@@ -274,12 +343,56 @@ const Explore = () => {
 
               {/* Content based on active tab */}
               {activeTab === 'products' ? (
-                <ProductGrid 
-                  products={transformedProducts} 
-                  onFavoriteToggle={handleFavoriteToggle} 
-                />
+                <div>
+                  {/* Filter summary and clear button */}
+                  {(selectedCategory || searchQuery || priceRange.min > 0 || priceRange.max < 1000000) && (
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="text-sm text-gray-600">
+                        {filteredProducts.length} products found
+                        {selectedCategory && <span className="ml-2">• Category: {selectedCategory}</span>}
+                        {searchQuery && <span className="ml-2">• Search: "{searchQuery}"</span>}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedCategory('');
+                          setSearchQuery('');
+                          setPriceRange({min: 0, max: 1000000});
+                        }}
+                        className="text-sm text-indigo-600 hover:text-indigo-800"
+                      >
+                        Clear all filters
+                      </button>
+                    </div>
+                  )}
+                  
+                  <ProductGrid 
+                    products={transformedProducts} 
+                    onFavoriteToggle={handleFavoriteToggle} 
+                  />
+                </div>
               ) : (
                 <div className="w-full">
+                  {/* Filter summary and clear button for stores */}
+                  {(selectedCategory || searchQuery) && (
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="text-sm text-gray-600">
+                        {filteredStores.length} stores found
+                        {selectedCategory && <span className="ml-2">• Category: {selectedCategory}</span>}
+                        {searchQuery && <span className="ml-2">• Search: "{searchQuery}"</span>}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedCategory('');
+                          setSearchQuery('');
+                          setPriceRange({min: 0, max: 1000000});
+                        }}
+                        className="text-sm text-indigo-600 hover:text-indigo-800"
+                      >
+                        Clear all filters
+                      </button>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-center mb-6">
                     <div>
                       <p className="text-sm text-gray-500">
@@ -296,7 +409,9 @@ const Explore = () => {
                         </Link>
                       ))
                     ) : (
-                      <p className="col-span-full text-center text-gray-500 py-8">No stores available</p>
+                      <p className="col-span-full text-center text-gray-500 py-8">
+                        {searchQuery || selectedCategory ? 'No stores match your filters' : 'No stores available'}
+                      </p>
                     )}
                   </div>
                 </div>

@@ -7,7 +7,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "./ui/navigation-menu";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { ProfileDropdown } from "./ProfileDropdown";
 import SearchBar from "../components/SearchBar";
 import { useCart } from "../CartContext";
@@ -16,6 +16,7 @@ import { useCart } from "../CartContext";
 export const Navigation = (): JSX.Element => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { cart } = useCart();
+  const navigate = useNavigate();
   
   // Check if user is logged in by looking for token in localStorage
   const isLoggedIn = !!localStorage.getItem('token');
@@ -129,19 +130,36 @@ export const Navigation = (): JSX.Element => {
           </button>
           
           {/* Mobile Search Bar */}
-          <div className="relative mb-4">
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const searchQuery = formData.get('search') as string;
+            if (searchQuery.trim()) {
+              // Check if the search query contains store-related keywords
+              const storeKeywords = ['store', 'shop', 'business', 'vendor', 'seller'];
+              const isStoreSearch = storeKeywords.some(keyword => 
+                searchQuery.toLowerCase().includes(keyword)
+              );
+              
+              // Navigate to explore with appropriate tab
+              const tab = isStoreSearch ? 'stores' : 'products';
+              navigate(`/explore?search=${encodeURIComponent(searchQuery.trim())}&tab=${tab}`);
+              setMobileOpen(false);
+            }
+          }} className="relative mb-4">
             <input
               type="text"
+              name="search"
               placeholder="Search for items..."
               className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg bg-gray-50 text-sm font-['Inter',Helvetica] focus:outline-none focus:ring-2 focus:ring-[#0075F3] focus:border-transparent"
             />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 hover:text-gray-600">
                 <circle cx="11" cy="11" r="8"/>
                 <path d="m21 21-4.35-4.35"/>
               </svg>
-            </div>
-          </div>
+            </button>
+          </form>
           {/* Nav links */}
           <div className="flex flex-col gap-4 mt-2">
             {navItems.map((item, index) => (
