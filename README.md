@@ -1,5 +1,4 @@
 # Hustle-Hub
-
 HustleHub is a digital platform designed to help student entrepreneurs at the African Leadership University promote and grow their businesses to showcase, discover, and engage with student-operated businesses within their campus community. Right now, talented students offering valuable services are essentially invisible to most of their potential customers. The platform will serve as a comprehensive hub where student entrepreneurs can establish their digital presence and potential customers can easily browse and purchase products and services offered by their peers by replacing outdated promotion methods like WhatsApp broadcasts and campus flyers with a modern, streamlined solution.
 ---
 
