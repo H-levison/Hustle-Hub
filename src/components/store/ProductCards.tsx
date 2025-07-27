@@ -74,7 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
               <span>4.5</span>
             </div>
           </div>
-          <p className="text-sm text-gray-500 mb-1 line-clamp-1">{product.category || 'Uncategorized'}</p>
+          <p className="text-sm text-gray-500 mb-1 line-clamp-1">{product.businessName || 'Unknown Store'}</p>
         </Link>
         <div className="flex justify-between items-center">
           <Link to={`/product/${product.id}`} className="cursor-pointer">
@@ -106,7 +106,7 @@ const ProductCards = () => {
           
           // Get category names and business info for products
           const productsWithDetails = await Promise.all(
-            data.slice(0, 6).map(async (product: Product) => {
+            data.slice(0, 5).map(async (product: Product) => {
               try {
                 // Get category name
                 const categoryResponse = await fetch(`http://localhost:5000/categories/${product.category_id}`);
@@ -180,8 +180,8 @@ const ProductCards = () => {
     return (
       <section className="px-2 sm:px-4 md:mx-24 py-6 sm:py-8">
         <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Featured Products</h2>
-        <div className="flex gap-8 md:flex-wrap overflow-x-auto no-scrollbar">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div className="flex gap-8 md:flex-wrap overflow-x-auto no-scrollbar">
+            {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="w-64 flex-shrink-0">
               <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
               <div className="pt-3 px-1">
