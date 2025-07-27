@@ -14,11 +14,21 @@ export interface CartItem {
   vendorWhatsapp: string;
 }
 
+// Define vendor group structure
+export interface VendorGroup {
+  businessId: string;
+  vendorName: string;
+  vendorWhatsapp: string;
+  items: CartItem[];
+}
+
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
+  clearVendorItems: (businessId: string) => void;
+  getVendorGroups: () => VendorGroup[];
   showNotification: boolean;
   notificationMessage: string;
 }
@@ -38,23 +48,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (item: CartItem) => {
     setCart(prev => {
-      // If cart is not empty and businessId is different, clear cart first
-      if (prev.length > 0 && prev[0].businessId !== item.businessId) {
-        setNotificationMessage(`Cart cleared! Item from ${item.vendorName} added.`);
-        setShowNotification(true);
-        setTimeout(() => setShowNotification(false), 3000);
-        return [item];
-      }
       // If item with same id, color, and size exists, increase quantity
       const existing = prev.find(
-        i => i.id === item.id && i.color === item.color && i.size === item.size
+        i => i.id === item.id && i.color === item.color && i.size === item.size && i.businessId === item.businessId
       );
       if (existing) {
         setNotificationMessage('Item quantity updated in cart!');
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000);
         return prev.map(i =>
-          i.id === item.id && i.color === item.color && i.size === item.size
+          i.id === item.id && i.color === item.color && i.size === item.size && i.businessId === item.businessId
             ? { ...i, quantity: i.quantity + item.quantity }
             : i
         );
@@ -72,12 +75,36 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => setCart([]);
 
+  const clearVendorItems = (businessId: string) => {
+    setCart(prev => prev.filter(item => item.businessId !== businessId));
+  };
+
+  const getVendorGroups = (): VendorGroup[] => {
+    const groups: { [key: string]: VendorGroup } = {};
+    
+    cart.forEach(item => {
+      if (!groups[item.businessId]) {
+        groups[item.businessId] = {
+          businessId: item.businessId,
+          vendorName: item.vendorName,
+          vendorWhatsapp: item.vendorWhatsapp,
+          items: []
+        };
+      }
+      groups[item.businessId].items.push(item);
+    });
+    
+    return Object.values(groups);
+  };
+
   return (
     <CartContext.Provider value={{ 
       cart, 
       addToCart, 
       removeFromCart, 
       clearCart, 
+      clearVendorItems,
+      getVendorGroups,
       showNotification, 
       notificationMessage 
     }}>

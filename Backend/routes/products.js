@@ -60,9 +60,6 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
-
-
 // GET /products
 router.get("/", async (req, res) => {
     try {
@@ -123,37 +120,35 @@ router.get("/", async (req, res) => {
       res.status(500).json({ error: "Server error" });
     }
   });
-  
-  module.exports = router;
 
-// DELETE /products/:id
-router.delete("/:id", authMiddleware, async (req, res) => {
-  const { id } = req.params;
-  console.log("Product deletion attempt by:", req.user.email);
-
+// GET /products/vendor - Get products for the current vendor (MUST BE BEFORE /:id route)
+router.get("/vendor", authMiddleware, async (req, res) => {
   try {
-    // Only vendors can delete products
+    // Only vendors can access this endpoint
     if (!req.user.is_provider) {
-      return res.status(403).json({ error: "Only vendors can delete products" });
+      return res.status(403).json({ error: "Only vendors can access this endpoint" });
     }
 
-    // Find the product and check if it belongs to the current vendor
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
+    const products = await Product.find({ vendor_id: req.user._id });
 
-    // Check if the product belongs to the current vendor
-    if (product.vendor_id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: "You can only delete your own products" });
-    }
+    const response = products.map((p) => ({
+      id: p._id,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      category_id: p.category_id,
+      business_id: p.business_id,
+      vendor_id: p.vendor_id,
+      image: p.image,
+      stock: p.stock,
+      colors: p.colors,
+      sizes: p.sizes,
+    }));
 
-    await Product.findByIdAndDelete(id);
-
-    return res.status(200).json({ message: "Product deleted successfully" });
+    res.json(response);
   } catch (err) {
-    console.error("Error deleting product:", err);
-    return res.status(500).json({ error: "Server error" });
+    console.error("Error fetching vendor products:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -186,34 +181,34 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// GET /products/vendor - Get products for the current vendor
-router.get("/vendor", authMiddleware, async (req, res) => {
+// DELETE /products/:id
+router.delete("/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  console.log("Product deletion attempt by:", req.user.email);
+
   try {
-    // Only vendors can access this endpoint
+    // Only vendors can delete products
     if (!req.user.is_provider) {
-      return res.status(403).json({ error: "Only vendors can access this endpoint" });
+      return res.status(403).json({ error: "Only vendors can delete products" });
     }
 
-    const products = await Product.find({ vendor_id: req.user._id });
+    // Find the product and check if it belongs to the current vendor
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
 
-    const response = products.map((p) => ({
-      id: p._id,
-      name: p.name,
-      description: p.description,
-      price: p.price,
-      category_id: p.category_id,
-      business_id: p.business_id,
-      vendor_id: p.vendor_id,
-      image: p.image,
-      stock: p.stock,
-      colors: p.colors,
-      sizes: p.sizes,
-    }));
+    // Check if the product belongs to the current vendor
+    if (product.vendor_id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: "You can only delete your own products" });
+    }
 
-    res.json(response);
+    await Product.findByIdAndDelete(id);
+
+    return res.status(200).json({ message: "Product deleted successfully" });
   } catch (err) {
-    console.error("Error fetching vendor products:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error deleting product:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 });
 

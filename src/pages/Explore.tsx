@@ -5,6 +5,7 @@ import ProductFilterSidebar from "../components/explore/ProductFilterSidebar";
 import ProductGrid from "../components/explore/ProductGrid";
 import { SlidersHorizontal, Search } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -25,20 +26,33 @@ interface Product {
   isFavorite?: boolean;
 }
 
+interface Store {
+  id: string;
+  name: string;
+  description: string;
+  logo: string;
+  whatsapp: string;
+  category_id: string;
+  category?: string;
+}
+
 const Explore = () => {
   const [searchParams] = useSearchParams();
   const categoryFilter = searchParams.get('category');
   
+  const [activeTab, setActiveTab] = useState<'products' | 'stores'>('products');
   const [productList, setProductList] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
+  const [filteredStores, setFilteredStores] = useState<Store[]>([]);
   const [activeFilter, setActiveFilter] = useState<string | null>(categoryFilter);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        setLoading(true);
         const response = await fetch(`${API_BASE}/products`);
         if (response.ok) {
           const data = await response.json();
@@ -82,12 +96,55 @@ const Explore = () => {
         }
       } catch (error) {
         console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Fetch stores
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/businesses`);
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Get category names for stores
+          const storesWithDetails = await Promise.all(
+            data.map(async (store: Store) => {
+              try {
+                // Get category name
+                const categoryResponse = await fetch(`${API_BASE}/categories/${store.category_id}`);
+                let categoryName = 'Uncategorized';
+                if (categoryResponse.ok) {
+                  const category = await categoryResponse.json();
+                  categoryName = category.name;
+                }
+
+                return {
+                  ...store,
+                  category: categoryName
+                };
+              } catch (err) {
+                return {
+                  ...store,
+                  category: 'Uncategorized'
+                };
+              }
+            })
+          );
+          
+          setStores(storesWithDetails);
+        }
+      } catch (error) {
+        console.error('Error fetching stores:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchStores();
   }, []);
 
   // Filter products based on category
@@ -104,10 +161,24 @@ const Explore = () => {
     }
   }, [productList, categoryFilter]);
 
-  const handleFavoriteToggle = (productId: number) => {
+  // Filter stores based on category
+  useEffect(() => {
+    if (categoryFilter) {
+      const filtered = stores.filter(store => 
+        store.category?.toLowerCase().includes(categoryFilter.toLowerCase())
+      );
+      setFilteredStores(filtered);
+      setActiveFilter(categoryFilter);
+    } else {
+      setFilteredStores(stores);
+      setActiveFilter(null);
+    }
+  }, [stores, categoryFilter]);
+
+  const handleFavoriteToggle = (productId: string) => {
     setProductList(prev => 
       prev.map(product => 
-        product.id === productId.toString()
+        product.id === productId
           ? { ...product, isFavorite: !product.isFavorite }
           : product
       )
@@ -121,7 +192,7 @@ const Explore = () => {
 
   // Transform products to match ProductGrid expected format
   const transformedProducts = filteredProducts.map(product => ({
-    id: parseInt(product.id),
+    id: product.id, // Keep as string, don't convert to integer
     images: [product.image || "https://via.placeholder.com/400x400?text=Product+Image"],
     title: product.name,
     location: product.business || 'Unknown Store',
@@ -140,7 +211,7 @@ const Explore = () => {
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-hustlehub-blue mx-auto"></div>
-            <p className="mt-4 text-lg">Loading products...</p>
+            <p className="mt-4 text-lg">Loading...</p>
           </div>
         </div>
       </>
@@ -151,9 +222,6 @@ const Explore = () => {
     <>
       <Navigation />
       
-      {/* Search Bar */}
-      
-      
       {/* Main Content */}
       <section className="py-8">
         <div className="container mx-auto px-4">
@@ -161,10 +229,10 @@ const Explore = () => {
           {categoryFilter && (
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                {categoryFilter} Products
+                {categoryFilter} {activeTab === 'products' ? 'Products' : 'Stores'}
               </h1>
               <p className="text-gray-600">
-                Showing {filteredProducts.length} products in {categoryFilter}
+                Showing {activeTab === 'products' ? filteredProducts.length : filteredStores.length} {activeTab} in {categoryFilter}
               </p>
             </div>
           )}
@@ -186,18 +254,95 @@ const Explore = () => {
               </button>
             </div>
             
-            {/* Product Grid */}
+            {/* Content Area */}
             <div className="flex-1">
-              <ProductGrid 
-                products={transformedProducts} 
-                onFavoriteToggle={handleFavoriteToggle} 
-              />
+              {/* Tab Navigation */}
+              <div className="flex border-b mb-6">
+                <button
+                  className={`px-4 py-2 font-medium text-sm ${activeTab === 'products' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setActiveTab('products')}
+                >
+                  Products
+                </button>
+                <button
+                  className={`px-4 py-2 font-medium text-sm ${activeTab === 'stores' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setActiveTab('stores')}
+                >
+                  Stores
+                </button>
+              </div>
+
+              {/* Content based on active tab */}
+              {activeTab === 'products' ? (
+                <ProductGrid 
+                  products={transformedProducts} 
+                  onFavoriteToggle={handleFavoriteToggle} 
+                />
+              ) : (
+                <div className="w-full">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        Showing 1-{filteredStores.length} of {filteredStores.length} stores
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {filteredStores.length > 0 ? (
+                      filteredStores.map(store => (
+                        <Link key={store.id} to={`/shop/${store.id}`}>
+                          <StoreCard store={store} />
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="col-span-full text-center text-gray-500 py-8">No stores available</p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
        
     </>
+  );
+};
+
+// Store Card Component
+interface StoreCardProps {
+  store: Store;
+}
+
+const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
+  return (
+    <div className="relative h-56 sm:h-72 md:h-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer">
+      <img
+        src={store.logo || "https://via.placeholder.com/400x300?text=Store+Logo"}
+        alt={store.name}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Store+Logo';
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+      
+      <button className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white/90 rounded-full p-1.5 sm:p-2 hover:bg-white transition-colors">
+        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </button>
+      
+      <div className="absolute bottom-12 sm:bottom-14 left-2 sm:left-3 text-white">
+        <h3 className="font-semibold text-base sm:text-lg leading-tight">{store.name}</h3>
+        <p className="text-xs sm:text-sm opacity-90 line-clamp-2">{store.description}</p>
+      </div>
+      
+      <button className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 bg-white text-black rounded-full py-1.5 sm:py-2 text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors">
+        Browse shop
+      </button>
+    </div>
   );
 };
 

@@ -165,65 +165,11 @@ const LoyaltyCards = () => {
     <Navigation />
     <div className="min-h-screen  bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Hero Section */}
-      <section className="relative overflow-hidden  mx-5 mt-5 rounded-xl">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative px-6 py-20 max-w-7xl mx-auto">
-          <div className="text-center text-white">
-            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-full px-6 py-3 mb-8 border border-white/20">
-              <Crown className="h-5 w-5 text-yellow-300" />
-              <span className="text-sm font-semibold">Premium Loyalty Program</span>
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              Your Digital
-              <span className="block bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">
-                Wallet
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto mb-12 leading-relaxed">
-              Earn points across all vendors, unlock exclusive rewards, and enjoy personalized benefits at your favorite campus businesses
-            </p>
-            
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Zap className="h-8 w-8 text-yellow-300" />
-                </div>
-                <div className="text-3xl font-bold mb-1">{totalPoints}</div>
-                <div className="text-blue-200 text-sm">Total Points</div>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                <div className="flex items-center justify-center mb-3">
-                  <ShoppingBag className="h-8 w-8 text-green-300" />
-                </div>
-                <div className="text-3xl font-bold mb-1">{mockLoyaltyCards.length}</div>
-                <div className="text-blue-200 text-sm">Active Cards</div>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Award className="h-8 w-8 text-purple-300" />
-                </div>
-                <div className="text-3xl font-bold mb-1">{currentTier}</div>
-                <div className="text-blue-200 text-sm">Global Tier</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    
 
       <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
         {/* Current Tier Status */}
-        <section className="mb-16">
+        {/* <section className="mb-16">
           <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
             <div className={`bg-gradient-to-r ${currentTierData?.color} p-8 text-white relative overflow-hidden`}>
               <div className="absolute top-0 right-0 w-40 h-40 opacity-10">
@@ -271,10 +217,10 @@ const LoyaltyCards = () => {
               </div>
             )}
           </div>
-        </section>
+        </section> */}
 
         {/* Membership Tiers */}
-        <section className="mb-16">
+        <section className="mt-20 mb-16">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Membership Tiers</h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">

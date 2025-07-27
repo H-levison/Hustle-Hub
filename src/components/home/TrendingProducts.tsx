@@ -32,7 +32,7 @@ const TrendingProducts: React.FC = () => {
           
           // Get category names and business names for products
           const productsWithDetails = await Promise.all(
-            data.slice(0, 4).map(async (product: Product) => {
+            data.slice(0, 6).map(async (product: Product) => {
               try {
                 // Get category name
                 const categoryResponse = await fetch(`${API_BASE}/categories/${product.category_id}`);
@@ -82,7 +82,7 @@ const TrendingProducts: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 py-8">
         <h2 className="text-xl font-bold mb-4">Trending Products</h2>
         <div className="flex gap-4 overflow-x-auto pb-2">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="min-w-[180px] bg-white rounded-xl shadow p-2 flex flex-col">
               <div className="w-full h-28 bg-gray-200 rounded-t-xl mb-2 animate-pulse" />
               <div className="h-4 bg-gray-200 rounded mb-1 animate-pulse" />

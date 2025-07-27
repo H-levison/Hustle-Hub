@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigation } from '../components/Navigation';
-import { Plus, X, Trash2, Package, Tag, Award, Image, Pencil } from 'lucide-react';
+import { Plus, X, Trash2, Package, Tag, Award, Image, Pencil, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Product {
@@ -37,7 +37,7 @@ const VendorShop = () => {
   const [error, setError] = useState<string | null>(null);
 
   // State for tabs and modals
-  const [activeTab, setActiveTab] = useState<'products' | 'loyalty'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'loyalty' | 'orders'>('products');
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showAddTier, setShowAddTier] = useState(false);
   const [showEditStore, setShowEditStore] = useState(false);
@@ -51,6 +51,7 @@ const VendorShop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loyaltyCards, setLoyaltyCards] = useState<LoyaltyCard[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [store, setStore] = useState<any>(null);
 
   // Form states
@@ -141,6 +142,29 @@ const VendorShop = () => {
       setLoyaltyCards(data);
     } catch (err) {
       console.error('Error fetching loyalty cards:', err);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      console.log('Fetching orders...');
+      const response = await fetch(`${API_BASE}/orders/vendor`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Orders fetch error:', errorText);
+        setOrders([]);
+        return;
+      }
+      const data = await response.json();
+      console.log('Orders fetched:', data);
+      setOrders(data);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setOrders([]);
     }
   };
 
@@ -337,6 +361,33 @@ const VendorShop = () => {
     }
   };
 
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      console.log('Updating order status:', orderId, newStatus);
+      const response = await fetch(`${API_BASE}/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Order status update error:', errorText);
+        throw new Error('Failed to update order status');
+      }
+
+      console.log('Order status updated successfully');
+      // Refresh orders
+      await fetchOrders();
+    } catch (err) {
+      setError('Failed to update order status. Please try again.');
+      console.error(err);
+    }
+  };
+
   // Variation handlers
   const addColor = () => {
     if (newProduct.colorInput.trim()) {
@@ -375,6 +426,7 @@ const VendorShop = () => {
   // Tab configuration
   const tabs = [
     { id: 'products', label: 'Products', icon: Package },
+    { id: 'orders', label: 'Orders', icon: ShoppingBag },
     { id: 'loyalty', label: 'Loyalty Cards', icon: Award }
   ];
 
@@ -394,6 +446,7 @@ const VendorShop = () => {
           fetchProducts(),
           fetchCategories(),
           fetchLoyaltyCards(),
+          fetchOrders(),
           fetchStore(user.id, token)
         ]);
       } catch (err) {
@@ -868,7 +921,136 @@ const VendorShop = () => {
             </div>
           )}
 
+          {/* Orders Tab */}
+          {activeTab === 'orders' && (
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Orders ({Array.isArray(orders) ? orders.length : 0})</h2>
+              </div>
+              
+              {/* Orders list */}
+              {!Array.isArray(orders) || orders.length === 0 ? (
+                <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
+                  <ShoppingBag size={48} className="mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-700">No orders yet</h3>
+                  <p className="text-gray-500 mt-2">Orders from customers will appear here</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {orders.map(order => (
+                    <div key={order.id} className="bg-white rounded-lg shadow-sm border p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="font-semibold text-lg">Order #{order.id.slice(-6)}</h3>
+                          <p className="text-sm text-gray-500">
+                            {new Date(order.created_at).toLocaleDateString()} at {new Date(order.created_at).toLocaleTimeString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            order.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                            order.status === 'preparing' ? 'bg-orange-100 text-orange-800' :
+                            order.status === 'ready' ? 'bg-green-100 text-green-800' :
+                            order.status === 'delivered' ? 'bg-gray-100 text-gray-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          </span>
+                        </div>
+                      </div>
 
+                      {/* Customer Info */}
+                      <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                        <h4 className="font-medium mb-2">Customer Information</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <span className="text-gray-600">Name:</span> {order.customer_name}
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Phone:</span> {order.customer_phone}
+                          </div>
+                          {order.customer_address && (
+                            <div className="md:col-span-2">
+                              <span className="text-gray-600">Address:</span> {order.customer_address}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Order Items */}
+                      <div className="mb-4">
+                        <h4 className="font-medium mb-2">Order Items</h4>
+                        <div className="space-y-2">
+                          {order.items.map((item: any, index: number) => (
+                            <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100">
+                              <div className="flex items-center gap-3">
+                                <img 
+                                  src={item.image || "https://via.placeholder.com/40x40"} 
+                                  alt={item.product_name}
+                                  className="w-10 h-10 rounded object-cover"
+                                />
+                                <div>
+                                  <p className="font-medium">{item.product_name}</p>
+                                  <p className="text-sm text-gray-500">
+                                    Qty: {item.quantity}
+                                    {item.color && ` | Color: ${item.color}`}
+                                    {item.size && ` | Size: ${item.size}`}
+                                  </p>
+                                </div>
+                              </div>
+                              <p className="font-semibold">RWF{(item.price * item.quantity).toLocaleString()}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Order Summary */}
+                      <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Subtotal:</span>
+                          <span>RWF{order.subtotal.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Delivery:</span>
+                          <span>RWF{order.delivery_fee.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Tax:</span>
+                          <span>RWF{order.tax.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between font-semibold text-lg pt-2 border-t border-gray-200">
+                          <span>Total:</span>
+                          <span>RWF{order.total.toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Status Update */}
+                      <div className="flex justify-between items-center">
+                        <div className="flex gap-2">
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                            className="border rounded px-3 py-1 text-sm"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {order.whatsapp_sent ? 'WhatsApp sent' : 'WhatsApp not sent'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Loyalty Cards Tab */}
           {activeTab === 'loyalty' && (

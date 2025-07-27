@@ -106,7 +106,7 @@ const ProductCards = () => {
           
           // Get category names and business info for products
           const productsWithDetails = await Promise.all(
-            data.slice(0, 8).map(async (product: Product) => {
+            data.slice(0, 6).map(async (product: Product) => {
               try {
                 // Get category name
                 const categoryResponse = await fetch(`http://localhost:5000/categories/${product.category_id}`);
@@ -163,11 +163,6 @@ const ProductCards = () => {
   const handleAddToCart = (productId: string) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      if (cart.length > 0 && cart[0].businessId !== product.business_id) {
-        if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
-          return;
-        }
-      }
       addToCart({
         id: product.id,
         title: product.name,
@@ -186,7 +181,7 @@ const ProductCards = () => {
       <section className="px-2 sm:px-4 md:mx-24 py-6 sm:py-8">
         <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Featured Products</h2>
         <div className="flex gap-8 md:flex-wrap overflow-x-auto no-scrollbar">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="w-64 flex-shrink-0">
               <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
               <div className="pt-3 px-1">

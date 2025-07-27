@@ -91,11 +91,6 @@ const Product = () => {
   const handleAddToCart = () => {
     if (!product) return;
     
-    if (cart.length > 0 && cart[0].businessId !== product.business_id) {
-      if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
-        return;
-      }
-    }
     addToCart({
       id: product.id,
       title: product.name,

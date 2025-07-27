@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../CartContext';
@@ -6,7 +6,7 @@ import { useCart } from '../../CartContext';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 type Product = {
-  id: number;
+  id: string;
   images: string[];
   title: string;
   location: string;
@@ -18,45 +18,14 @@ type Product = {
   details: string;
 };
 
-type Store = {
-  id: string;
-  name: string;
-  description: string;
-  logo: string;
-  whatsapp: string;
-};
-
 interface ProductGridProps {
   products: Product[];
-  onFavoriteToggle: (productId: number) => void;
+  onFavoriteToggle: (productId: string) => void;
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle }) => {
   const [sortOption, setSortOption] = useState('featured');
   const [showSortOptions, setShowSortOptions] = useState(false);
-  const [activeTab, setActiveTab] = useState('products');
-  const [stores, setStores] = useState<Store[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // Fetch stores from backend
-  useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${API_BASE}/businesses`);
-        if (response.ok) {
-          const data = await response.json();
-          setStores(data);
-        }
-      } catch (error) {
-        console.error('Error fetching stores:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStores();
-  }, []);
 
   const sortOptions = [
     { value: 'featured', label: 'Featured' },
@@ -83,92 +52,56 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onFavoriteToggle })
 
   return (
     <div className="w-full">
-      <div className="flex border-b mb-6">
-        <button
-          className={`px-4 py-2 font-medium text-sm ${activeTab === 'products' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('products')}
-        >
-          Products
-        </button>
-        <button
-          className={`px-4 py-2 font-medium text-sm ${activeTab === 'stores' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('stores')}
-        >
-          Stores
-        </button>
-      </div>
-
       <div className="flex justify-between items-center mb-6">
         <div>
           <p className="text-sm text-gray-500">
-            Showing 1-{activeTab === 'products' ? products.length : stores.length} of {activeTab === 'products' ? products.length : stores.length} {activeTab}
+            Showing 1-{products.length} of {products.length} products
           </p>
         </div>
-        {activeTab === 'products' && (
-          <div className="relative">
-            <button 
-              className="flex items-center gap-2 text-sm border rounded-md px-3 py-1.5"
-              onClick={() => setShowSortOptions(!showSortOptions)}
-            >
-              Sort by: {sortOptions.find(option => option.value === sortOption)?.label}
-              {showSortOptions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-            {showSortOptions && (
-              <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md z-10">
-                {sortOptions.map(option => (
-                  <button
-                    key={option.value}
-                    className={`block w-full text-left px-4 py-2 text-sm ${sortOption === option.value ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-                    onClick={() => {
-                      setSortOption(option.value);
-                      setShowSortOptions(false);
-                    }}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {activeTab === 'products' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {sortedProducts.map(product => (
-            <Link key={product.id} to={`/product/${product.id}`}>
-              <ProductCard 
-                product={product} 
-                onFavoriteToggle={onFavoriteToggle} 
-              />
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {loading ? (
-            // Loading skeleton for stores
-            Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="relative h-56 sm:h-72 md:h-80 rounded-xl overflow-hidden shadow-lg bg-gray-200 animate-pulse" />
-            ))
-          ) : stores.length > 0 ? (
-            stores.map(store => (
-              <Link key={store.id} to={`/shop/${store.id}`}>
-                <StoreCard store={store} />
-              </Link>
-            ))
-          ) : (
-            <p className="col-span-full text-center text-gray-500 py-8">No stores available</p>
+        <div className="relative">
+          <button 
+            className="flex items-center gap-2 text-sm border rounded-md px-3 py-1.5"
+            onClick={() => setShowSortOptions(!showSortOptions)}
+          >
+            Sort by: {sortOptions.find(option => option.value === sortOption)?.label}
+            {showSortOptions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          {showSortOptions && (
+            <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md z-10">
+              {sortOptions.map(option => (
+                <button
+                  key={option.value}
+                  className={`block w-full text-left px-4 py-2 text-sm ${sortOption === option.value ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                  onClick={() => {
+                    setSortOption(option.value);
+                    setShowSortOptions(false);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           )}
         </div>
-      )}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {sortedProducts.map(product => (
+          <Link key={product.id} to={`/product/${product.id}`}>
+            <ProductCard 
+              product={product} 
+              onFavoriteToggle={onFavoriteToggle} 
+            />
+          </Link>
+        ))}
+      </div>
     </div>
   );
 };
 
 interface ProductCardProps {
   product: Product;
-  onFavoriteToggle: (productId: number) => void;
+  onFavoriteToggle: (productId: string) => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) => {
@@ -182,14 +115,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    // For explore products, we need to fetch business data
-    // For now, using a default approach
+    // Use the location as business name and create a unique business ID
     const businessId = 'explore_' + product.id; // Create a unique identifier
-    if (cart.length > 0 && cart[0].businessId !== businessId) {
-      if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
-        return;
-      }
-    }
     addToCart({
       id: product.id.toString(),
       title: product.title,
@@ -197,8 +124,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
       image: product.images[0],
       quantity: 1,
       businessId: businessId,
-      vendorName: 'Explore Store', // This should be fetched from business data
-      vendorWhatsapp: '+250788123456', // This should be fetched from business data
+      vendorName: product.location, // Use the location as vendor name
+      vendorWhatsapp: '+250788123456', // Default WhatsApp number
     });
   };
 
@@ -254,41 +181,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
           </button>
         </div>
       </div>
-    </div>
-  );
-};
-
-interface StoreCardProps {
-  store: Store;
-}
-
-const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
-  return (
-    <div className="relative h-56 sm:h-72 md:h-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer">
-      <img
-        src={store.logo || "https://via.placeholder.com/400x300?text=Store+Logo"}
-        alt={store.name}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Store+Logo';
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-      
-      <button className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white/90 rounded-full p-1.5 sm:p-2 hover:bg-white transition-colors">
-        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </button>
-      
-      <div className="absolute bottom-12 sm:bottom-14 left-2 sm:left-3 text-white">
-        <h3 className="font-semibold text-base sm:text-lg leading-tight">{store.name}</h3>
-        <p className="text-xs sm:text-sm opacity-90 line-clamp-2">{store.description}</p>
-      </div>
-      
-      <button className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 bg-white text-black rounded-full py-1.5 sm:py-2 text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors">
-        Browse shop
-      </button>
     </div>
   );
 };
