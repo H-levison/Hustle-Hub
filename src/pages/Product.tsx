@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Heart, Share2, MessageCircle, ShoppingBag, User, Truck, Shield, RotateCcw, CheckCircle } from 'lucide-react';
+import { Star, Heart, Share2, MessageCircle, ShoppingBag, User, Truck, Shield, RotateCcw, CheckCircle, Plus, Send } from 'lucide-react';
 import { Navigation } from '../components/Navigation';
 import { useCart } from '../CartContext';
 
@@ -25,6 +25,240 @@ interface Product {
 
 // This function is no longer needed as we'll use business_id directly from the product
 
+interface Review {
+  id: string;
+  user_id: string;
+  product_id: string;
+  rating: number;
+  comment: string;
+  user_name: string;
+  created_at: string;
+}
+
+const ProductReviews = ({ productId }: { productId: string }) => {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({
+    rating: 5,
+    comment: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [productId]);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/reviews/product/${productId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setReviews(data);
+      } else {
+        setReviews([]);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+      setReviews([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newReview.comment.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in to leave a review');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          rating: newReview.rating,
+          comment: newReview.comment
+        })
+      });
+
+      if (response.ok) {
+        setNewReview({ rating: 5, comment: '' });
+        setShowReviewForm(false);
+        fetchReviews(); // Refresh reviews
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to submit review');
+      }
+    } catch (err) {
+      alert('Failed to submit review. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const averageRating = reviews.length > 0 
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+    : 0;
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-hustlehub-blue mx-auto"></div>
+        <p className="mt-2 text-gray-600">Loading reviews...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h3 className="text-lg font-medium text-gray-900">Customer Reviews</h3>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-4 h-4 ${
+                    star <= averageRating
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-gray-600">
+              {averageRating.toFixed(1)} ({reviews.length} reviews)
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowReviewForm(!showReviewForm)}
+          className="flex items-center gap-2 bg-hustlehub-blue text-white px-4 py-2 rounded-lg hover:bg-hustlehub-blue/90 transition-colors"
+        >
+          <Plus size={16} />
+          Write Review
+        </button>
+      </div>
+
+      {/* Review Form */}
+      {showReviewForm && (
+        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <h4 className="font-medium text-gray-900 mb-3">Write a Review</h4>
+          <form onSubmit={handleSubmitReview}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setNewReview({ ...newReview, rating: star })}
+                    className="text-2xl"
+                  >
+                    <Star
+                      className={`${
+                        star <= newReview.rating
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Comment</label>
+              <textarea
+                value={newReview.comment}
+                onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-hustlehub-blue"
+                rows={4}
+                placeholder="Share your experience with this product..."
+                required
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex items-center gap-2 bg-hustlehub-blue text-white px-4 py-2 rounded-lg hover:bg-hustlehub-blue/90 transition-colors disabled:opacity-50"
+              >
+                {submitting ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <Send size={16} />
+                )}
+                Submit Review
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowReviewForm(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Reviews List */}
+      {reviews.length === 0 ? (
+        <div className="text-center py-8">
+          <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-600">No reviews yet. Be the first to review this product!</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {reviews.map((review) => (
+            <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-hustlehub-blue/10 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-hustlehub-blue" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{review.user_name}</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-3 h-3 ${
+                              star <= review.rating
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        {new Date(review.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-700 leading-relaxed">{review.comment}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Product = () => {
   const { id } = useParams();
   const [selectedImage, setSelectedImage] = useState(0);
@@ -35,6 +269,8 @@ const Product = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
   const { addToCart, cart } = useCart();
 
   useEffect(() => {
@@ -72,6 +308,21 @@ const Product = () => {
           }
 
           setProduct(productData);
+          
+          // Fetch reviews for average rating
+          try {
+            const reviewsResponse = await fetch(`${API_BASE}/reviews/product/${productData.id}`);
+            if (reviewsResponse.ok) {
+              const reviews = await reviewsResponse.json();
+              if (reviews.length > 0) {
+                const avgRating = reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / reviews.length;
+                setAverageRating(avgRating);
+                setReviewCount(reviews.length);
+              }
+            }
+          } catch (err) {
+            console.error('Error fetching reviews:', err);
+          }
         } else {
           setError('Product not found');
         }
@@ -86,7 +337,7 @@ const Product = () => {
     fetchProduct();
   }, [id]);
 
-  const tabs = ['Description', 'Styling Ideas', 'Reviews', 'Best Seller'];
+  const tabs = ['Description', 'Reviews'];
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -204,8 +455,8 @@ const Product = () => {
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                   <div className="flex items-center">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
-                    <span>4.8</span>
-                    <span className="ml-1">(188 reviews)</span>
+                    <span>{averageRating > 0 ? averageRating.toFixed(1) : '4.8'}</span>
+                    <span className="ml-1">({reviewCount > 0 ? reviewCount : '188'} reviews)</span>
                   </div>
                   <span>•</span>
                   <span>{product.business}</span>
@@ -344,23 +595,8 @@ const Product = () => {
                   <p className="text-gray-600 leading-relaxed">{product.description}</p>
                 </div>
               )}
-              {activeTab === 'Styling Ideas' && (
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Styling Ideas</h3>
-                  <p className="text-gray-600">Styling suggestions and ideas for this product will be displayed here.</p>
-                </div>
-              )}
               {activeTab === 'Reviews' && (
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Customer Reviews</h3>
-                  <p className="text-gray-600">Customer reviews and ratings will be displayed here.</p>
-                </div>
-              )}
-              {activeTab === 'Best Seller' && (
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Best Seller</h3>
-                  <p className="text-gray-600">Best selling products and recommendations will be displayed here.</p>
-                </div>
+                <ProductReviews productId={product.id} />
               )}
             </div>
           </div>
