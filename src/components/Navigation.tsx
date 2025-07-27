@@ -10,11 +10,18 @@ import {
 import { NavLink } from "react-router-dom";
 import { ProfileDropdown } from "./ProfileDropdown";
 import SearchBar from "../components/SearchBar";
+import { useCart } from "../CartContext";
 
 
 export const Navigation = (): JSX.Element => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Mock login state
+  const { cart } = useCart();
+  
+  // Check if user is logged in by looking for token in localStorage
+  const isLoggedIn = !!localStorage.getItem('token');
+  
+  // Calculate total items in cart
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
   const navItems = [
     { label: "Home", to: "/" },
     { label: "Explore", to: "/explore" },
@@ -64,8 +71,13 @@ export const Navigation = (): JSX.Element => {
       {/* Desktop Right side controls */}
       <div className="hidden md:flex items-center gap-6">
         {/* Cart icon */}
-        <NavLink to="/cart" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+        <NavLink to="/cart" className="relative flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
           <ShoppingCart size={22} />
+          {cartItemCount > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {cartItemCount > 99 ? '99+' : cartItemCount}
+            </div>
+          )}
         </NavLink>
         {/* Auth controls */}
         {isLoggedIn ? (
@@ -153,9 +165,14 @@ export const Navigation = (): JSX.Element => {
           {/* Cart and Auth controls on same line */}
           <div className="flex items-center justify-between gap-4">
             {/* Cart icon */}
-            <NavLink to="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+            <NavLink to="/cart" onClick={() => setMobileOpen(false)} className="relative flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
               <ShoppingCart size={22} />
               <span className="font-['Inter',Helvetica] font-medium text-base">Cart</span>
+              {cartItemCount > 0 && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemCount > 99 ? '99+' : cartItemCount}
+                </div>
+              )}
             </NavLink>
             
             {/* Auth controls for mobile */}
