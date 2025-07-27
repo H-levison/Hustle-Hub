@@ -89,7 +89,18 @@ router.get("/vendor", authMiddleware, async (req, res) => {
       return res.status(403).json({ error: "Only vendors can access this endpoint" });
     }
 
-    const orders = await Order.find({ vendor_id: req.user._id })
+    // First, get the vendor's business
+    const Business = require("../models/Business");
+    const vendorBusiness = await Business.findOne({ owner_id: req.user._id });
+    
+    if (!vendorBusiness) {
+      return res.status(404).json({ error: "No business found for this vendor" });
+    }
+
+    // Get orders that belong to this vendor's business (remove vendor_id filter)
+    const orders = await Order.find({ 
+      business_id: vendorBusiness._id
+    })
       .sort({ created_at: -1 }) // Most recent first
       .populate('business_id', 'name');
 
@@ -171,8 +182,20 @@ router.put("/:orderId/status", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "Invalid status" });
     }
 
+    // First, get the vendor's business
+    const Business = require("../models/Business");
+    const vendorBusiness = await Business.findOne({ owner_id: req.user._id });
+    
+    if (!vendorBusiness) {
+      return res.status(404).json({ error: "No business found for this vendor" });
+    }
+
     const order = await Order.findOneAndUpdate(
-      { _id: orderId, vendor_id: req.user._id },
+      { 
+        _id: orderId, 
+        vendor_id: req.user._id,
+        business_id: vendorBusiness._id
+      },
       { 
         status,
         updated_at: new Date()

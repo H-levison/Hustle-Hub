@@ -434,14 +434,6 @@ const Product = () => {
                       (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Product+Image';
                     }}
                   />
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <button className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors">
-                      <Heart className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <button className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors">
-                      <Share2 className="w-5 h-5 text-gray-600" />
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>

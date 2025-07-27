@@ -101,18 +101,18 @@ const HeroGrid = () => {
         />
         <Card 
           title="Services"
-          subtitle=" Apartment search and cleaning services made simple. "
+          // subtitle=" Apartment search and cleaning services made simple. "
           tags={["house-hunting" , "cleaning"]}
-          button="Join communities"
+          button="See more"
           bgImage="https://media.licdn.com/dms/image/v2/D4E0BAQG026Z0gOalLQ/company-logo_200_200/company-logo_200_200/0/1719171441582?e=2147483647&v=beta&t=-jZIWCXM4GP3LfL6-hWFdUSeSh7C3nZfI_6FKxQZPY4"
           className="row-span-3 col-start-4 row-start-1"
           onClick={() => handleCategoryClick("Services")}
         />
         <Card 
           title="Books & Stationeries"
-          subtitle="We offer services that help people learn and grow."
+          // subtitle="We offer services that help people learn and grow."
           tags={["education"]}
-          button="check out "
+          button="See more"
           bgImage="https://wp.penguin.co.uk/wp-content/uploads/2024/12/Penguin-Best-Books-of-2025-article-sizing-1-1024x683.jpg"
           className="row-span-2 col-start-3 row-start-2"
           onClick={() => handleCategoryClick("Books & Stationeries")}
