@@ -8,7 +8,7 @@ const SearchBar = () => {
 
   return (
     <div className="w-full  max-w-2xl mx-auto  rounded-xl shadow-sm border p-1 px-6 ">
-      <div className="flex  items-center gap-6"> 
+      <div className="flex  items-center"> 
         
         <div className="flex-1  "> 
           <div className="flex gap-2">
@@ -23,8 +23,7 @@ const SearchBar = () => {
           </div>
         </div>
         
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl flex items-center gap-2 transition-colors font-medium">
-          {/* <Search size={20} /> */}
+        <button className="ml-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl flex items-center gap-2 transition-colors font-medium">
           Search
         </button>
       </div>

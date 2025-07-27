@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar";
 import ProductFilterSidebar from "../components/explore/ProductFilterSidebar";
 import ProductGrid from "../components/explore/ProductGrid";
 import { SlidersHorizontal, Search } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -25,8 +26,12 @@ interface Product {
 }
 
 const Explore = () => {
+  const [searchParams] = useSearchParams();
+  const categoryFilter = searchParams.get('category');
+  
   const [productList, setProductList] = useState<Product[]>([]);
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [activeFilter, setActiveFilter] = useState<string | null>(categoryFilter);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -85,6 +90,20 @@ const Explore = () => {
     fetchProducts();
   }, []);
 
+  // Filter products based on category
+  useEffect(() => {
+    if (categoryFilter) {
+      const filtered = productList.filter(product => 
+        product.category?.toLowerCase().includes(categoryFilter.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+      setActiveFilter(categoryFilter);
+    } else {
+      setFilteredProducts(productList);
+      setActiveFilter(null);
+    }
+  }, [productList, categoryFilter]);
+
   const handleFavoriteToggle = (productId: number) => {
     setProductList(prev => 
       prev.map(product => 
@@ -101,7 +120,7 @@ const Explore = () => {
   };
 
   // Transform products to match ProductGrid expected format
-  const transformedProducts = productList.map(product => ({
+  const transformedProducts = filteredProducts.map(product => ({
     id: parseInt(product.id),
     images: [product.image || "https://via.placeholder.com/400x400?text=Product+Image"],
     title: product.name,
@@ -120,7 +139,7 @@ const Explore = () => {
         <Navigation />
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-hustlehub-blue mx-auto"></div>
             <p className="mt-4 text-lg">Loading products...</p>
           </div>
         </div>
@@ -138,6 +157,18 @@ const Explore = () => {
       {/* Main Content */}
       <section className="py-8">
         <div className="container mx-auto px-4">
+          {/* Category Filter Header */}
+          {categoryFilter && (
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                {categoryFilter} Products
+              </h1>
+              <p className="text-gray-600">
+                Showing {filteredProducts.length} products in {categoryFilter}
+              </p>
+            </div>
+          )}
+          
           <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar - Hidden on mobile, toggleable */}
             <div className="hidden md:block md:w-1/4 lg:w-1/5 flex-shrink-0">

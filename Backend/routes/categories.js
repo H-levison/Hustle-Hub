@@ -39,60 +39,18 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST /categories
+// POST /categories - DISABLED: Categories are predefined
 router.post("/", authMiddleware, async (req, res) => {
-    const { name } = req.body;
-    console.log("Category creation attempt by:", req.user.email);
-  
-    try {
-      // Only providers can create categories
-      if (!req.user.is_provider) {
-        return res.status(403).json({ error: "Only vendors can create categories" });
-      }
-  
-      if (!name || name.trim() === "") {
-        return res.status(400).json({ error: "Category name is required" });
-      }
-  
-      const existing = await Category.findOne({ name: name.trim() });
-      if (existing) {
-        return res.status(409).json({ error: "Category already exists" });
-      }
-  
-      const newCategory = new Category({ name: name.trim() });
-      await newCategory.save();
-  
-      return res.status(201).json({
-        id: newCategory._id,
-        name: newCategory.name,
-      });
-    } catch (err) {
-      console.error("Error creating category:", err);
-      return res.status(500).json({ error: "Server error" });
-    }
+  return res.status(403).json({ 
+    error: "Category creation is disabled. Categories are predefined and cannot be created or modified." 
   });
+});
 
-// DELETE /categories/:id
+// DELETE /categories/:id - DISABLED: Categories are predefined
 router.delete("/:id", authMiddleware, async (req, res) => {
-  const { id } = req.params;
-  console.log("Category deletion attempt by:", req.user.email);
-
-  try {
-    // Only providers can delete categories
-    if (!req.user.is_provider) {
-      return res.status(403).json({ error: "Only vendors can delete categories" });
-    }
-
-    const category = await Category.findByIdAndDelete(id);
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
-    }
-
-    return res.status(200).json({ message: "Category deleted successfully" });
-  } catch (err) {
-    console.error("Error deleting category:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
+  return res.status(403).json({ 
+    error: "Category deletion is disabled. Categories are predefined and cannot be created or modified." 
+  });
 });
 
 module.exports = router;

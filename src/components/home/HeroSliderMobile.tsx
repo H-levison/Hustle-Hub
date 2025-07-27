@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface CategoryCardProps {
   title: string;
@@ -33,7 +34,7 @@ const categories: CategoryCardProps[] = [
     bgColor: "bg-green-100",
   },
   {
-    title: "Books & Stationery",
+    title: "Books & Stationeries",
     image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop",
     bgColor: "bg-orange-100",
   },
@@ -43,12 +44,12 @@ const categories: CategoryCardProps[] = [
     bgColor: "bg-purple-100",
   },
   {
-    title: "Tech & Digital Products",
+    title: "Digital Products & Services",
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop",
     bgColor: "bg-indigo-100",
   },
   {
-    title: "Pets & Animals",
+    title: "Health & Wellness",
     image: "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=400&h=300&fit=crop",
     bgColor: "bg-teal-100",
   },
@@ -85,6 +86,12 @@ const CategoryCard: React.FC<CategoryCardProps & { onClick: () => void }> = ({
 );
 
 const HeroSliderMobile: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (category: string) => {
+    navigate(`/explore?category=${encodeURIComponent(category)}`);
+  };
+
   return (
     <>
        
@@ -104,7 +111,7 @@ const HeroSliderMobile: React.FC = () => {
               >
                 <CategoryCard 
                   {...cat} 
-                  onClick={() => console.log(`Clicked ${cat.title}`)}
+                  onClick={() => handleCategoryClick(cat.title)}
                 />
               </div>
             ))}

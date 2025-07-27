@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   Star,
   Heart,
   Mail,
 } from 'lucide-react';
 import { Navigation } from '../components/Navigation';
+import { useCart } from '../CartContext';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  business_id: string;
+  isFavorite?: boolean;
+}
+
+interface ProductCardProps {
+  product: Product;
+  onFavoriteToggle: (productId: string) => void;
+  onAddToCart: (productId: string) => void;
+}
+
 // Product Card Component with new design
-const ProductCard = ({ product, onFavoriteToggle, onAddToCart }) => {
-  const handleFavoriteClick = (e) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, onAddToCart }) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onFavoriteToggle(product.id);
   };
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     onAddToCart(product.id);
   };
@@ -25,21 +42,23 @@ const ProductCard = ({ product, onFavoriteToggle, onAddToCart }) => {
   const rating = (4.0 + Math.random()).toFixed(1);
 
   return (
-    <div className="bg-transparent rounded-xl overflow-hidden group cursor-pointer transition-all">
+    <div className="bg-transparent rounded-xl overflow-hidden group transition-all">
       <div className="relative">
-        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100">
-          <img
-            src={product.image || "https://via.placeholder.com/400x400?text=Product+Image"}
-            alt={product.name}
-            className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Product+Image';
-            }}
-          />
-        </div>
+        <Link to={`/product/${product.id}`} className="block">
+          <div className="aspect-square overflow-hidden rounded-xl bg-gray-100 cursor-pointer">
+            <img
+              src={product.image || "https://via.placeholder.com/400x400?text=Product+Image"}
+              alt={product.name}
+              className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Product+Image';
+              }}
+            />
+          </div>
+        </Link>
         <button
           onClick={handleFavoriteClick}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors z-10"
         >
           <Heart 
             size={18} 
@@ -48,16 +67,20 @@ const ProductCard = ({ product, onFavoriteToggle, onAddToCart }) => {
         </button>
       </div>
       <div className="pt-3 px-1">
-        <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{product.name}</h3>
-          <div className="flex items-center text-sm">
-            <Star size={14} className="fill-black text-black mr-0.5" />
-            <span>{rating}</span>
+        <Link to={`/product/${product.id}`} className="block">
+          <div className="flex justify-between items-start cursor-pointer">
+            <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{product.name}</h3>
+            <div className="flex items-center text-sm">
+              <Star size={14} className="fill-black text-black mr-0.5" />
+              <span>{rating}</span>
+            </div>
           </div>
-        </div>
-        <p className="text-sm text-gray-500 mb-1">{product.category}</p>
+          <p className="text-sm text-gray-500 mb-1">{product.category}</p>
+        </Link>
         <div className="flex justify-between items-center">
-          <p className="font-semibold text-gray-900">RWF {product.price.toLocaleString()}</p>
+          <Link to={`/product/${product.id}`} className="cursor-pointer">
+            <p className="font-semibold text-gray-900">RWF {product.price.toLocaleString()}</p>
+          </Link>
           <button 
             onClick={handleAddToCart}
             className="text-xs bg-indigo-50 text-indigo-600 px-3 py-2 rounded-full hover:bg-indigo-100 transition-colors"
@@ -70,14 +93,27 @@ const ProductCard = ({ product, onFavoriteToggle, onAddToCart }) => {
   );
 };
 
+interface StoreData {
+  id: string;
+  name: string;
+  description: string;
+  logo: string;
+  banner: string;
+  followers: number;
+  products: number;
+  subtitle: string;
+  whatsapp: string;
+}
+
 const Shop = () => {
   const { id } = useParams();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [categories, setCategories] = useState(['All']);
-  const [storeData, setStoreData] = useState(null);
-  const [products, setProducts] = useState([]);
+  const [storeData, setStoreData] = useState<StoreData | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const { addToCart, cart } = useCart();
 
   // Fetch store data
   useEffect(() => {
@@ -124,9 +160,9 @@ const Shop = () => {
         if (response.ok) {
           const productsData = await response.json();
           
-          // Get category names for products
+          // Get category names for products and ensure correct business_id
           const productsWithCategories = await Promise.all(
-            productsData.map(async (product) => {
+            productsData.map(async (product: any) => {
               try {
                 const categoryResponse = await fetch(`${API_BASE}/categories/${product.category_id}`);
                 if (categoryResponse.ok) {
@@ -134,18 +170,21 @@ const Shop = () => {
                   return {
                     ...product,
                     category: category.name,
+                    business_id: storeData.id, // Ensure correct business_id
                     isFavorite: false // Default state
                   };
                 }
                 return {
                   ...product,
                   category: 'Uncategorized',
+                  business_id: storeData.id, // Ensure correct business_id
                   isFavorite: false
                 };
               } catch (err) {
                 return {
                   ...product,
                   category: 'Uncategorized',
+                  business_id: storeData.id, // Ensure correct business_id
                   isFavorite: false
                 };
               }
@@ -159,10 +198,10 @@ const Shop = () => {
           setCategories(uniqueCategories);
           
           // Update product count
-          setStoreData(prev => ({
+          setStoreData(prev => prev ? {
             ...prev,
             products: productsWithCategories.length
-          }));
+          } : null);
         }
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -172,7 +211,7 @@ const Shop = () => {
     fetchProducts();
   }, [storeData]);
 
-  const handleFavoriteToggle = (productId) => {
+  const handleFavoriteToggle = (productId: string) => {
     setProducts(prev => 
       prev.map(product => 
         product.id === productId 
@@ -182,11 +221,24 @@ const Shop = () => {
     );
   };
 
-  const handleAddToCart = (productId) => {
+  const handleAddToCart = (productId: string) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      console.log(`Added ${product.name} to cart!`);
-      // You can add your cart logic here
+      if (cart.length > 0 && cart[0].businessId !== product.business_id) {
+        if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
+          return;
+        }
+      }
+      addToCart({
+        id: product.id,
+        title: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: 1,
+        businessId: product.business_id,
+        vendorName: storeData?.name || 'Unknown Store',
+        vendorWhatsapp: storeData?.whatsapp || '+250788123456',
+      });
     }
   };
 
@@ -195,7 +247,7 @@ const Shop = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-hustlehub-blue mx-auto"></div>
           <p className="mt-4 text-lg">Loading store...</p>
         </div>
       </div>
@@ -210,7 +262,7 @@ const Shop = () => {
           <p className="text-lg text-red-600">{error}</p>
           <button 
             onClick={() => window.history.back()} 
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="mt-4 px-4 py-2 bg-hustlehub-blue text-white rounded hover:bg-hustlehub-blue/90"
           >
             Go Back
           </button>
@@ -255,7 +307,7 @@ const Shop = () => {
           <p className="text-xs text-gray-500 mt-2">{storeData.subtitle}</p>
 
           <nav className="mt-6 border-t pt-4">
-            <button className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-500 text-white font-medium">
+            <button className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-hustlehub-blue text-white font-medium">
               <Mail className="w-4 h-4" /> Shop
             </button>
           </nav>
@@ -268,7 +320,7 @@ const Shop = () => {
                   key={category}
                   onClick={() => setSelectedCategory(category)}
                   className={`text-left px-2 py-1 rounded text-sm ${selectedCategory === category 
-                    ? 'bg-blue-500 text-white' 
+                    ? 'bg-hustlehub-blue text-white' 
                     : 'text-gray-600 hover:bg-gray-100'}`}
                 >
                   {category}

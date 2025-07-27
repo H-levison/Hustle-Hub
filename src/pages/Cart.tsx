@@ -12,7 +12,9 @@ interface CartItem {
   color?: string;
   size?: string;
   quantity: number;
-  vendorId?: number;
+  businessId: string;
+  vendorName: string;
+  vendorWhatsapp: string;
 }
 
 interface Vendor {
@@ -21,16 +23,16 @@ interface Vendor {
   whatsapp: string;
 }
 
-// Helper to get vendor by product id
-function getVendorByProduct(cart: CartItem[]): Vendor | undefined {
+// Helper to get vendor from cart items
+function getVendorFromCart(cart: CartItem[]): Vendor | undefined {
   if (!cart.length) return undefined;
   
-  // For now, return a default vendor since we don't have vendor info in cart items
-  // In a real implementation, you would fetch vendor info based on the product's vendor_id
+  // All items in cart should have the same vendor (single-vendor cart)
+  const firstItem = cart[0];
   return {
-    id: "1",
-    name: "Default Store",
-    whatsapp: "+250788123456" // Default WhatsApp number
+    id: firstItem.businessId,
+    name: firstItem.vendorName,
+    whatsapp: firstItem.vendorWhatsapp
   };
 }
 
@@ -47,6 +49,11 @@ const CartItems = () => {
   return (
     <div className="bg-white rounded-xl shadow p-4 mb-4">
       <h2 className="font-semibold mb-2">Shopping Cart</h2>
+      {cart.length > 0 && (
+        <div className="text-sm text-gray-600 mb-3">
+          Vendor: {cart[0].vendorName}
+        </div>
+      )}
       <ul className="divide-y divide-gray-200">
         {cart.map((item, idx) => (
           <li key={idx} className="py-4 flex items-center gap-4">
@@ -66,7 +73,7 @@ const CartItems = () => {
                 {item.size && `Size: ${item.size}`}
               </div>
               <div className="text-sm">Qty: {item.quantity}</div>
-              <div className="text-blue-600 font-bold">RWF{item.price.toLocaleString()}</div>
+              <div className="text-hustlehub-blue font-bold">RWF{item.price.toLocaleString()}</div>
             </div>
             <button className="text-red-500 hover:underline text-sm" onClick={() => removeFromCart(item.id)}>Remove</button>
           </li>
@@ -80,15 +87,15 @@ const CouponCode = () => (
   <div className="bg-white rounded-xl shadow p-4 mb-4">
     <h2 className="font-semibold mb-2">Coupon Code</h2>
     <input className="w-full border rounded px-2 py-1 mb-2" placeholder="Enter Your Coupon Code" />
-    <button className="w-full bg-white border border-blue-600 text-blue-600 rounded py-2">Apply Your Loyalty card</button>
+    <button className="w-full bg-white border border-hustlehub-blue text-hustlehub-blue rounded py-2">Apply Your Loyalty card</button>
   </div>
 );
 
 const OrderSummary = () => {
   const { cart } = useCart();
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const delivery = cart.length > 0 ? 2999 : 0;
-  const tax = cart.length > 0 ? 3999 : 0;
+  const delivery = 0; // Set delivery fee to zero
+  const tax = 0; // Set tax to zero
   const total = subtotal + delivery + tax;
   return (
     <div className="bg-white rounded-xl shadow p-4 mb-4">
@@ -103,14 +110,14 @@ const OrderSummary = () => {
 
 const PaymentMethod = () => {
   const { cart } = useCart();
-  const vendor = getVendorByProduct(cart);
+  const vendor = getVendorFromCart(cart);
   
   const handleCheckout = () => {
     if (!vendor) return;
     const orderLines = cart.map(item =>
       `- ${item.title} (Qty: ${item.quantity}${item.color ? ", Color: " + item.color : ""}${item.size ? ", Size: " + item.size : ""}) - RWF${item.price * item.quantity}`
     ).join("%0A");
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + (cart.length > 0 ? 2999 : 0) + (cart.length > 0 ? 3999 : 0);
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0); // Only subtotal, no fees
     const message = `Hello, I want to order:%0A${orderLines}%0A%0ATotal: RWF${total.toLocaleString()}`;
     const whatsappUrl = `https://wa.me/${vendor.whatsapp.replace(/[^\d]/g, '')}?text=${message}`;
     window.open(whatsappUrl, '_blank');
@@ -119,11 +126,18 @@ const PaymentMethod = () => {
   return (
     <div className="bg-white rounded-xl shadow p-4">
       <h2 className="font-semibold mb-2">Payment Method</h2>
+      {vendor && (
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+          <div className="text-sm text-gray-600 mb-1">Ordering from:</div>
+          <div className="font-medium">{vendor.name}</div>
+          <div className="text-sm text-gray-500">{vendor.whatsapp}</div>
+        </div>
+      )}
       <div className="flex gap-2 mb-4">
         <span className="bg-gray-100 rounded p-2">Pay on Whatsapp</span>
       </div>
-      <button className="w-full bg-blue-600 text-white rounded py-2" onClick={handleCheckout} disabled={!vendor || cart.length === 0}>
-        Check Out to Whatsapp
+      <button className="w-full bg-hustlehub-blue text-white rounded py-2" onClick={handleCheckout} disabled={!vendor || cart.length === 0}>
+        Check Out to {vendor?.name || 'Vendor'}
       </button>
     </div>
   );

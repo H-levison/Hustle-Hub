@@ -12,12 +12,14 @@ const productsRoute = require("./routes/products");
 const loyaltyRoute = require("./routes/loyalty");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// ✅ Enable CORS
+// ✅ Enable CORS for production
 app.use(
   cors({
-    origin: "http://localhost:5173", // Vite frontend
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://your-frontend-app.onrender.com', 'http://localhost:5173'] // Add your frontend URL
+      : "http://localhost:5173",
     credentials: true,
   })
 );

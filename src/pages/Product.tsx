@@ -20,12 +20,10 @@ interface Product {
   sizes: string[];
   category?: string;
   business?: string;
+  business_whatsapp?: string;
 }
 
-const getVendorIdByProductId = (productId: string) => {
-  // This function can be updated to get vendor ID from the product data
-  return 1; // Default vendor ID
-};
+// This function is no longer needed as we'll use business_id directly from the product
 
 const Product = () => {
   const { id } = useParams();
@@ -60,15 +58,17 @@ const Product = () => {
             productData.category = 'Uncategorized';
           }
 
-          // Get business name
+          // Get business name and WhatsApp
           try {
             const businessResponse = await fetch(`${API_BASE}/businesses/${productData.business_id}`);
             if (businessResponse.ok) {
               const business = await businessResponse.json();
               productData.business = business.name;
+              productData.business_whatsapp = business.whatsapp;
             }
           } catch (err) {
             productData.business = 'Unknown Store';
+            productData.business_whatsapp = '+250788123456';
           }
 
           setProduct(productData);
@@ -91,8 +91,7 @@ const Product = () => {
   const handleAddToCart = () => {
     if (!product) return;
     
-    const vendorId = getVendorIdByProductId(product.id);
-    if (cart.length > 0 && cart[0].vendorId !== vendorId) {
+    if (cart.length > 0 && cart[0].businessId !== product.business_id) {
       if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
         return;
       }
@@ -105,7 +104,9 @@ const Product = () => {
       color: selectedColor,
       size: selectedSize,
       quantity,
-      vendorId,
+      businessId: product.business_id,
+      vendorName: product.business || 'Unknown Store',
+      vendorWhatsapp: product.business_whatsapp || '+250788123456',
     });
   };
 
@@ -113,7 +114,7 @@ const Product = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-hustlehub-blue mx-auto"></div>
           <p className="mt-4 text-lg">Loading product...</p>
         </div>
       </div>
@@ -127,7 +128,7 @@ const Product = () => {
           <p className="text-lg text-red-600">{error || 'Product not found'}</p>
           <button 
             onClick={() => window.history.back()} 
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="mt-4 px-4 py-2 bg-hustlehub-blue text-white rounded hover:bg-hustlehub-blue/90"
           >
             Go Back
           </button>
@@ -160,7 +161,7 @@ const Product = () => {
                     onClick={() => setSelectedImage(idx)}
                     className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                       selectedImage === idx 
-                        ? 'border-blue-600 ring-2 ring-blue-100' 
+                        ? 'border-hustlehub-blue ring-2 ring-hustlehub-blue/20' 
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -234,9 +235,9 @@ const Product = () => {
                         key={color}
                         onClick={() => setSelectedColor(color)}
                         className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                          selectedColor === color
-                            ? 'border-blue-600 bg-blue-50 text-blue-600'
-                            : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                                                  selectedColor === color
+                          ? 'border-hustlehub-blue bg-hustlehub-blue/10 text-hustlehub-blue'
+                          : 'border-gray-200 text-gray-700 hover:border-gray-300'
                         }`}
                       >
                         {color}
@@ -256,9 +257,9 @@ const Product = () => {
                         key={size}
                         onClick={() => setSelectedSize(size)}
                         className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                          selectedSize === size
-                            ? 'border-blue-600 bg-blue-50 text-blue-600'
-                            : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                                                  selectedSize === size
+                          ? 'border-hustlehub-blue bg-hustlehub-blue/10 text-hustlehub-blue'
+                          : 'border-gray-200 text-gray-700 hover:border-gray-300'
                         }`}
                       >
                         {size}
@@ -292,7 +293,7 @@ const Product = () => {
               {/* Add to Cart Button */}
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors mb-4"
+                className="w-full bg-hustlehub-blue text-white py-3 px-6 rounded-lg font-medium hover:bg-hustlehub-blue/90 transition-colors mb-4"
               >
                 Add to Cart - RWF {(product.price * quantity).toLocaleString()}
               </button>
@@ -332,7 +333,7 @@ const Product = () => {
                     onClick={() => setActiveTab(tab)}
                     className={`py-4 px-1 border-b-2 font-medium text-sm ${
                       activeTab === tab
-                        ? 'border-blue-600 text-blue-600'
+                        ? 'border-hustlehub-blue text-hustlehub-blue'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >

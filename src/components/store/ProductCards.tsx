@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCart } from '../../CartContext';
 
 interface Product {
   id: string;
@@ -15,6 +16,8 @@ interface Product {
   colors: string[];
   sizes: string[];
   category?: string; // Added category name
+  businessName?: string; // Added business name
+  businessWhatsapp?: string; // Added business WhatsApp
 }
 
 interface ProductCardProps {
@@ -38,21 +41,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
   };
 
   return (
-    <div className="bg-transparent rounded-xl overflow-hidden group cursor-pointer transition-all w-64 flex-shrink-0">
+    <div className="bg-transparent rounded-xl overflow-hidden group transition-all w-64 flex-shrink-0">
       <div className="relative">
-        <div className="aspect-square overflow-hidden rounded-xl bg-gray-100">
-          <img
-            src={product.image || "https://via.placeholder.com/400x400?text=Product+Image"}
-            alt={product.name}
-            className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Product+Image';
-            }}
-          />
-        </div>
+        <Link to={`/product/${product.id}`} className="block">
+          <div className="aspect-square overflow-hidden rounded-xl bg-gray-100 cursor-pointer">
+            <img
+              src={product.image || "https://via.placeholder.com/400x400?text=Product+Image"}
+              alt={product.name}
+              className="w-full h-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Product+Image';
+              }}
+            />
+          </div>
+        </Link>
         <button
           onClick={handleFavoriteClick}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors z-10"
         >
           <Heart 
             size={18} 
@@ -61,16 +66,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
         </button>
       </div>
       <div className="pt-3 px-1">
-        <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
-          <div className="flex items-center text-sm">
-            <Star size={14} className="fill-black text-black mr-0.5" />
-            <span>4.5</span>
+        <Link to={`/product/${product.id}`} className="block">
+          <div className="flex justify-between items-start cursor-pointer">
+            <h3 className="font-semibold text-gray-900 text-base leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
+            <div className="flex items-center text-sm">
+              <Star size={14} className="fill-black text-black mr-0.5" />
+              <span>4.5</span>
+            </div>
           </div>
-        </div>
-        <p className="text-sm text-gray-500 mb-1 line-clamp-1">{product.category || 'Uncategorized'}</p>
+          <p className="text-sm text-gray-500 mb-1 line-clamp-1">{product.category || 'Uncategorized'}</p>
+        </Link>
         <div className="flex justify-between items-center">
-          <p className="font-semibold text-gray-900">RWF{product.price.toLocaleString()}</p>
+          <Link to={`/product/${product.id}`} className="cursor-pointer">
+            <p className="font-semibold text-gray-900">RWF{product.price.toLocaleString()}</p>
+          </Link>
           <button 
             onClick={handleAddToCart}
             className="text-xs bg-indigo-50 text-indigo-600 px-3 py-2 rounded-full hover:bg-indigo-100 transition-colors"
@@ -86,6 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle, on
 const ProductCards = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart, cart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -94,32 +104,46 @@ const ProductCards = () => {
         if (response.ok) {
           const data = await response.json();
           
-          // Get category names for products
-          const productsWithCategories = await Promise.all(
+          // Get category names and business info for products
+          const productsWithDetails = await Promise.all(
             data.slice(0, 8).map(async (product: Product) => {
               try {
+                // Get category name
                 const categoryResponse = await fetch(`http://localhost:5000/categories/${product.category_id}`);
+                let categoryName = 'Uncategorized';
                 if (categoryResponse.ok) {
                   const category = await categoryResponse.json();
-                  return {
-                    ...product,
-                    category: category.name
-                  };
+                  categoryName = category.name;
                 }
+
+                // Get business info
+                const businessResponse = await fetch(`http://localhost:5000/businesses/${product.business_id}`);
+                let businessName = 'Unknown Store';
+                let businessWhatsapp = '+250788123456';
+                if (businessResponse.ok) {
+                  const business = await businessResponse.json();
+                  businessName = business.name;
+                  businessWhatsapp = business.whatsapp;
+                }
+
                 return {
                   ...product,
-                  category: 'Uncategorized'
+                  category: categoryName,
+                  businessName,
+                  businessWhatsapp
                 };
               } catch (err) {
                 return {
                   ...product,
-                  category: 'Uncategorized'
+                  category: 'Uncategorized',
+                  businessName: 'Unknown Store',
+                  businessWhatsapp: '+250788123456'
                 };
               }
             })
           );
           
-          setProducts(productsWithCategories);
+          setProducts(productsWithDetails);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -139,8 +163,21 @@ const ProductCards = () => {
   const handleAddToCart = (productId: string) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      console.log(`Added ${product.name} to cart!`);
-      // You can add your cart logic here
+      if (cart.length > 0 && cart[0].businessId !== product.business_id) {
+        if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
+          return;
+        }
+      }
+      addToCart({
+        id: product.id,
+        title: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: 1,
+        businessId: product.business_id,
+        vendorName: product.businessName || 'Unknown Store',
+        vendorWhatsapp: product.businessWhatsapp || '+250788123456',
+      });
     }
   };
 
@@ -181,13 +218,13 @@ const ProductCards = () => {
       
       <div className="flex gap-8 md:flex-wrap overflow-x-auto no-scrollbar">
         {products.map((product) => (
-          <Link key={product.id} to={`/product/${product.id}`} className="cursor-pointer"> 
-            <ProductCard 
-              product={product} 
-              onFavoriteToggle={handleFavoriteToggle}
-              onAddToCart={handleAddToCart}
-            /> 
-          </Link>
+         <ProductCard 
+         
+         key={product.id}
+         product={product}
+         onFavoriteToggle={handleFavoriteToggle}
+         onAddToCart={handleAddToCart}
+        />
         ))}
       </div>
     </section>

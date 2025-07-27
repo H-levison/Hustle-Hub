@@ -43,6 +43,9 @@
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;
+    
+    /* HustleHub brand colors */
+    --hustlehub-blue: 0 117 243;
   }
 
   .dark {

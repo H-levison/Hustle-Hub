@@ -112,22 +112,26 @@ const TrendingProducts: React.FC = () => {
       <h2 className="text-xl font-bold mb-4">Trending Products</h2>
       <div className="flex gap-4 overflow-x-auto pb-2">
         {products.map((product) => (
-          <Link key={product.id} to={`/product/${product.id}`} className="min-w-[180px] bg-white rounded-xl shadow p-2 flex flex-col hover:shadow-lg transition-shadow">
-            <img 
-              src={product.image || "https://via.placeholder.com/400x300?text=Product+Image"} 
-              alt={product.name} 
-              className="w-full h-28 object-cover rounded-t-xl mb-2"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Product+Image';
-              }}
-            />
-            <div className="font-semibold text-sm mb-1 line-clamp-1">{product.name}</div>
-            <div className="text-xs text-gray-500 mb-1">{product.category}, {product.business}</div>
-            <div className="flex items-center gap-1 text-xs text-yellow-500 mb-1">
-              <span>★</span> 4.5 ({(Math.random() * 200 + 50).toFixed(0)})
-            </div>
-            <div className="text-base font-bold text-blue-600">RWF{product.price.toLocaleString()}</div>
-          </Link>
+          <div key={product.id} className="min-w-[180px] bg-white rounded-xl shadow p-2 flex flex-col hover:shadow-lg transition-shadow">
+            <Link to={`/product/${product.id}`} className="cursor-pointer">
+              <img 
+                src={product.image || "https://via.placeholder.com/400x300?text=Product+Image"} 
+                alt={product.name} 
+                className="w-full h-28 object-cover rounded-t-xl mb-2"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Product+Image';
+                }}
+              />
+            </Link>
+            <Link to={`/product/${product.id}`} className="cursor-pointer">
+              <div className="font-semibold text-sm mb-1 line-clamp-1">{product.name}</div>
+              <div className="text-xs text-gray-500 mb-1">{product.category}, {product.business}</div>
+              <div className="flex items-center gap-1 text-xs text-yellow-500 mb-1">
+                <span>★</span> 4.5 ({(Math.random() * 200 + 50).toFixed(0)})
+              </div>
+                                <div className="text-base font-bold text-hustlehub-blue">RWF{product.price.toLocaleString()}</div>
+            </Link>
+          </div>
         ))}
       </div>
     </section>

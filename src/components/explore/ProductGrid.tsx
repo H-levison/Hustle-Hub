@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../../CartContext';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -172,10 +173,33 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { addToCart, cart } = useCart();
   
   const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onFavoriteToggle(product.id);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // For explore products, we need to fetch business data
+    // For now, using a default approach
+    const businessId = 'explore_' + product.id; // Create a unique identifier
+    if (cart.length > 0 && cart[0].businessId !== businessId) {
+      if (!window.confirm('Your cart contains items from another vendor. Adding this product will clear your cart. Continue?')) {
+        return;
+      }
+    }
+    addToCart({
+      id: product.id.toString(),
+      title: product.title,
+      price: product.price,
+      image: product.images[0],
+      quantity: 1,
+      businessId: businessId,
+      vendorName: 'Explore Store', // This should be fetched from business data
+      vendorWhatsapp: '+250788123456', // This should be fetched from business data
+    });
   };
 
   return (
@@ -222,7 +246,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onFavoriteToggle }) 
         <p className="text-sm text-gray-500 mb-1">{product.location}</p>
         <div className="flex justify-between items-center">
           <p className="font-semibold text-gray-900">RWF{product.price.toFixed(2)}</p>
-          <button className="text-xs bg-indigo-50 text-indigo-600 px-3 py-2 rounded-full hover:bg-indigo-100 transition-colors">
+          <button 
+            onClick={handleAddToCart}
+            className="text-xs bg-indigo-50 text-indigo-600 px-3 py-2 rounded-full hover:bg-indigo-100 transition-colors"
+          >
             Add to Cart
           </button>
         </div>

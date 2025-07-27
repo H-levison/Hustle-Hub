@@ -13,11 +13,13 @@ import ForgotPassword from "./pages/auth/forgot-password";
 import Cart from "./pages/Cart";
 import VendorShop from "./pages/VendorShop";
 import { CartProvider } from "./CartContext";
+import CartNotification from "./components/CartNotification";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <CartProvider>
       <HashRouter>
+        <CartNotification />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/leaderboard" element={<Leaderboard />} />

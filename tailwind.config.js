@@ -40,6 +40,9 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        hustlehub: {
+          blue: "rgb(var(--hustlehub-blue))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
